@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Syne, Syne_Mono, Noto_Serif_SC, Inter } from 'next/font/google'
-import './globals.css'
-// AnalyticsProvider is added in STEP 5 — imported here once it exists.
-// import AnalyticsProvider from '@/components/AnalyticsProvider'
+// globals.css is intentionally NOT imported here.
+// It lives in (marketing)/layout.tsx so Tailwind preflight only applies
+// to marketing routes and never disrupts Payload's /admin CSS.
+import AnalyticsProvider from '@/components/AnalyticsProvider'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -53,14 +54,14 @@ export default function RootLayout({
       lang="en"
       className={`${syne.variable} ${syneMono.variable} ${notoSerifSC.variable} ${inter.variable}`}
     >
-      <body className="bg-bg text-pg-text font-syne antialiased">
+      <body>
         {/*
-          AnalyticsProvider wraps children so Firebase Analytics is initialised
-          once on the client. Uncomment when AnalyticsProvider is built in STEP 5.
+          AnalyticsProvider is a client component that initialises Firebase Analytics
+          once on first mount. It renders no DOM of its own — just wraps children.
         */}
-        {/* <AnalyticsProvider> */}
-        {children}
-        {/* </AnalyticsProvider> */}
+        <AnalyticsProvider>
+          {children}
+        </AnalyticsProvider>
       </body>
     </html>
   )

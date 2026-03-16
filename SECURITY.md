@@ -43,13 +43,57 @@ Severities: INFO | WARN | DEFERRED
   to the existing Supabase project) before introducing any third-party auth provider.
   See CLAUDE.md Authentication section.
 
-[2026-03-16] DEFERRED [weconnect schema] — RLS policies for weconnect.* tables not yet defined.
-  The weconnect.listings table will hold commercial listing data. Before any public
-  read access via the anon key, define explicit SELECT policies.
-  Suggested starter policy (read-only, all rows):
-    CREATE POLICY "Public listings are viewable by everyone"
-    ON weconnect.listings FOR SELECT USING (true);
-  REVISIT: before first public deployment.
+[2026-03-16] WARN [weconnect schema] — Schema access granted via GRANT, not RLS.
+  The following was run in Supabase:
+    GRANT USAGE ON SCHEMA weconnect TO anon, authenticated;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA weconnect TO anon, authenticated;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA weconnect GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
+
+  GRANT USAGE is required and correct — PostgREST needs it to see the schema.
+
+  RISK: RLS is NOT enabled on weconnect.listings. The anon key (NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  which is public and exposed in the browser) currently has INSERT, UPDATE, and DELETE
+  privileges on all weconnect.* tables. Any user who reads the page source can call the
+  Supabase API and modify or delete listings data.
+
+  This is acceptable for local development only.
+
+  REQUIRED before production deployment:
+    -- 1. Enable RLS (blocks all access by default until policies are added)
+    ALTER TABLE weconnect.listings ENABLE ROW LEVEL SECURITY;
+
+    -- 2. Add a read-only policy for anonymous users
+    CREATE POLICY "Public can read listings"
+      ON weconnect.listings FOR SELECT TO anon USING (true);
+
+    -- 3. If only service_role (server-side) should write listings, add no INSERT/UPDATE/DELETE
+    --    policies for anon — the server client bypasses RLS anyway.
+
+  REVISIT: before first public/staging deployment.
+
+[2026-03-16] INFO [package.json] — STACK DEVIATION: Next.js upgraded from 14 to 15.3.6 (pinned exact).
+  react and react-dom pinned to exact version 19.2.4 (not a range) due to critical CVEs:
+    CVE-2025-55182 (CVSS 10.0 — RCE in RSC) — affects 19.0.0, 19.1.0, 19.1.1, 19.2.0; fixed in 19.0.1/19.1.2/19.2.1
+    CVE-2025-55183 (CVSS 5.3 — source code exposure) — same affected range
+    CVE-2026-23864 (CVSS 7.5 — DoS) — fixed in 19.0.4/19.1.5/19.2.4
+  19.2.4 is the fully patched version across all three CVEs.
+  next pinned to 15.4.11 exact: highest minor satisfying @payloadcms/next@3.79.0 peer dep
+    (>=15.2.9 <15.3.0 || >=15.3.9 <15.4.0 || >=15.4.11 <15.5.0). npm @latest resolves to 16.x.
+  CVE-2025-29927 (CVSS 9.1 — middleware auth bypass): fixed in 15.2.3+, 15.4.11 is safe.
+  CVE-2025-66478 / CVE-2025-55182 (CVSS 10.0 — RCE): fixed in 15.4.8+, 15.4.11 is safe.
+  CVE-2025-55183 / CVE-2025-67779 (RSC DoS + source code exposure): fixed in 15.4.10+, 15.4.11 is safe.
+  Node.js engines minimum bumped from 18.17.0 to 18.18.0 (Next.js 15 minimum).
+  NOTE: React Server Component APIs do not follow semver between 19.x minors — exact pins are the safe strategy.
+  NOTE: third-party libs may still declare peer deps of react ^16||^17||^18 — use --legacy-peer-deps if install fails.
+
+[2026-03-16] INFO [package.json] — STACK DEVIATION: Next.js upgraded from 14 to 15 (initial entry).
+  Reason: @payloadcms/next@3.79.0 (current Payload release) requires next@>=15.2.9.
+  Next.js 14 peer dependency is no longer satisfied by any current Payload v3 release.
+  React also updated from 18 to 19 (Next.js 15 default).
+  Impact: App Router API is largely compatible. One notable Next.js 15 change is that
+  cookies(), headers(), params, and searchParams are now async — no current project
+  files use these synchronously, so no code changes needed.
+  CLAUDE.md stack entry should be updated by project owner: Next.js 14 → Next.js 15.
 
 [2026-03-16] INFO [payload.config.ts] — Payload secret configured via PAYLOAD_SECRET env var.
   If PAYLOAD_SECRET is empty or default, Payload will reject logins and warn at startup.

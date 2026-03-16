@@ -46,3 +46,13 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-16] ADD [src/components/ComingSoon.tsx] — Shared coming-soon placeholder component
 [2026-03-16] STUB [src/app/platform/funding/page.tsx] — Funding placeholder (v1 scope)
 [2026-03-16] STUB [src/app/platform/markets/page.tsx] — Markets placeholder (v1 scope)
+[2026-03-16] ADD [src/lib/analytics/firebase.ts] — Firebase Analytics init; SSR-guarded; dynamic import of firebase/analytics; isSupported() check
+[2026-03-16] ADD [src/components/AnalyticsProvider.tsx] — Client component wrapping root layout; calls initFirebase() on mount
+[2026-03-16] MODIFY [src/app/layout.tsx] — Wired AnalyticsProvider into root layout body
+[2026-03-16] STUB [src/lib/auth/weconnect-auth.stub.ts] — IWeConnectAuth interface + stub implementation; all methods throw NotImplementedError
+[2026-03-16] MODIFY [package.json] — STACK DEVIATION: next ^14.2.0 → ^15.0.0, react/react-dom ^18.3.0 → ^19.0.0, @types/react* ^18 → ^19, eslint-config-next ^14 → ^15. Forced by @payloadcms/next@3.79.0 dropping Next.js 14 peer dependency.
+[2026-03-16] ADD [src/app/(marketing)/layout.tsx] — Route group layout; scopes bg-bg/text-pg-text/font-syne to marketing routes only, preventing bleed into Payload admin
+[2026-03-16] MODIFY [src/app/layout.tsx] — Removed marketing body classes; admin /create-first-user was inheriting our dark bg and breaking Payload's CSS
+[2026-03-16] MODIFY [src/app/globals.css] — Removed body background/color; moved to (marketing) layout
+[2026-03-16] MODIFY [src/app/(marketing)/] — Migrated home page and all platform routes into (marketing) route group
+[2026-03-16] MODIFY [package.json] — Security pin: react/react-dom → exact 19.2.4. next/eslint-config-next corrected to 15.4.11 (15.3.6 was below @payloadcms/next@3.79.0 peer dep minimum of 15.3.9; 15.4.11 is highest minor in allowed range and fully patched against all known 15.x CVEs).
