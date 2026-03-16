@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin
+
+# Payload CMS admin panel must not be indexed.
+# Security decision logged in SECURITY.md.

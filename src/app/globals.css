@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  CSS custom properties mirroring /reference/pergroup-website.html :root vars.
+  These are used alongside Tailwind tokens for inline-style interop and
+  any component that can't use Tailwind classes.
+*/
+:root {
+  /* PER GROUP marketing palette */
+  --amber: #F5A82A;
+  --amber-glow: rgba(245, 168, 42, 0.15);
+  --green: #39E07A;
+  --bg: #05060A;
+  --bg2: #080B12;
+  --line: rgba(255, 255, 255, 0.06);
+  --line2: rgba(255, 255, 255, 0.03);
+  --text: #DDE0E8;
+  --muted: rgba(221, 224, 232, 0.4);
+  --faint: rgba(221, 224, 232, 0.12);
+
+  /* WeConnect platform palette */
+  --wc-amber: #F5A623;
+  --wc-amber2: #D4880A;
+  --wc-green: #22C55E;
+  --wc-bg: #0F1117;
+  --wc-surface: #1A1D27;
+  --wc-surface2: #22263A;
+  --wc-border: rgba(255, 255, 255, 0.08);
+  --wc-text: #E8EAF0;
+  --wc-muted: rgba(232, 234, 240, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
