@@ -1,3 +1,3 @@
-# pergroup-weconnect
+# pergroup-web
 
 Project scaffold.
