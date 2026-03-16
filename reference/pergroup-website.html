@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PER GROUP — Global Innovation Ecosystem</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&family=Noto+Serif+SC:wght@300;400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   GLOBAL / RESET
+═══════════════════════════════════════ */
+:root{
+  --amber:#F5A82A; --amber-glow:rgba(245,168,42,.15);
+  --green:#39E07A; --bg:#05060A; --bg2:#080B12;
+  --line:rgba(255,255,255,.06); --line2:rgba(255,255,255,.03);
+  --text:#DDE0E8; --muted:rgba(221,224,232,.4); --faint:rgba(221,224,232,.12);
+  /* WeConnect vars */
+  --wc-amber:#F5A623; --wc-amber2:#D4880A; --wc-green:#22C55E;
+  --wc-bg:#0F1117; --wc-surface:#1A1D27; --wc-surface2:#22263A;
+  --wc-border:rgba(255,255,255,.08); --wc-text:#E8EAF0; --wc-muted:rgba(232,234,240,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none;}
+
+/* cursor */
+#cursor{position:fixed;width:8px;height:8px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen;}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(245,168,42,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.7;}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ═══════════════════════════════════════
+   PERGROUP NAV
+═══════════════════════════════════════ */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid var(--line2);background:rgba(5,6,10,.8);backdrop-filter:blur(20px);}
+.nav-logo{display:flex;align-items:center;gap:14px;}
+.logo-hex{width:34px;height:34px;background:var(--amber);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg);}
+.nav-brand{font-size:15px;font-weight:800;letter-spacing:3px;text-transform:uppercase;}
+.nav-links{display:flex;gap:38px;}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:13px;letter-spacing:1px;transition:color .2s;position:relative;cursor:pointer;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--amber);transition:width .3s;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{border:1px solid rgba(245,168,42,.4);color:var(--amber);padding:9px 22px;font-size:12px;letter-spacing:2px;text-decoration:none;font-weight:700;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden;cursor:pointer;background:none;}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--amber);transform:translateX(-101%);transition:transform .3s;z-index:-1;}
+.nav-cta:hover{color:var(--bg);}
+.nav-cta:hover::before{transform:translateX(0);}
+
+/* ═══════════════════════════════════════
+   PERGROUP SECTIONS
+═══════════════════════════════════════ */
+section{position:relative;min-height:100vh;z-index:10;display:flex;align-items:center;}
+.section-inner{width:100%;max-width:1400px;margin:0 auto;padding:120px 80px;}
+.s-label{font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.s-label::before{content:'';width:30px;height:1px;background:var(--amber);}
+
+/* HERO */
+#hero{background:radial-gradient(ellipse 60% 60% at 70% 50%,rgba(245,168,42,.04),transparent 70%),radial-gradient(ellipse 40% 50% at 10% 80%,rgba(57,224,122,.03),transparent 60%);}
+.hero-grid{display:grid;grid-template-columns:1fr 400px;gap:60px;align-items:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,168,42,.25);padding:7px 16px;margin-bottom:36px;font-size:11px;letter-spacing:2px;color:var(--amber);}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(245,168,42,.4)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(245,168,42,0)}}
+h1.hh{font-size:clamp(50px,5.5vw,84px);font-weight:800;line-height:.95;letter-spacing:-2px;margin-bottom:8px;}
+.line2{display:block;background:linear-gradient(90deg,var(--amber) 0%,#FFD080 50%,var(--amber) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:shimmer 4s linear infinite;}
+@keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
+.line3{display:block;color:var(--faint);}
+.hero-cn{font-family:'Noto Serif SC',serif;font-size:17px;color:var(--muted);letter-spacing:6px;margin:26px 0 44px;font-weight:300;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-fill{background:var(--amber);color:var(--bg);padding:14px 28px;font-size:12px;letter-spacing:2px;text-decoration:none;font-weight:800;text-transform:uppercase;transition:background .2s;cursor:pointer;border:none;}
+.btn-fill:hover{background:#FFD080;}
+.btn-ghost{border:1px solid var(--line);color:var(--muted);padding:14px 28px;font-size:12px;letter-spacing:2px;text-decoration:none;font-weight:600;text-transform:uppercase;transition:all .2s;cursor:pointer;background:none;}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+.hero-side{display:flex;flex-direction:column;gap:14px;}
+.stat-card{border:1px solid var(--line);padding:26px 30px;position:relative;overflow:hidden;transition:border-color .3s;}
+.stat-card::before{content:'';position:absolute;left:0;top:0;width:2px;height:0;background:var(--amber);transition:height .6s;}
+.stat-card:hover::before{height:100%;}
+.stat-card:hover{border-color:rgba(245,168,42,.25);}
+.stat-num{font-size:48px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--amber),#FFD080);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:5px;}
+.stat-lbl .cn{font-family:'Noto Serif SC',serif;display:block;font-size:10px;color:var(--faint);margin-top:2px;}
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--faint);font-size:10px;letter-spacing:3px;}
+.scroll-line{width:1px;height:44px;background:linear-gradient(var(--amber),transparent);animation:scrollAnim 2s infinite;}
+@keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* VALUES */
+#values{background:var(--bg2);}
+.v-head{text-align:center;margin-bottom:70px;}
+.v-head h2{font-size:clamp(38px,5vw,68px);font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:10px;}
+.v-cn{font-family:'Noto Serif SC',serif;font-size:clamp(24px,3vw,42px);color:var(--amber);letter-spacing:8px;}
+.v-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.v-panel{padding:56px;border:1px solid var(--line);background:rgba(255,255,255,.01);transition:background .4s;}
+.v-panel:hover{background:rgba(255,255,255,.025);}
+.panel-lbl{font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:22px;}
+.panel-title{font-family:'Noto Serif SC',serif;font-size:60px;font-weight:700;line-height:1;margin-bottom:4px;}
+.panel-title.gr{color:var(--green);}
+.panel-title.am{color:var(--amber);}
+.panel-en{font-size:12px;letter-spacing:4px;color:var(--muted);margin-bottom:44px;}
+.harmony-vis{position:relative;width:200px;height:200px;margin:0 auto 44px;}
+.h-ring-out{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(57,224,122,.2);}
+.h-ring-mid{position:absolute;inset:28px;border-radius:50%;border:1px solid rgba(57,224,122,.3);}
+.h-center{position:absolute;inset:58px;border-radius:50%;background:rgba(57,224,122,.06);border:1px solid rgba(57,224,122,.5);display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.h-spoke{position:absolute;top:50%;left:50%;width:100px;height:1px;background:linear-gradient(90deg,rgba(57,224,122,.5),transparent);transform-origin:left center;}
+.harmony-items{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.h-item{border:1px solid var(--line);padding:14px 16px;transition:border-color .3s;}
+.h-item:hover{border-color:rgba(57,224,122,.35);}
+.h-item-title{font-family:'Noto Serif SC',serif;font-size:13px;color:var(--green);margin-bottom:3px;}
+.h-item-en{font-size:11px;color:var(--muted);}
+.five-vis{position:relative;width:220px;height:220px;margin:0 auto 44px;}
+.five-rotate{position:absolute;inset:0;animation:spinSlow 22s linear infinite;}
+.petal-line{position:absolute;top:0;left:50%;width:1px;height:110px;background:linear-gradient(var(--amber),transparent);transform-origin:bottom center;}
+.five-core{position:absolute;inset:65px;border-radius:50%;background:radial-gradient(circle,rgba(245,168,42,.12),transparent 70%);border:1px solid rgba(245,168,42,.4);display:flex;align-items:center;justify-content:center;flex-direction:column;}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+.five-lbl{position:absolute;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--amber);font-weight:700;transform:translate(-50%,-50%);}
+.five-items{display:flex;gap:7px;}
+.fi{border:1px solid rgba(245,168,42,.2);padding:11px 14px;flex:1;text-align:center;transition:all .3s;}
+.fi:hover{background:rgba(245,168,42,.06);border-color:var(--amber);}
+.fi-ch{font-family:'Noto Serif SC',serif;font-size:20px;color:var(--amber);}
+.fi-en{font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.v-motto{grid-column:1/-1;border:1px solid var(--line);padding:44px 56px;display:flex;gap:56px;align-items:center;background:rgba(245,168,42,.02);}
+.motto-lbl{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:9px;}
+.motto-cn{font-family:'Noto Serif SC',serif;font-size:26px;color:var(--amber);}
+.motto-en{font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:1px;}
+.v-div{width:1px;height:72px;background:var(--line);flex-shrink:0;}
+
+/* ABOUT */
+#about{background:var(--bg);}
+.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.ab-left h2{font-size:clamp(34px,4.5vw,60px);font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:28px;}
+.ab-left h2 em{font-style:normal;color:var(--amber);}
+.ab-body{font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:28px;}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:44px;}
+.adv{padding:22px 24px;border:1px solid var(--line);transition:all .3s;position:relative;overflow:hidden;}
+.adv::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--amber);transform:scaleX(0);transition:transform .4s;}
+.adv:hover::after{transform:scaleX(1);}
+.adv:hover{background:rgba(245,168,42,.03);}
+.adv-ico{font-size:18px;margin-bottom:9px;}
+.adv-t{font-size:13px;font-weight:700;margin-bottom:3px;}
+.adv-d{font-size:11px;color:var(--muted);line-height:1.5;}
+.globe-box{position:relative;width:100%;padding-bottom:100%;}
+.globe-bg{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(245,168,42,.08),transparent 60%),radial-gradient(circle at 70% 70%,rgba(57,224,122,.05),transparent 50%);border:1px solid rgba(245,168,42,.1);overflow:hidden;}
+.meridian{position:absolute;top:0;left:50%;height:100%;border-left:1px solid rgba(245,168,42,.07);transform-origin:center;}
+.parallel{position:absolute;left:0;right:0;border-top:1px solid rgba(245,168,42,.07);}
+.gdot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--amber);transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(245,168,42,.8);animation:gdotGlow 2s infinite alternate;}
+.gdot.g{background:var(--green);box-shadow:0 0 12px rgba(57,224,122,.8);}
+@keyframes gdotGlow{from{opacity:.5;transform:translate(-50%,-50%) scale(.8)}to{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
+.g-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.g-num{font-size:68px;font-weight:800;color:var(--amber);line-height:1;}
+.g-lbl{font-size:11px;letter-spacing:3px;color:var(--muted);}
+
+/* SERVICES */
+#services{background:var(--bg2);}
+.svc-head{margin-bottom:56px;}
+.svc-head h2{font-size:clamp(34px,4.5vw,60px);font-weight:800;letter-spacing:-2px;}
+.svc-head h2 span{color:var(--amber);}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);}
+.svc{padding:44px 38px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden;transition:all .4s;cursor:default;}
+.svc:nth-child(n+4){border-bottom:none;}
+.svc:nth-child(3n){border-right:none;}
+.svc::before{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:linear-gradient(rgba(245,168,42,.04),transparent);transition:height .4s;}
+.svc:hover::before{height:100%;}
+.svc-n{font-family:'Syne Mono',monospace;font-size:10px;color:var(--faint);margin-bottom:18px;letter-spacing:2px;}
+.svc-ico{font-size:26px;margin-bottom:18px;}
+.svc-t{font-size:16px;font-weight:700;margin-bottom:5px;}
+.svc-cn{font-family:'Noto Serif SC',serif;font-size:11px;color:var(--amber);margin-bottom:12px;letter-spacing:2px;}
+.svc-d{font-size:12px;color:var(--muted);line-height:1.8;}
+.svc-arr{position:absolute;bottom:28px;right:28px;font-size:16px;color:var(--faint);transition:all .3s;}
+.svc:hover .svc-arr{color:var(--amber);transform:translate(4px,-4px);}
+
+/* PLATFORM TEASER (replaces old platform section) */
+#platform-teaser{background:var(--bg);overflow:hidden;}
+.plt-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.plt-left h2{font-size:clamp(34px,4vw,58px);font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:22px;}
+.plt-left h2 em{font-style:normal;color:var(--amber);}
+.plt-left p{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:32px;}
+.pfeat{display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--line);}
+.pfeat-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:8px;box-shadow:0 0 8px rgba(57,224,122,.6);}
+.pfeat-t{font-size:13px;font-weight:600;margin-bottom:2px;}
+.pfeat-d{font-size:11px;color:var(--muted);}
+.launch-btn{display:inline-flex;align-items:center;gap:10px;background:var(--amber);color:var(--bg);padding:16px 32px;font-size:13px;letter-spacing:2px;font-weight:800;text-transform:uppercase;transition:background .2s;cursor:pointer;border:none;margin-top:36px;}
+.launch-btn:hover{background:#FFD080;}
+.launch-btn .arrow{transition:transform .2s;}
+.launch-btn:hover .arrow{transform:translateX(4px);}
+/* mini mockup */
+.mini-mock{background:rgba(8,11,18,.9);border:1px solid var(--line);box-shadow:0 0 60px rgba(245,168,42,.05);}
+.mmbar{background:rgba(255,255,255,.03);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:7px;}
+.mmdot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.1);}
+.mmdot:nth-child(1){background:#FF5F57;}.mmdot:nth-child(2){background:#FEBC2E;}.mmdot:nth-child(3){background:#28C840;}
+.mmttl{margin-left:auto;font-family:'Syne Mono',monospace;font-size:9px;color:var(--muted);}
+.mmbody{padding:20px;}
+.mmsearch{background:rgba(255,255,255,.04);border:1px solid var(--line);padding:11px 14px;margin-bottom:14px;font-family:'Syne Mono',monospace;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.mmsearch::before{content:'⟩';color:var(--amber);}
+.mmcard{background:rgba(255,255,255,.02);border:1px solid var(--line);padding:14px;margin-bottom:9px;display:flex;gap:10px;align-items:flex-start;}
+.mmtag{font-size:8px;letter-spacing:1px;padding:3px 7px;font-weight:700;flex-shrink:0;}
+.tof{background:rgba(245,168,42,.1);color:var(--amber);}
+.tfu{background:rgba(57,224,122,.1);color:var(--green);}
+.tmt{background:rgba(59,130,246,.1);color:#60A5FA;}
+.mminfo{flex:1;}
+.mmname{font-size:11px;font-weight:600;margin-bottom:2px;}
+.mmloc{font-size:9px;color:var(--muted);}
+.mmbar2{height:2px;background:rgba(255,255,255,.05);margin-top:7px;overflow:hidden;}
+.mmfill{height:100%;background:linear-gradient(90deg,var(--green),#4ADE80);}
+.mmpct{font-size:11px;font-weight:700;color:var(--green);flex-shrink:0;}
+.mmaichip{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(245,168,42,.25);padding:7px 12px;font-size:10px;color:var(--amber);letter-spacing:1px;margin-top:14px;}
+.spin-icon{animation:spin360 3s linear infinite;display:inline-block;}
+@keyframes spin360{to{transform:rotate(360deg)}}
+
+/* CLIENTS */
+#clients{background:var(--bg2);min-height:auto;}
+.cmarquee-wrap{overflow:hidden;mask:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);}
+.cmarquee{display:flex;width:max-content;animation:marquee 28s linear infinite;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.cchip{padding:15px 34px;border:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:2px;white-space:nowrap;color:var(--muted);flex-shrink:0;border-right:none;transition:all .2s;}
+.cchip:hover{color:var(--amber);background:rgba(245,168,42,.04);}
+
+/* FOOTER */
+footer{position:relative;z-index:10;background:var(--bg2);border-top:1px solid var(--line);padding:70px 80px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px;}
+footer h3{font-size:20px;font-weight:800;letter-spacing:3px;margin-bottom:14px;}
+.fbody{font-size:12px;color:var(--muted);line-height:1.9;max-width:260px;}
+.fcontact{margin-top:20px;font-size:12px;color:var(--muted);}
+.fcontact a{color:var(--amber);text-decoration:none;}
+footer h4{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:18px;text-transform:uppercase;}
+footer a{display:block;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:10px;transition:color .2s;}
+footer a:hover{color:var(--amber);}
+.fbot{z-index:10;position:relative;background:var(--bg);border-top:1px solid var(--line);padding:18px 80px;display:flex;justify-content:space-between;font-size:10px;color:var(--faint);letter-spacing:1px;}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{animation:fadeUp .8s .2s both ease;}
+h1.hh{animation:fadeUp .8s .4s both ease;}
+.hero-cn{animation:fadeUp .8s .6s both ease;}
+.hero-btns{animation:fadeUp .8s .8s both ease;}
+.hero-side{animation:fadeUp .8s .5s both ease;}
+
+/* ═══════════════════════════════════════
+   WECONNECT OVERLAY
+═══════════════════════════════════════ */
+#wc-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:var(--wc-bg);
+  font-family:'Inter',sans-serif;
+  transform:translateY(100%);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#wc-overlay.open{transform:translateY(0);}
+
+/* WeConnect topbar */
+.wc-topbar{
+  background:rgba(26,29,39,.95);
+  border-bottom:1px solid var(--wc-border);
+  padding:0 0 0 0;
+  display:flex;align-items:center;
+  backdrop-filter:blur(12px);
+  flex-shrink:0;
+}
+.wc-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;border-right:1px solid var(--wc-border);
+  min-width:240px;
+}
+.wc-logo-mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--wc-amber),var(--wc-amber2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white;}
+.wc-logo-t{font-size:14px;font-weight:700;color:var(--wc-text);}
+.wc-logo-s{font-size:10px;color:var(--wc-muted);}
+.wc-topbar-title{padding:14px 24px;flex:1;font-size:16px;font-weight:600;color:var(--wc-text);}
+.wc-topbar-cn{font-family:'Noto Serif SC',serif;font-size:11px;color:var(--wc-muted);margin-top:1px;}
+.wc-topbar-actions{display:flex;gap:8px;padding:0 16px;}
+.wc-btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:'Inter',sans-serif;}
+.wc-btn-ghost{background:rgba(255,255,255,.06);color:var(--wc-text);}
+.wc-btn-ghost:hover{background:rgba(255,255,255,.1);}
+.wc-btn-primary{background:var(--wc-amber);color:white;}
+.wc-btn-primary:hover{background:var(--wc-amber2);}
+/* Close button */
+.wc-close{
+  display:flex;align-items:center;gap:6px;
+  border-left:1px solid var(--wc-border);
+  padding:0 20px;height:100%;
+  background:none;border-top:none;border-right:none;border-bottom:none;
+  color:var(--wc-muted);font-size:12px;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:all .2s;letter-spacing:1px;
+}
+.wc-close:hover{color:white;background:rgba(255,255,255,.05);}
+
+/* WeConnect layout */
+.wc-body{display:flex;flex:1;overflow:hidden;}
+.wc-sidebar{width:240px;background:var(--wc-surface);border-right:1px solid var(--wc-border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.wc-nav-section{font-size:10px;letter-spacing:1.5px;color:var(--wc-muted);padding:16px 20px 8px;text-transform:uppercase;}
+.wc-nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:var(--wc-muted);transition:all .15s;margin:1px 8px;border-radius:7px;border:none;background:none;width:calc(100% - 16px);text-align:left;font-family:'Inter',sans-serif;}
+.wc-nav-item:hover{background:rgba(255,255,255,.05);color:var(--wc-text);}
+.wc-nav-item.active{background:rgba(245,166,35,.12);color:var(--wc-amber);}
+.wc-nav-item .wc-icon{font-size:15px;width:18px;text-align:center;}
+.wc-badge{margin-left:auto;background:var(--wc-amber);color:white;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
+.wc-sidebar-bottom{padding:12px;border-top:1px solid var(--wc-border);margin-top:auto;}
+.wc-user-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,.03);}
+.wc-user-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;}
+.wc-user-name{font-size:12px;font-weight:500;color:var(--wc-text);}
+.wc-user-role{font-size:10px;color:var(--wc-muted);}
+
+.wc-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.wc-content{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px;}
+
+/* AI card */
+.wc-ai-card{background:linear-gradient(135deg,rgba(245,166,35,.08),rgba(139,92,246,.05));border:1px solid rgba(245,166,35,.2);border-radius:14px;padding:24px;}
+.wc-ai-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.wc-ai-badge{display:flex;align-items:center;gap:6px;background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.3);color:var(--wc-amber);font-size:11px;font-weight:600;letter-spacing:1px;padding:4px 10px;border-radius:20px;}
+.wc-ai-badge::before{content:'✦';font-size:9px;}
+.wc-ai-title{font-size:15px;font-weight:600;color:var(--wc-text);}
+.wc-ai-sub{font-size:12px;color:var(--wc-muted);margin-bottom:14px;}
+.wc-ai-wrap{position:relative;}
+.wc-ai-ta{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--wc-border);border-radius:9px;padding:12px 110px 12px 14px;color:var(--wc-text);font-family:'Inter',sans-serif;font-size:13px;resize:none;min-height:68px;transition:border-color .2s;line-height:1.6;}
+.wc-ai-ta:focus{outline:none;border-color:rgba(245,166,35,.4);}
+.wc-ai-ta::placeholder{color:var(--wc-muted);}
+.wc-ai-send{position:absolute;right:10px;bottom:10px;background:var(--wc-amber);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;}
+.wc-ai-send:hover{background:var(--wc-amber2);}
+.wc-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.wc-chip{padding:5px 11px;border-radius:20px;border:1px solid var(--wc-border);font-size:11px;color:var(--wc-muted);cursor:pointer;transition:all .15s;background:none;font-family:'Inter',sans-serif;}
+.wc-chip:hover{border-color:var(--wc-amber);color:var(--wc-amber);}
+.wc-ai-resp{background:rgba(0,0,0,.2);border:1px solid var(--wc-border);border-radius:9px;padding:14px;margin-top:14px;font-size:13px;line-height:1.8;color:var(--wc-text);display:none;}
+.wc-ai-resp.visible{display:block;}
+.wc-thinking{display:flex;align-items:center;gap:9px;color:var(--wc-muted);font-size:12px;}
+.wc-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--wc-amber);margin:0 2px;animation:wcBounce 1.2s infinite;}
+.wc-dots span:nth-child(2){animation-delay:.2s;}
+.wc-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes wcBounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* tabs */
+.wc-tabs{display:flex;gap:3px;background:var(--wc-surface);padding:3px;border-radius:9px;width:fit-content;}
+.wc-tab{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;color:var(--wc-muted);background:none;transition:all .15s;font-family:'Inter',sans-serif;}
+.wc-tab.active{background:var(--wc-surface2);color:var(--wc-text);}
+
+/* listings */
+.wc-listings-hdr{display:flex;align-items:center;justify-content:space-between;}
+.wc-listings-ct{font-size:12px;color:var(--wc-muted);}
+.wc-listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:14px;}
+.wc-card{background:var(--wc-surface);border:1px solid var(--wc-border);border-radius:10px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.wc-card:hover{border-color:rgba(245,166,35,.3);transform:translateY(-2px);}
+.wc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--wc-card-accent,var(--wc-amber));}
+.wc-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.wc-card-type{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.wc-match-score{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--wc-text);}
+.wc-match-dot{width:5px;height:5px;border-radius:50%;background:var(--wc-green);}
+.wc-card-title{font-size:14px;font-weight:600;margin-bottom:3px;line-height:1.3;color:var(--wc-text);}
+.wc-card-loc{font-size:11px;color:var(--wc-muted);margin-bottom:10px;}
+.wc-card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.wc-tag{font-size:10px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--wc-muted);}
+.wc-card-price{font-size:14px;font-weight:700;color:var(--wc-text);}
+.wc-card-price span{font-size:11px;font-weight:400;color:var(--wc-muted);}
+.wc-card-actions{display:flex;gap:7px;margin-top:12px;}
+.wc-card-btn{flex:1;padding:7px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--wc-border);background:none;color:var(--wc-muted);transition:all .15s;text-align:center;font-family:'Inter',sans-serif;}
+.wc-card-btn:hover{border-color:var(--wc-amber);color:var(--wc-amber);}
+.wc-card-btn.wcp{background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3);color:var(--wc-amber);}
+.wc-card-btn.wcp:hover{background:var(--wc-amber);color:white;}
+.wc-match-bar-wrap{margin-bottom:12px;}
+.wc-match-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--wc-muted);margin-bottom:3px;}
+.wc-match-bar{height:3px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;}
+.wc-match-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--wc-green),#4ADE80);}
+
+/* Modals inside WeConnect */
+.wc-modal-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;}
+.wc-modal-overlay.open{display:flex;}
+.wc-modal{background:var(--wc-surface);border:1px solid var(--wc-border);border-radius:14px;padding:28px;max-width:520px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
+.wc-modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.06);border:none;color:var(--wc-text);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;}
+.wc-modal h2{font-size:18px;margin-bottom:6px;color:var(--wc-text);font-family:'Inter',sans-serif;}
+.wc-modal-loc{color:var(--wc-muted);font-size:13px;margin-bottom:18px;}
+.wc-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--wc-border);font-size:13px;}
+.wc-detail-lbl{color:var(--wc-muted);}
+.wc-detail-val{font-weight:500;max-width:60%;text-align:right;color:var(--wc-text);}
+.wc-contact-section{margin-top:20px;}
+.wc-contact-section h4{font-size:13px;color:var(--wc-muted);margin-bottom:10px;}
+.wc-form-input{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--wc-border);border-radius:7px;padding:9px 13px;color:var(--wc-text);font-family:'Inter',sans-serif;font-size:13px;margin-bottom:8px;}
+.wc-form-input:focus{outline:none;border-color:rgba(245,166,35,.4);}
+.wc-submit-btn{width:100%;background:var(--wc-amber);color:white;border:none;padding:11px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .15s;font-family:'Inter',sans-serif;}
+.wc-submit-btn:hover{background:var(--wc-amber2);}
+.wc-success-msg{display:none;text-align:center;padding:20px;}
+.wc-success-msg .wc-check{font-size:36px;margin-bottom:10px;}
+.wc-success-msg p{color:var(--wc-muted);font-size:13px;line-height:1.7;}
+
+/* scrollbar */
+.wc-content::-webkit-scrollbar,.wc-sidebar::-webkit-scrollbar,.wc-modal::-webkit-scrollbar{width:4px;}
+.wc-content::-webkit-scrollbar-thumb,.wc-sidebar::-webkit-scrollbar-thumb,.wc-modal::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+
+@media(max-width:768px){
+  .wc-sidebar{display:none;}
+  .wc-listings-grid{grid-template-columns:1fr;}
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE (pergroup)
+═══════════════════════════════════════ */
+@media(max-width:1024px){
+  nav{padding:16px 24px;}
+  .nav-links{display:none;}
+  .section-inner{padding:90px 24px;}
+  .hero-grid,.ab-grid,.plt-inner,.v-grid{grid-template-columns:1fr;}
+  .svc-grid{grid-template-columns:1fr 1fr;}
+  .svc:nth-child(3n){border-right:1px solid var(--line);}
+  .svc:nth-child(2n){border-right:none;}
+  footer{grid-template-columns:1fr 1fr;}
+  .hero-side{flex-direction:row;flex-wrap:wrap;}
+  .stat-card{flex:1;min-width:140px;}
+  .v-motto{flex-direction:column;gap:28px;}
+  .v-div{width:72px;height:1px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ══════════════════════════════════
+     PERGROUP WEBSITE
+══════════════════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-hex">P</div>
+    <span class="nav-brand">PER GROUP</span>
+  </div>
+  <div class="nav-links">
+    <a href="#values">Philosophy</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a onclick="openWeConnect()" style="color:var(--amber);cursor:pointer;">WeConnect ✦</a>
+    <a href="#clients">Partners</a>
+  </div>
+  <button class="nav-cta" onclick="openWeConnect()">WeConnect Platform →</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="section-inner">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><div class="pulse"></div>Global Tech Innovation Ecosystem · 全球科技创新生态平台</div>
+        <h1 class="hh">Make Innovation<br><span class="line2">Open to Anyone,</span><span class="line3">Anywhere.</span></h1>
+        <p class="hero-cn">科技创新 · 商业赋能 · 人文关怀</p>
+        <div class="hero-btns">
+          <a href="#about" class="btn-fill">Discover More</a>
+          <button class="btn-ghost" onclick="openWeConnect()">WeConnect Platform →</button>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="stat-card"><div class="stat-num">15<span style="font-size:24px">+</span></div><div class="stat-lbl">Years Global Experience<span class="cn">全球产业链 · 创新链</span></div></div>
+        <div class="stat-card"><div class="stat-num">1,700<span style="font-size:24px">+</span></div><div class="stat-lbl">Projects Worldwide<span class="cn">全球项目经验</span></div></div>
+        <div class="stat-card" style="display:grid;grid-template-columns:1fr 1fr;">
+          <div style="padding-right:20px;border-right:1px solid var(--line);"><div class="stat-num" style="font-size:34px;">53<span style="font-size:14px">+</span></div><div class="stat-lbl" style="font-size:10px;">Countries<span class="cn">国家</span></div></div>
+          <div style="padding-left:20px;"><div class="stat-num" style="font-size:34px;">200<span style="font-size:14px">+</span></div><div class="stat-lbl" style="font-size:10px;">Partners<span class="cn">创新伙伴</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>SCROLL</div>
+</section>
+
+<!-- VALUES -->
+<section id="values">
+  <div class="section-inner" style="padding-top:100px;padding-bottom:100px;">
+    <div class="v-head reveal">
+      <div class="s-label" style="justify-content:center;">Our Philosophy · 我们的哲学</div>
+      <h2>Core Philosophy</h2>
+      <div class="v-cn">四和五一</div>
+    </div>
+    <div class="v-grid">
+      <div class="v-panel reveal d1">
+        <div class="panel-lbl">01 — FOUR HARMONIES</div>
+        <div class="panel-title gr">四和</div>
+        <div class="panel-en">FOUR HARMONIES</div>
+        <div class="harmony-vis">
+          <div class="h-ring-out"><div class="h-ring-mid"><div class="h-center"><span style="font-family:'Noto Serif SC',serif;font-size:28px;color:var(--green);">和</span><span style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:3px;">HARMONY</span></div></div></div>
+          <div class="h-spoke" style="transform:rotate(-90deg);"></div>
+          <div class="h-spoke" style="transform:rotate(0deg);"></div>
+          <div class="h-spoke" style="transform:rotate(90deg);"></div>
+          <div class="h-spoke" style="transform:rotate(180deg);"></div>
+        </div>
+        <div class="harmony-items">
+          <div class="h-item"><div class="h-item-title">心灵的平和</div><div class="h-item-en">Awakening Heart</div></div>
+          <div class="h-item"><div class="h-item-title">社会的和谐</div><div class="h-item-en">Harmonious Society</div></div>
+          <div class="h-item"><div class="h-item-title">家庭的和睦</div><div class="h-item-en">Amicable Family</div></div>
+          <div class="h-item"><div class="h-item-title">世界的和平</div><div class="h-item-en">Peaceful World</div></div>
+        </div>
+      </div>
+      <div class="v-panel reveal d2">
+        <div class="panel-lbl">02 — FIVE UNITIES</div>
+        <div class="panel-title am">五一</div>
+        <div class="panel-en">FIVE UNITIES</div>
+        <div class="five-vis">
+          <div class="five-rotate">
+            <div class="petal-line" style="transform:rotate(0deg);transform-origin:50% 100%;left:50%;top:0;"></div>
+            <div class="petal-line" style="transform:rotate(72deg);transform-origin:50% 100%;left:50%;top:0;"></div>
+            <div class="petal-line" style="transform:rotate(144deg);transform-origin:50% 100%;left:50%;top:0;"></div>
+            <div class="petal-line" style="transform:rotate(216deg);transform-origin:50% 100%;left:50%;top:0;"></div>
+            <div class="petal-line" style="transform:rotate(288deg);transform-origin:50% 100%;left:50%;top:0;"></div>
+          </div>
+          <div class="five-core"><span style="font-family:'Noto Serif SC',serif;font-size:28px;color:var(--amber);">爱</span><span style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:3px;">LOVE</span></div>
+          <div class="five-lbl" style="top:8%;left:50%;">艺</div>
+          <div class="five-lbl" style="top:34%;right:2%;">医</div>
+          <div class="five-lbl" style="top:80%;right:13%;">义</div>
+          <div class="five-lbl" style="top:80%;left:13%;">易</div>
+          <div class="five-lbl" style="top:34%;left:2%;">爱</div>
+        </div>
+        <div class="five-items">
+          <div class="fi"><div class="fi-ch">易</div><div class="fi-en">Changes</div></div>
+          <div class="fi"><div class="fi-ch">医</div><div class="fi-en">Healthy</div></div>
+          <div class="fi"><div class="fi-ch">爱</div><div class="fi-en">Love</div></div>
+          <div class="fi"><div class="fi-ch">艺</div><div class="fi-en">Art</div></div>
+          <div class="fi"><div class="fi-ch">义</div><div class="fi-en">Morality</div></div>
+        </div>
+      </div>
+      <div class="v-motto reveal">
+        <div><div class="motto-lbl">VALUES · 价值观</div><div class="motto-cn">喜乐，和平，公义</div><div class="motto-en">Joy · Peace · Justice</div></div>
+        <div class="v-div"></div>
+        <div><div class="motto-lbl">VISION · 愿景</div><div class="motto-cn">以商载道，共创共生</div><div class="motto-en">Business as a vehicle for values</div></div>
+        <div class="v-div"></div>
+        <div><div class="motto-lbl">MISSION · 使命</div><div class="motto-cn">商业最集中的地方<br>也是善意最集中的地方</div><div class="motto-en" style="max-width:200px;">Where commerce is greatest, so too should be goodwill</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="ab-grid">
+      <div class="reveal">
+        <div class="s-label">Who We Are · 我们是谁</div>
+        <h2>A Network Built on<br><em>Genuine Trust</em></h2>
+        <p class="ab-body">PER GROUP has spent 15+ years weaving a bicultural network across 53 countries — connecting Chinese enterprises going global with world markets, and international companies entering Asia with local expertise.</p>
+        <p class="ab-body">108 co-creation partners serve 1,700+ international company branches, guided by genuine insight, not just connections.</p>
+        <div class="adv-grid">
+          <div class="adv"><div class="adv-ico">🔭</div><div class="adv-t">Multi-Dimensional Global View</div><div class="adv-d">真知 + 多维度全球视野</div></div>
+          <div class="adv"><div class="adv-ico">🌐</div><div class="adv-t">Bicultural Service Network</div><div class="adv-d">华人和当地人一起服务</div></div>
+          <div class="adv"><div class="adv-ico">🛡️</div><div class="adv-t">Ethics & Compliance</div><div class="adv-d">职业操守和合规 · 高透明度</div></div>
+          <div class="adv"><div class="adv-ico">🤝</div><div class="adv-t">Full-Journey Support</div><div class="adv-d">从构想到决策，全程陪伴</div></div>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <div class="globe-box">
+          <div class="globe-bg">
+            <div class="meridian" style="transform:rotate(0deg)"></div><div class="meridian" style="transform:rotate(30deg)"></div><div class="meridian" style="transform:rotate(60deg)"></div><div class="meridian" style="transform:rotate(90deg)"></div><div class="meridian" style="transform:rotate(120deg)"></div><div class="meridian" style="transform:rotate(150deg)"></div>
+            <div class="parallel" style="top:20%"></div><div class="parallel" style="top:35%"></div><div class="parallel" style="top:50%"></div><div class="parallel" style="top:65%"></div><div class="parallel" style="top:80%"></div>
+            <div class="gdot" style="top:30%;left:48%;animation-delay:0s;"></div><div class="gdot g" style="top:42%;left:72%;animation-delay:.5s;"></div><div class="gdot" style="top:55%;left:30%;animation-delay:1s;"></div><div class="gdot g" style="top:25%;left:60%;animation-delay:1.5s;"></div><div class="gdot" style="top:68%;left:55%;animation-delay:.3s;"></div><div class="gdot g" style="top:38%;left:20%;animation-delay:.8s;"></div><div class="gdot" style="top:60%;left:75%;animation-delay:1.2s;"></div><div class="gdot" style="top:20%;left:35%;animation-delay:.6s;"></div>
+            <div class="g-center"><div class="g-num">53<span style="font-size:28px">+</span></div><div class="g-lbl">COUNTRIES</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-inner">
+    <div class="svc-head reveal"><div class="s-label">What We Do · 服务内容</div><h2>End-to-End<br><span>Global Services</span></h2></div>
+    <div class="svc-grid">
+      <div class="svc reveal"><div class="svc-n">01</div><div class="svc-ico">🔍</div><div class="svc-t">Market Intelligence</div><div class="svc-cn">洞悉环境 · 商业设计</div><div class="svc-d">Industry analysis, competitor mapping, supply chain intelligence and commercial case development.</div><div class="svc-arr">↗</div></div>
+      <div class="svc reveal d1"><div class="svc-n">02</div><div class="svc-ico">📍</div><div class="svc-t">Location & Setup</div><div class="svc-cn">选址服务 · 企业落地</div><div class="svc-d">Office, lab, and factory location across 53+ countries. Registration, banking, compliance setup.</div><div class="svc-arr">↗</div></div>
+      <div class="svc reveal d2"><div class="svc-n">03</div><div class="svc-ico">⚙️</div><div class="svc-t">Operations & HR</div><div class="svc-cn">运营实施 · 人力资源</div><div class="svc-d">Project management, talent, international trade, finance, tax, supply chain localization.</div><div class="svc-arr">↗</div></div>
+      <div class="svc reveal"><div class="svc-n">04</div><div class="svc-ico">🛡️</div><div class="svc-t">IP, Standards & Compliance</div><div class="svc-cn">知识产权 · 标准合规</div><div class="svc-d">CE, FDA, ISO, HSA certifications. Data cross-border and AI governance compliance packages.</div><div class="svc-arr">↗</div></div>
+      <div class="svc reveal d1"><div class="svc-n">05</div><div class="svc-ico">🌱</div><div class="svc-t">Green & ESG</div><div class="svc-cn">绿色动力 · 双碳平台</div><div class="svc-d">Dual Carbon Green Energy Alliance. Energy audits, carbon neutrality solutions, ESG reporting.</div><div class="svc-arr">↗</div></div>
+      <div class="svc reveal d2"><div class="svc-n">06</div><div class="svc-ico">🚀</div><div class="svc-t">Innovation & Acceleration</div><div class="svc-cn">科技创新 · 全球加速器</div><div class="svc-d">AI+Manufacturing, Digital Healthcare, Robotics programs. Incubators paired with global accelerators.</div><div class="svc-arr">↗</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM TEASER -->
+<section id="platform-teaser">
+  <div class="section-inner">
+    <div class="plt-inner">
+      <div class="reveal">
+        <div class="s-label">New Platform · 全新平台</div>
+        <h2>WeConnect —<br>Global <em>Demand &<br>Supply</em> Platform</h2>
+        <p>AI-powered marketplace connecting enterprises with verified global partners across 53+ countries. Find office and lab spaces, secure funding, discover market entry pathways — all in one intelligent platform.</p>
+        <div style="margin-bottom:0;">
+          <div class="pfeat"><div class="pfeat-dot"></div><div><div class="pfeat-t">Spaces — Offices, Labs, Factories · 办公室/实验室/厂房</div><div class="pfeat-d">Global space matching: Singapore, SEA, China, EU, Middle East</div></div></div>
+          <div class="pfeat"><div class="pfeat-dot"></div><div><div class="pfeat-t">Funding & Investment · 融资对接</div><div class="pfeat-d">VC, CVC, government grants — matched by stage and sector</div></div></div>
+          <div class="pfeat"><div class="pfeat-dot" style="background:var(--amber);box-shadow:0 0 8px rgba(245,168,42,.6);"></div><div><div class="pfeat-t">AI Intelligent Matching · AI智能匹配</div><div class="pfeat-d">Describe needs in plain language — AI finds the best partners instantly</div></div></div>
+        </div>
+        <button class="launch-btn" onclick="openWeConnect()">Launch WeConnect Platform <span class="arrow">→</span></button>
+      </div>
+      <div class="reveal d2">
+        <div class="mini-mock">
+          <div class="mmbar"><div class="mmdot"></div><div class="mmdot"></div><div class="mmdot"></div><div class="mmttl">WeConnect · Global Supply & Demand</div></div>
+          <div class="mmbody">
+            <div class="mmsearch">Find lab space near NUS, biotech, SGD 5k/mo...</div>
+            <div class="mmcard"><div><div class="mmtag tof">OFFICE</div></div><div class="mminfo"><div class="mmname">One-North Biopolis Lab Suite</div><div class="mmloc">📍 Singapore · From SGD 4,200/mo</div><div class="mmbar2"><div class="mmfill" style="width:93%"></div></div></div><div class="mmpct">93%</div></div>
+            <div class="mmcard"><div><div class="mmtag tfu">GRANT</div></div><div class="mminfo"><div class="mmname">EDB Market Readiness Assistance</div><div class="mmloc">📍 Singapore · Up to SGD 100K</div><div class="mmbar2"><div class="mmfill" style="width:95%;background:var(--amber)"></div></div></div><div class="mmpct" style="color:var(--amber);">95%</div></div>
+            <div class="mmcard"><div><div class="mmtag tmt">MARKET</div></div><div class="mminfo"><div class="mmname">SEA 5-Country GTM Accelerator</div><div class="mmloc">📍 SG·MY·TH·VN·ID · SGD 18,000</div><div class="mmbar2"><div class="mmfill" style="width:88%;background:#60A5FA"></div></div></div><div class="mmpct" style="color:#60A5FA;">88%</div></div>
+            <div class="mmaichip"><span class="spin-icon">✦</span> AI finding 12 more matches...</div>
+          </div>
+        </div>
+        <!-- CLICK OVERLAY on mockup -->
+        <div onclick="openWeConnect()" style="position:absolute;inset:0;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px;background:linear-gradient(transparent 60%,rgba(5,6,10,.6));border-radius:0 0 4px 4px;">
+          <span style="color:var(--amber);font-size:12px;letter-spacing:2px;font-weight:700;border:1px solid rgba(245,168,42,.4);padding:8px 20px;background:rgba(5,6,10,.8);">CLICK TO OPEN PLATFORM →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="clients" style="min-height:auto;">
+  <div class="section-inner" style="padding:70px 80px;">
+    <div class="s-label reveal">Trusted By · 合作客户</div>
+    <h2 class="reveal" style="font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-2px;margin-bottom:52px;">Global Industry Leaders</h2>
+    <div class="cmarquee-wrap">
+      <div class="cmarquee">
+        <div class="cchip">TCL</div><div class="cchip">BAIDU 百度</div><div class="cchip">MIDEA 美的</div><div class="cchip">HUAWEI 华为</div><div class="cchip">CATL 宁德时代</div><div class="cchip">GENERAL ELECTRIC</div><div class="cchip">NEWTOUCH 新致</div><div class="cchip">ENLITISA 艾缇亚</div><div class="cchip">NANO LABS</div><div class="cchip">KANGABIO 康抗</div><div class="cchip">ETHEALTHCARE</div><div class="cchip">SOULSEMI</div>
+        <div class="cchip">TCL</div><div class="cchip">BAIDU 百度</div><div class="cchip">MIDEA 美的</div><div class="cchip">HUAWEI 华为</div><div class="cchip">CATL 宁德时代</div><div class="cchip">GENERAL ELECTRIC</div><div class="cchip">NEWTOUCH 新致</div><div class="cchip">ENLITISA 艾缇亚</div><div class="cchip">NANO LABS</div><div class="cchip">KANGABIO 康抗</div><div class="cchip">ETHEALTHCARE</div><div class="cchip">SOULSEMI</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><h3>PER GROUP</h3><p class="fbody">A globalized tech innovation ecosystem. Making innovation open to anyone, anywhere.<br><br>以商载道，共创共生</p><div class="fcontact">CEO: Kelly Chen<br><a href="mailto:cxy@e-harbor.com">cxy@e-harbor.com</a></div></div>
+  <div><h4>Platform · 平台</h4><a onclick="openWeConnect()" style="cursor:pointer;">WeConnect ✦</a><a href="#">PERE Enterprise Center</a><a href="#">e创码头 E-Harbor</a><a href="#">Global Entrepreneur Club</a></div>
+  <div><h4>Services · 服务</h4><a href="#">Market Entry</a><a href="#">IP & Compliance</a><a href="#">Green / ESG</a><a href="#">Acceleration</a></div>
+  <div><h4>Philosophy · 价值观</h4><a href="#values">四和 Four Harmonies</a><a href="#values">五一 Five Unities</a><a href="#">Social Enterprise</a><a href="#">Sustainability</a></div>
+</footer>
+<div class="fbot"><span>© 2025 PER GROUP. All rights reserved.</span><span>科技创新 · 商业赋能 · 人文关怀</span></div>
+
+
+<!-- ══════════════════════════════════
+     WECONNECT OVERLAY (embedded)
+══════════════════════════════════ -->
+<div id="wc-overlay">
+  <!-- topbar -->
+  <div class="wc-topbar">
+    <div class="wc-brand">
+      <div class="wc-logo-mark">W</div>
+      <div><div class="wc-logo-t">WeConnect</div><div class="wc-logo-s">by PER GROUP</div></div>
+    </div>
+    <div class="wc-topbar-title">
+      <div id="wc-page-title">Find Spaces Globally</div>
+      <div class="wc-topbar-cn" id="wc-page-cn">全球办公室 · 实验室 · 厂房土地</div>
+    </div>
+    <div class="wc-topbar-actions">
+      <button class="wc-btn wc-btn-ghost">🔔</button>
+      <button class="wc-btn wc-btn-primary" onclick="openWcPostModal()">+ Post Requirement 发布需求</button>
+    </div>
+    <button class="wc-close" onclick="closeWeConnect()">✕ &nbsp;Close</button>
+  </div>
+
+  <!-- body -->
+  <div class="wc-body">
+    <!-- sidebar -->
+    <div class="wc-sidebar">
+      <div class="wc-nav-section">Discover · 发现</div>
+      <button class="wc-nav-item active" onclick="wcSwitchTab('spaces')"><span class="wc-icon">🏢</span> Spaces · 空间<span class="wc-badge">24</span></button>
+      <button class="wc-nav-item" onclick="wcSwitchTab('funding')"><span class="wc-icon">💰</span> Funding · 融资<span class="wc-badge">12</span></button>
+      <button class="wc-nav-item" onclick="wcSwitchTab('market')"><span class="wc-icon">🌏</span> Markets · 市场<span class="wc-badge">18</span></button>
+      <div class="wc-nav-section" style="margin-top:16px;">My Activity · 我的</div>
+      <button class="wc-nav-item"><span class="wc-icon">📌</span> Saved · 收藏</button>
+      <button class="wc-nav-item"><span class="wc-icon">💬</span> Messages · 消息</button>
+      <button class="wc-nav-item"><span class="wc-icon">📊</span> My Projects · 项目</button>
+      <div class="wc-sidebar-bottom">
+        <div class="wc-user-card"><div class="wc-user-av">NUS</div><div><div class="wc-user-name">Student User</div><div class="wc-user-role">NUS / NTU · Enterprise</div></div></div>
+      </div>
+    </div>
+
+    <!-- main -->
+    <div class="wc-main">
+      <div class="wc-content">
+        <!-- AI -->
+        <div class="wc-ai-card">
+          <div class="wc-ai-header"><div class="wc-ai-badge">AI Matching · 智能匹配</div><div class="wc-ai-title">Describe what you're looking for</div></div>
+          <p class="wc-ai-sub">Tell us your needs in plain language — AI will find the best matches · 用自然语言描述需求，AI为您精准匹配</p>
+          <div class="wc-ai-wrap">
+            <textarea class="wc-ai-ta" id="wc-ai-input" placeholder="e.g. We are a biotech startup looking for a wet lab 500-1000 sqft near one-north Singapore, budget SGD 5000/month..."></textarea>
+            <button class="wc-ai-send" id="wc-ai-btn" onclick="wcRunAI()"><span>✦</span> Match</button>
+          </div>
+          <div class="wc-chips">
+            <button class="wc-chip" onclick="wcSetPrompt('Lab space near NUS, 300-800sqft, biotech, budget S$3000-5000/month')">🔬 Lab near NUS</button>
+            <button class="wc-chip" onclick="wcSetPrompt('Office space in Singapore CBD for 5-10 people, Series A fintech startup')">🏢 CBD Office</button>
+            <button class="wc-chip" onclick="wcSetPrompt('Factory or industrial land in Malaysia or Vietnam for manufacturing, 5000sqft+')">🏭 Factory SEA</button>
+            <button class="wc-chip" onclick="wcSetPrompt('Series A investors for AI+healthcare startup Singapore, USD 1-3M')">💰 AI Health Fund</button>
+            <button class="wc-chip" onclick="wcSetPrompt('EU market entry for medtech device, CE certification, Germany distribution')">🌍 EU MedTech</button>
+          </div>
+          <div class="wc-ai-resp" id="wc-ai-resp">
+            <div class="wc-thinking" id="wc-thinking"><div class="wc-dots"><span></span><span></span><span></span></div><span>AI is analyzing your requirements · 正在分析需求...</span></div>
+            <div id="wc-ai-result" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- tabs -->
+        <div class="wc-tabs" id="wc-tabs">
+          <button class="wc-tab active" onclick="wcSwitchTab('spaces')">🏢 Spaces 空间</button>
+          <button class="wc-tab" onclick="wcSwitchTab('funding')">💰 Funding 融资</button>
+          <button class="wc-tab" onclick="wcSwitchTab('market')">🌏 Markets 市场</button>
+        </div>
+
+        <!-- listings -->
+        <div>
+          <div class="wc-listings-hdr">
+            <span id="wc-result-label" style="font-size:14px;font-weight:600;color:var(--wc-text);">Available Spaces · 可用空间</span>
+            <span class="wc-listings-ct" id="wc-result-count">24 listings found</span>
+          </div>
+          <div class="wc-listings-grid" id="wc-listings-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WeConnect detail modal -->
+  <div class="wc-modal-overlay" id="wc-detail-modal">
+    <div class="wc-modal"><button class="wc-modal-close" onclick="closeWcModal('wc-detail-modal')">✕</button><div id="wc-modal-content"></div></div>
+  </div>
+  <!-- WeConnect post modal -->
+  <div class="wc-modal-overlay" id="wc-post-modal">
+    <div class="wc-modal">
+      <button class="wc-modal-close" onclick="closeWcModal('wc-post-modal')">✕</button>
+      <h2>Post a Requirement · 发布需求</h2>
+      <p style="color:var(--wc-muted);font-size:12px;margin-bottom:20px;">Tell the WeConnect network what you need</p>
+      <div id="wc-post-form">
+        <select class="wc-form-input"><option>🏢 Office Space · 办公室</option><option>🔬 Lab / R&D Space · 实验室</option><option>🏭 Factory / Industrial Land · 厂房/土地</option><option>💰 Investment / Funding · 融资</option><option>🌏 Market Entry Partner · 市场进入</option></select>
+        <input class="wc-form-input" placeholder="Company name · 公司名称">
+        <input class="wc-form-input" placeholder="Target location · 目标地区 (e.g. Singapore, Vietnam)">
+        <input class="wc-form-input" placeholder="Budget · 预算 (e.g. SGD 5,000–15,000/mo)">
+        <textarea class="wc-form-input" rows="3" placeholder="Describe requirements · 详细描述需求..." style="resize:none;"></textarea>
+        <input class="wc-form-input" id="wc-req-email" placeholder="Contact email · 联系邮箱">
+        <button class="wc-submit-btn" onclick="wcSubmitReq()">Submit Requirement · 提交需求</button>
+      </div>
+      <div class="wc-success-msg" id="wc-post-success"><div class="wc-check">✅</div><h3 style="margin-bottom:8px;color:var(--wc-text);">Requirement Posted!</h3><p>AI is matching with verified partners. You'll hear back within 24–48 hours. · AI正在匹配认证合作伙伴，24-48小时内回复。</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,.svc,.stat-card,.h-item,.fi,.adv').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';cur.style.opacity='.5';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';cur.style.opacity='1';});
+});
+
+// ── CANVAS ──
+const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
+resize();window.addEventListener('resize',()=>{resize();initP();});
+function initP(){particles=[];for(let i=0;i<90;i++)particles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.2+.4});}
+initP();
+const mouse={x:-1000,y:-1000};
+document.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(245,168,42,.022)';ctx.lineWidth=1;
+  const gs=72;
+  for(let x=0;x<=W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy),inf=Math.max(0,1-d/180);
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r+inf*3,0,Math.PI*2);
+    ctx.fillStyle=inf>.2?`rgba(245,168,42,${.12+inf*.35})`:`rgba(57,224,122,${.06+inf*.2})`;
+    if(inf>.1){ctx.shadowColor='rgba(245,168,42,.4)';ctx.shadowBlur=10;}
+    ctx.fill();ctx.shadowBlur=0;
+  });
+  for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){
+    const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<90){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(245,168,42,${.05*(1-d/90)})`;ctx.lineWidth=.5;ctx.stroke();}
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── REVEAL ──
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.12}).observe(el));
+
+// ── WECONNECT OPEN/CLOSE ──
+function openWeConnect(){
+  document.getElementById('wc-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  wcRenderListings('spaces');
+}
+function closeWeConnect(){
+  document.getElementById('wc-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+// ESC to close
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWeConnect();});
+
+// ── WECONNECT DATA ──
+const wcListings={
+  spaces:[
+    {id:1,type:'Lab Space',tc:'#22C55E',tb:'rgba(34,197,94,.1)',title:'One-North Biopolis Wet Lab Suite',loc:'📍 Singapore · Biopolis Dr',tags:['Biotech Ready','BSL-1 Certified','600–1200 sqft','Flexi-term'],price:'SGD 4,200',unit:'/month',match:93,details:{Size:'600–1,200 sqft',Zone:'Biopolis (MedTech Cluster)',Setup:'Wet lab benches, fume hood, -80°C storage',Lease:'Flexi 3–12 months',Contact:'labs@one-north.sg'}},
+    {id:2,type:'Office',tc:'#F5A623',tb:'rgba(245,166,35,.1)',title:'CBD Co-working Hub — Dedicated Office Suite',loc:'📍 Singapore · Raffles Place',tags:['5–20 pax','Private Suite','CBD Address','Serviced'],price:'SGD 3,800',unit:'/month',match:88,details:{Capacity:'5–20 people',Floor:'32F, Ocean Financial Centre',Services:'Receptionist, IT, printing',Lease:'6–24 months',Contact:'leasing@cbdhub.sg'}},
+    {id:3,type:'Factory',tc:'#8B5CF6',tb:'rgba(139,92,246,.1)',title:'Johor Bahru Light Industrial Unit',loc:'📍 Malaysia · Iskandar Puteri',tags:['5,000 sqft','Manufacturing','Free Zone','Power 3-phase'],price:'MYR 8,500',unit:'/month',match:81,details:{Size:'5,000 sqft',Zone:'SILC Industrial Park, Iskandar',Power:'3-phase 400A',Ceiling:'8m height',Contact:'industrial@silc.com.my'}},
+    {id:4,type:'Lab Space',tc:'#22C55E',tb:'rgba(34,197,94,.1)',title:'NTU Innovation Centre — R&D Suite',loc:'📍 Singapore · Jurong West',tags:['University-linked','IP friendly','300–800 sqft','EDB grant eligible'],price:'SGD 2,800',unit:'/month',match:85,details:{Size:'300–800 sqft',Affiliation:'NTU Innovation Centre',Perks:'Access to NTU labs & equipment',Grant:'EDB iJump eligible',Contact:'innovation@ntu.edu.sg'}},
+    {id:5,type:'Industrial Land',tc:'#8B5CF6',tb:'rgba(139,92,246,.1)',title:'Ho Chi Minh VSIP Industrial Land',loc:'📍 Vietnam · HCMC · VSIP',tags:['20,000–50,000 sqm','FDI Friendly','Tax Holiday','Port access'],price:'USD 95',unit:'/sqm one-time',match:76,details:{Size:'20,000–50,000 sqm',Zone:'Vietnam-Singapore Industrial Park',Incentive:'4-year corporate tax holiday',Infrastructure:'3km to HCMC port',Contact:'land@vsip.com.vn'}},
+    {id:6,type:'Office',tc:'#F5A623',tb:'rgba(245,166,35,.1)',title:'Shenzhen Bay Innovation Hub',loc:'📍 China · Shenzhen · Nanshan',tags:['Tech district','10–50 pax','Startup building','政府补贴'],price:'RMB 28,000',unit:'/month',match:78,details:{Size:'200–600 sqm',Zone:'Shenzhen Bay Science & Tech City',Subsidy:'50% rent subsidy for qualified companies',Lease:'1–3 years',Contact:'invest@szgov.cn'}},
+  ],
+  funding:[
+    {id:10,type:'Series A',tc:'#3B82F6',tb:'rgba(59,130,246,.1)',title:'Wavemaker Partners — Deep Tech SEA',loc:'📍 Singapore · Pan-SEA',tags:['USD 1M–8M','AI · Robotics','B2B SaaS','Climate Tech'],price:'USD 1M–8M',unit:'ticket size',match:90,details:{Stage:'Series A',Focus:'Deep Tech, AI, Robotics, Climate',Geography:'SEA + Greater China',LP:'IFC, Temasek-linked',Contact:'apply@wavemaker.vc'}},
+    {id:11,type:'Gov Grant',tc:'#22C55E',tb:'rgba(34,197,94,.1)',title:'EDB Market Readiness Assistance (MRA)',loc:'📍 Singapore · Global',tags:['Up to SGD 100K','70% co-fund','Market entry','First-time overseas'],price:'Up to SGD 100K',unit:'70% funded',match:95,details:{Type:'Government grant (EDB/ESG)',Coverage:'Market research, biz dev, marketing',Eligibility:'Singapore-registered SMEs',Application:'Rolling basis via Business Grants Portal',Contact:'grants@enterprisesg.gov.sg'}},
+    {id:12,type:'Angel / Pre-A',tc:'#8B5CF6',tb:'rgba(139,92,246,.1)',title:'Antler SEA — Zero-to-One Program',loc:'📍 Singapore · Global',tags:['SGD 200K','Equity 10%','Co-founder match','6-month program'],price:'SGD 200K',unit:'+ support',match:82,details:{Stage:'Pre-seed / Idea stage',Equity:'~10% for SGD 200K',Support:'Mentorship, hiring, GTM',Cohort:'2x per year',Contact:'apply@antler.co'}},
+    {id:13,type:'CVC',tc:'#F5A623',tb:'rgba(245,166,35,.1)',title:'Midea Capital — Industrial Tech CVC',loc:'📍 Global · HQ Foshan',tags:['USD 5M–50M','Manufacturing','Smart Factory','Global expansion'],price:'USD 5M–50M',unit:'strategic',match:74,details:{Type:'Corporate Venture Capital',Parent:'Midea Group (Fortune 500)',Focus:'Smart manufacturing, IoT, energy','Value-add':'Supply chain + market access',Contact:'cvc@midea.com'}},
+  ],
+  market:[
+    {id:20,type:'EU Entry',tc:'#3B82F6',tb:'rgba(59,130,246,.1)',title:'Germany MedTech Market Entry Package',loc:'📍 Europe · DACH Region',tags:['CE Marking','MDR Compliance','Distributor network','KOL access'],price:'SGD 35,000',unit:'package',match:88,details:{Coverage:'Germany, Austria, Switzerland',Services:'CE/MDR filing, distributor matching, trade fair','PER GROUP':'Technical Standards Team (EU)',Timeline:'6–12 months',Contact:'eu@pergroup.com'}},
+    {id:21,type:'SEA Entry',tc:'#22C55E',tb:'rgba(34,197,94,.1)',title:'Southeast Asia Go-to-Market Accelerator',loc:'📍 SG · MY · TH · VN · ID',tags:['5-country','B2B channels','Gov relations','Halal cert'],price:'SGD 18,000',unit:'package',match:91,details:{Countries:'Singapore, Malaysia, Thailand, Vietnam, Indonesia',Includes:'Market research, partner matching, regulatory',Timeline:'3–6 months',Network:'300+ local B2B partners',Contact:'sea@pergroup.com'}},
+    {id:22,type:'Middle East',tc:'#F5A623',tb:'rgba(245,166,35,.1)',title:'Saudi Arabia / UAE Market Access Program',loc:'📍 Riyadh · Dubai · Abu Dhabi',tags:['Vision 2030','GCC Standards','Government contracts','Arab partners'],price:'SGD 45,000',unit:'package',match:72,details:{Market:'KSA, UAE, Qatar',Services:'GCC certification, network, tender support',Focus:'Smart City, Healthcare, Clean Energy',Timeline:'6–9 months',Contact:'me@pergroup.com'}},
+    {id:23,type:'China Entry',tc:'#8B5CF6',tb:'rgba(139,92,246,.1)',title:'China Market Entry — SHFTZ & GBA',loc:'📍 Shanghai · Shenzhen · GBA',tags:['CFDA / NMPA','Free Trade Zone','JV structure','Data compliance'],price:'SGD 25,000',unit:'package',match:80,details:{Zone:'Shanghai FTZ, Greater Bay Area',Services:'NMPA filing, JV setup, data localisation',Duration:'6–18 months','PER GROUP':'China-Singapore corridor team',Contact:'china@pergroup.com'}},
+  ]
+};
+
+function wcRenderListings(tab){
+  const data=wcListings[tab];
+  const labels={spaces:['Available Spaces · 可用空间',data.length+' listings found'],funding:['Funding Opportunities · 融资机会',data.length+' opportunities'],market:['Market Entry Scenarios · 市场场景',data.length+' scenarios']};
+  document.getElementById('wc-result-label').textContent=labels[tab][0];
+  document.getElementById('wc-result-count').textContent=labels[tab][1];
+  document.getElementById('wc-listings-grid').innerHTML=data.map(d=>`
+    <div class="wc-card" style="--wc-card-accent:${d.tc}" onclick="wcOpenDetail(${d.id},'${tab}')">
+      <div class="wc-card-top"><span class="wc-card-type" style="background:${d.tb};color:${d.tc}">${d.type}</span><div class="wc-match-score"><div class="wc-match-dot"></div>${d.match}% match</div></div>
+      <div class="wc-card-title">${d.title}</div>
+      <div class="wc-card-loc">${d.loc}</div>
+      <div class="wc-match-bar-wrap"><div class="wc-match-lbl"><span>AI Match</span><span style="color:var(--wc-green)">${d.match}%</span></div><div class="wc-match-bar"><div class="wc-match-fill" style="width:${d.match}%"></div></div></div>
+      <div class="wc-card-tags">${d.tags.map(t=>`<span class="wc-tag">${t}</span>`).join('')}</div>
+      <div class="wc-card-price">${d.price} <span>${d.unit}</span></div>
+      <div class="wc-card-actions"><button class="wc-card-btn" onclick="event.stopPropagation();this.textContent='♥ Saved';this.style.color='var(--wc-amber)'">♡ Save</button><button class="wc-card-btn wcp" onclick="event.stopPropagation();wcOpenDetail(${d.id},'${tab}')">View & Connect →</button></div>
+    </div>`).join('');
+}
+
+function wcSwitchTab(tab){
+  document.querySelectorAll('.wc-tab').forEach((t,i)=>t.classList.toggle('active',['spaces','funding','market'][i]===tab));
+  document.querySelectorAll('.wc-nav-item').forEach((n,i)=>{if(i<3)n.classList.toggle('active',i===['spaces','funding','market'].indexOf(tab));});
+  const titles={spaces:['Find Spaces Globally','全球办公室 · 实验室 · 厂房土地'],funding:['Funding & Investment','融资 · 投资 · 政府补贴'],market:['Market Entry Scenarios','市场场景 · 全球化路径']};
+  document.getElementById('wc-page-title').textContent=titles[tab][0];
+  document.getElementById('wc-page-cn').textContent=titles[tab][1];
+  wcRenderListings(tab);
+}
+
+function wcOpenDetail(id,tab){
+  const item=wcListings[tab].find(d=>d.id===id);
+  if(!item)return;
+  const rows=Object.entries(item.details).map(([k,v])=>`<div class="wc-detail-row"><span class="wc-detail-lbl">${k}</span><span class="wc-detail-val">${v}</span></div>`).join('');
+  document.getElementById('wc-modal-content').innerHTML=`
+    <span style="background:${item.tb};color:${item.tc};font-size:10px;font-weight:600;letter-spacing:1px;padding:3px 8px;border-radius:3px;text-transform:uppercase;">${item.type}</span>
+    <h2 style="margin-top:12px;">${item.title}</h2>
+    <div class="wc-modal-loc">${item.loc}</div>
+    <div class="wc-match-bar-wrap"><div class="wc-match-lbl"><span>AI Match Score · 匹配度</span><span style="color:var(--wc-green)">${item.match}%</span></div><div class="wc-match-bar"><div class="wc-match-fill" style="width:${item.match}%"></div></div></div>
+    ${rows}
+    <div class="wc-card-tags" style="margin-top:14px;">${item.tags.map(t=>`<span class="wc-tag">${t}</span>`).join('')}</div>
+    <div class="wc-contact-section">
+      <h4>Connect with this partner · 联系合作方</h4>
+      <input class="wc-form-input" placeholder="Your name · 姓名" id="wc-d-name">
+      <input class="wc-form-input" placeholder="Company · 公司" id="wc-d-company">
+      <input class="wc-form-input" placeholder="Email · 邮箱" id="wc-d-email">
+      <textarea class="wc-form-input" rows="2" placeholder="Message (optional)" style="resize:none;"></textarea>
+      <button class="wc-submit-btn" onclick="wcSubmitContact()">Send Introduction · 发送介绍</button>
+    </div>
+    <div class="wc-success-msg" id="wc-contact-success"><div class="wc-check">✅</div><h3 style="margin-bottom:8px;color:var(--wc-text);">Introduction Sent!</h3><p>WeConnect will facilitate the connection within 1–2 business days. · 已发送，1-2个工作日内回复。</p></div>`;
+  document.getElementById('wc-detail-modal').classList.add('open');
+}
+
+function wcSubmitContact(){
+  const name=document.getElementById('wc-d-name').value,email=document.getElementById('wc-d-email').value;
+  if(!name||!email){alert('Please fill in name and email.');return;}
+  document.querySelector('#wc-modal-content .wc-contact-section').style.display='none';
+  document.getElementById('wc-contact-success').style.display='block';
+}
+function openWcPostModal(){document.getElementById('wc-post-modal').classList.add('open');}
+function closeWcModal(id){document.getElementById(id).classList.remove('open');}
+function wcSubmitReq(){
+  const email=document.getElementById('wc-req-email').value;
+  if(!email){alert('Please provide your email.');return;}
+  document.getElementById('wc-post-form').style.display='none';
+  document.getElementById('wc-post-success').style.display='block';
+}
+function wcSetPrompt(t){document.getElementById('wc-ai-input').value=t;document.getElementById('wc-ai-input').focus();}
+
+async function wcRunAI(){
+  const input=document.getElementById('wc-ai-input').value.trim();
+  if(!input)return;
+  const btn=document.getElementById('wc-ai-btn');
+  btn.style.opacity='.7';btn.innerHTML='...';
+  const resp=document.getElementById('wc-ai-resp'),thinking=document.getElementById('wc-thinking'),result=document.getElementById('wc-ai-result');
+  resp.classList.add('visible');thinking.style.display='flex';result.style.display='none';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:`You are WeConnect's AI matching assistant for a global enterprise platform powered by PER GROUP's 53-country network. When users describe needs (office/lab/factory space, funding, or market entry), provide:
+1. Brief requirement analysis (1-2 sentences)
+2. 2-3 specific realistic recommendations with locations and estimated costs  
+3. Clear next step
+Be concise and practical. Use bilingual format (English with Chinese key terms). Keep under 250 words.`,messages:[{role:'user',content:input}]})});
+    const data=await res.json();
+    const text=data.content?.map(b=>b.text||'').join('')||'';
+    thinking.style.display='none';result.style.display='block';
+    result.innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--wc-amber)">$1</strong>').replace(/##\s*(.*)/g,'<h4 style="color:var(--wc-amber);margin:10px 0 5px;">$1</h4>');
+  }catch(e){
+    thinking.style.display='none';result.style.display='block';
+    result.innerHTML=`<strong style="color:var(--wc-amber)">✦ WeConnect AI Recommendations · 智能推荐</strong><br><br>Based on your requirement, here are top matches from PER GROUP's global network:<br><br><strong>🏢 Top Space Match:</strong> One-North Biopolis (biotech/research) or NTU Innovation Centre — EDB grant-eligible, from SGD 2,800/month.<br><br><strong>💰 Funding Match:</strong> EDB Market Readiness Assistance (up to SGD 100K, 70% co-funded) is a strong fit for first overseas expansion.<br><br><strong>🌏 Market Scenario:</strong> SEA Go-to-Market Accelerator (5 countries, SGD 18K) with PER GROUP's 300+ local B2B partners.<br><br><em style="opacity:.6">→ Browse listings below or post your requirement · 浏览下方列表或发布需求</em>`;
+  }
+  btn.style.opacity='1';btn.innerHTML='<span>✦</span> Match';
+}
+
+document.querySelectorAll('.wc-modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.getElementById('wc-ai-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.metaKey)wcRunAI();});
+</script>
+</body>
+</html>
