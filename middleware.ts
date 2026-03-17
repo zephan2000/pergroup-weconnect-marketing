@@ -31,14 +31,21 @@ export function middleware(request: NextRequest) {
   const afterAdmin = pathname.replace(/^\/admin\/?/, '')
   const firstSegment = afterAdmin.split('/')[0]
 
-  // Handle logout: clear the cookie at the edge and redirect to login.
-  // Payload's client-side logOut() posts to /api/users/logout via fetch(),
-  // but Set-Cookie headers from fetch responses don't reliably clear browser
-  // cookies. Since Payload uses stateless JWTs, the token stays valid.
+  // Handle logout: expire the cookie on the pass-through response.
+  // Payload's Auth provider calls the REST API via fetch() to logout,
+  // but the REST handler doesn't set a Set-Cookie header — only the
+  // server action does. Using NextResponse.next() (not redirect) ensures
+  // the Set-Cookie header is delivered with the page response, which
+  // the browser reliably processes even during client-side navigation.
   if (firstSegment === 'logout') {
-    const loginUrl = new URL('/admin/login', request.url)
-    const response = NextResponse.redirect(loginUrl)
-    response.cookies.delete('payload-token')
+    const response = NextResponse.next()
+    response.cookies.set('payload-token', '', {
+      path: '/',
+      maxAge: 0,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    })
     return response
   }
 
