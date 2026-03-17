@@ -17,7 +17,7 @@ import CursorEffect from '@/components/CursorEffect'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
 import { WeConnectProvider } from '@/lib/weconnect/context'
 import WeConnectOverlay from '@/components/WeConnectOverlay'
-import { fontVariables } from '../layout'
+import { fontVariables } from '../fonts'
 import {
   DEFAULT_PLATFORM_SETTINGS,
   type PlatformSettingsData,

@@ -109,3 +109,10 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-17] ADD [src/components/RefreshRouteOnSave.tsx] — Client wrapper for Payload Live Preview; triggers router.refresh() on document save.
 [2026-03-17] MODIFY [src/app/(marketing)/page.tsx] — Added RefreshRouteOnSave for live preview support.
 [2026-03-17] MODIFY [src/lib/weconnect/platform-settings.ts] — Updated PlatformSettingsData type: fundingPlaceholderBody and marketsPlaceholderBody now accept richText or string.
+[2026-03-17] MODIFY [src/payload/collections/Pages.ts] — Enabled drafts (Save Draft / Publish workflow) with autosave (1.5s interval). No maxPerDoc limit — all versions kept indefinitely. Updated read access: public sees published only, authenticated editors see all.
+[2026-03-17] ADD [src/app/api/draft/route.ts] — Draft mode API: validates PAYLOAD_SECRET, enables Next.js draftMode, redirects to page. Used by Payload Live Preview iframe.
+[2026-03-17] ADD [src/app/api/exit-draft/route.ts] — Exit draft mode API: disables draftMode, redirects to /.
+[2026-03-17] MODIFY [payload.config.ts] — Live Preview URL now routes through /api/draft to enable draftMode in the preview iframe.
+[2026-03-17] MODIFY [src/app/(marketing)/page.tsx] — Fetches draft content when draftMode is enabled; renders RefreshRouteOnSave only in draft mode.
+[2026-03-17] MODIFY [src/components/RefreshRouteOnSave.tsx] — Removed iframe guard; uses window.location.origin fallback for serverURL.
+[2026-03-17] RISK — Unbounded page versions: maxPerDoc is not set on the Pages collection. All draft versions are kept indefinitely in cms.pages_v. Monitor with: SELECT count(*) FROM cms.pages_v; To cap: add maxPerDoc to versions config in src/payload/collections/Pages.ts.

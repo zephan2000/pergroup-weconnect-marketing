@@ -98,3 +98,17 @@ Severities: INFO | WARN | DEFERRED
 [2026-03-16] INFO [payload.config.ts] — Payload secret configured via PAYLOAD_SECRET env var.
   If PAYLOAD_SECRET is empty or default, Payload will reject logins and warn at startup.
   Ensure a strong secret is set in production (see .env.local.example for generation command).
+
+[2026-03-17] INFO [src/app/api/draft/route.ts] — Draft mode API route added. Validates `secret`
+  query param against PAYLOAD_SECRET before enabling Next.js draftMode. Unauthenticated requests
+  without the correct secret receive 401. Used by Payload Live Preview iframe URL.
+
+[2026-03-17] INFO [src/payload/collections/Pages.ts] — Pages read access updated for drafts:
+  Unauthenticated users only see `_status: 'published'` documents. Authenticated CMS editors
+  see all documents including drafts. Prevents draft content from leaking to the public site.
+
+[2026-03-17] WARN [src/payload/collections/Pages.ts] — Unbounded page versions: maxPerDoc is
+  not set. All draft versions are kept indefinitely in `cms.pages_v` and related `cms._pages_v_*`
+  tables. If editors make thousands of edits, these tables will grow unboundedly. To fix: add
+  `maxPerDoc: N` to `versions` config and run a migration. Payload will auto-prune oldest versions
+  silently (no user notification). Monitor with: `SELECT count(*) FROM cms.pages_v;`

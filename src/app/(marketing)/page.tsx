@@ -6,6 +6,7 @@
  * No data is hardcoded here.
  */
 import Link from 'next/link'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import BlockRenderer from '@/components/BlockRenderer'
@@ -16,6 +17,7 @@ import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
+  const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -26,6 +28,7 @@ export default async function HomePage() {
       },
     },
     limit: 1,
+    draft: isDraft, // fetches latest draft in preview, published otherwise
   })
 
   const page = result.docs[0]
@@ -44,7 +47,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <RefreshRouteOnSave />
+      {isDraft && <RefreshRouteOnSave />}
       <BlockRenderer blocks={(page.blocks as { blockType: string; [key: string]: unknown }[]) ?? []} />
     </>
   )

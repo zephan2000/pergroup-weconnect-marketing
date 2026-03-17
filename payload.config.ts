@@ -22,10 +22,11 @@ export default buildConfig({
       actions: ['@/payload/components/LanguageToggle'],
     },
     livePreview: {
-      url: ({ data }) =>
-        `${process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'}${
-          data?.slug && data.slug !== 'home' ? `/${data.slug}` : ''
-        }`,
+      url: ({ data }) => {
+        const base = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'
+        const slug = data?.slug && data.slug !== 'home' ? `/${data.slug}` : '/'
+        return `${base}/api/draft?secret=${process.env.PAYLOAD_SECRET}&slug=${slug}`
+      },
       collections: ['pages'],
       globals: ['platform-settings', 'site-settings'],
       breakpoints: [

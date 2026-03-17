@@ -28,10 +28,23 @@ export const Pages: CollectionConfig = {
       zh: '营销页面。添加 slug 为 "home" 的页面以填充首页。',
     },
   },
+  versions: {
+    drafts: {
+      autosave: {
+        interval: 1500, // autosave every 1.5s while editing
+      },
+    },
+    // No maxPerDoc — all versions kept indefinitely. Editors can review/revert
+    // any past version from the admin Versions tab. Storage is negligible.
+    // RISK: See CHANGELOG.md and SECURITY.md for monitoring guidance.
+  },
   access: {
-    // Public read — Next.js server components fetch pages without credentials.
-    // Logged to SECURITY.md.
-    read: () => true,
+    // Authenticated editors see all docs (including drafts).
+    // Public (unauthenticated) only sees published pages.
+    read: ({ req: { user } }) => {
+      if (user) return true
+      return { _status: { equals: 'published' } }
+    },
     // Create / update / delete require a logged-in CMS editor.
     create: ({ req: { user } }) => Boolean(user),
     update: ({ req: { user } }) => Boolean(user),
