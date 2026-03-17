@@ -55,10 +55,6 @@ export default function RootLayout({
       className={`${syne.variable} ${syneMono.variable} ${notoSerifSC.variable} ${inter.variable}`}
     >
       <body>
-        {/*
-          AnalyticsProvider is a client component that initialises Firebase Analytics
-          once on first mount. It renders no DOM of its own — just wraps children.
-        */}
         <AnalyticsProvider>
           {children}
         </AnalyticsProvider>

@@ -55,4 +55,42 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-16] MODIFY [src/app/layout.tsx] — Removed marketing body classes; admin /create-first-user was inheriting our dark bg and breaking Payload's CSS
 [2026-03-16] MODIFY [src/app/globals.css] — Removed body background/color; moved to (marketing) layout
 [2026-03-16] MODIFY [src/app/(marketing)/] — Migrated home page and all platform routes into (marketing) route group
+[2026-03-16] MODIFY [src/app/(marketing)/layout.tsx] — Moved globals.css import here from root layout; Tailwind preflight now scoped to marketing routes only
+[2026-03-16] MODIFY [src/app/layout.tsx] — Removed globals.css import; Tailwind/preflight must not apply to Payload admin routes
 [2026-03-16] MODIFY [package.json] — Security pin: react/react-dom → exact 19.2.4. next/eslint-config-next corrected to 15.4.11 (15.3.6 was below @payloadcms/next@3.79.0 peer dep minimum of 15.3.9; 15.4.11 is highest minor in allowed range and fully patched against all known 15.x CVEs).
+[2026-03-17] MODIFY [src/app/globals.css] — Added CSS @keyframes for marketing animations (pulse, shimmer, marquee, spinSlow, scrollLine, gdotGlow). Scoped to marketing routes only via (marketing)/layout.tsx import.
+[2026-03-17] MODIFY [src/payload/blocks/HeroBlock.ts] — Added stats array field (number, label, chineseLabel) to support right-column stat cards in the hero section.
+[2026-03-17] ADD [src/components/Nav.tsx] — Fixed top navigation bar: PER GROUP logo, section anchor links, WeConnect CTA. Server component.
+[2026-03-17] ADD [src/components/Footer.tsx] — Site footer: 4-column grid with brand, platform links, services, philosophy. Server component.
+[2026-03-17] MODIFY [src/app/(marketing)/layout.tsx] — Wired Nav and Footer into marketing layout so they appear on all marketing routes.
+[2026-03-17] MODIFY [src/app/(marketing)/page.tsx] — Removed redundant <main> wrapper (now in marketing layout).
+[2026-03-17] MODIFY [src/components/blocks/HeroBlock.tsx] — Full implementation: hero grid, animated eyebrow, shimmer headline, Chinese subtitle, CTA buttons, stat cards (auto-splits last two into side-by-side card), scroll hint.
+[2026-03-17] MODIFY [src/components/blocks/StatsBlock.tsx] — Full implementation: standalone stat card row with amber gradient numbers.
+[2026-03-17] MODIFY [src/components/blocks/ValuesBlock.tsx] — Full implementation: Four Harmonies panel (concentric rings + spokes), Five Unities panel (CSS spinning petals), motto row.
+[2026-03-17] MODIFY [src/components/blocks/AboutBlock.tsx] — Full implementation: two-column layout, body paragraphs, 2×2 advantages grid, animated globe visualisation with meridians, parallels, and glowing dots.
+[2026-03-17] MODIFY [src/components/blocks/ServicesBlock.tsx] — Full implementation: 3-column bordered grid of service cards with number, icon, title, Chinese title, description, and arrow.
+[2026-03-17] MODIFY [src/components/blocks/PlatformTeaserBlock.tsx] — Full implementation: feature list with coloured dots, mini mockup UI, click-through overlay to /platform/spaces.
+[2026-03-17] MODIFY [src/components/blocks/ClientsBlock.tsx] — Full implementation: CSS marquee with mask fade edges; client list duplicated for seamless infinite loop.
+[2026-03-17] ADD [src/scripts/seed.ts] — Payload local API seed script; creates "home" page with all 6 blocks pre-populated from reference content. Guards against duplicate runs.
+[2026-03-17] ADD [src/scripts/fix-next-env.cjs] — CJS patch loaded via tsx --require; fixes Payload loadEnv.js crash on Node 24 + tsx due to CJS/ESM interop: @next/env.default is undefined in CJS mode but Payload's esbuild output incorrectly accesses .default.
+[2026-03-17] ADD [src/app/@weconnect/default.tsx] — Parallel route slot default; returns null so non-platform routes don't 404 on the @weconnect slot.
+[2026-03-17] ADD [src/app/@weconnect/(.)platform/spaces/page.tsx] — Intercepting route: activates on client-side nav to /platform/spaces; renders WeConnectOverlay with activeTab="spaces".
+[2026-03-17] ADD [src/app/@weconnect/(.)platform/funding/page.tsx] — Intercepting route for /platform/funding → overlay with Funding tab.
+[2026-03-17] ADD [src/app/@weconnect/(.)platform/markets/page.tsx] — Intercepting route for /platform/markets → overlay with Markets tab.
+[2026-03-17] ADD [src/components/WeConnectOverlay.tsx] — Full-screen slide-up overlay client component. Apple liquid-glass effect: backdrop-filter blur(32px) saturate(180%) on semi-transparent background so marketing page blurs behind. Tabs switch via router.replace(); close via router.back(). Contains SpacesContent with mock listings, PlaceholderContent for Funding/Markets.
+[2026-03-17] MODIFY [src/app/layout.tsx] — Added weconnect: React.ReactNode parallel slot prop; renders {weconnect} after {children} inside AnalyticsProvider.
+[2026-03-17] MODIFY [src/components/blocks/HeroBlock.tsx] — Replaced <a> with next/link <Link> for all CTA buttons so client-side navigation triggers the @weconnect intercepting route.
+[2026-03-17] MODIFY [package.json] — seed script: tsx --require src/scripts/fix-next-env.cjs src/scripts/seed.ts
+[2026-03-17] FIX [src/components/blocks/ValuesBlock.tsx] — Changed shorthand <> to <React.Fragment key={motto.label}> in motto map to resolve "Each child in a list should have a unique key prop" warning.
+[2026-03-17] MODIFY [src/app/layout.tsx] — Removed @weconnect parallel slot prop; WeConnect overlay is now state-driven (not route-driven). Fixes "initialTree is not iterable" Next.js 15 router bug.
+[2026-03-17] ADD [src/lib/weconnect/context.tsx] — WeConnectContext: open/close/activeTab state shared between trigger buttons and WeConnectOverlay via React context.
+[2026-03-17] ADD [src/lib/weconnect/platform-settings.ts] — PlatformSettingsData interface and DEFAULT_PLATFORM_SETTINGS; shared between Payload global and WeConnectOverlay.
+[2026-03-17] ADD [src/payload/globals/PlatformSettings.ts] — Payload global for WeConnect overlay copy (AI matching headline/description/placeholder, Funding/Markets placeholder texts). CMS editors can update without a code deploy.
+[2026-03-17] MODIFY [payload.config.ts] — Registered PlatformSettings global.
+[2026-03-17] ADD [src/app/actions/weconnect.ts] — Server action wrapping getSpacesListings(); keeps Supabase queries server-side when called from the client overlay.
+[2026-03-17] ADD [src/components/WeConnectTrigger.tsx] — Client button component that calls open() from WeConnectContext; replaces /platform/* <Link> elements in Nav and HeroBlock.
+[2026-03-17] ADD [src/components/HeroCTAButtons.tsx] — Client component for HeroBlock CTA buttons; /platform/* hrefs and variant=weconnect open the overlay, all others render as <a>.
+[2026-03-17] MODIFY [src/components/WeConnectOverlay.tsx] — Full rewrite: context-driven (no router); settings prop from Payload global; real Supabase listings via fetchSpacesListings server action with loading/error/empty states; SpaceCard accepts Listing type.
+[2026-03-17] MODIFY [src/app/(marketing)/layout.tsx] — Added WeConnectProvider, async fetchPlatformSettings() from Payload (falls back to defaults), WeConnectOverlay rendered outside page div.
+[2026-03-17] MODIFY [src/components/Nav.tsx] — Replaced /platform/* <Link> elements with WeConnectTrigger client components.
+[2026-03-17] MODIFY [src/components/blocks/HeroBlock.tsx] — Replaced inline <Link> CTA buttons with HeroCTAButtons client component.

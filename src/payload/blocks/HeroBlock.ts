@@ -40,6 +40,18 @@ export const HeroBlock: Block = {
       admin: { description: 'e.g. "科技创新 · 商业赋能 · 人文关怀"' },
     },
     {
+      name: 'stats',
+      type: 'array',
+      label: 'Stat Cards (right column)',
+      maxRows: 4,
+      admin: { description: 'The stat cards displayed to the right of the headline. Up to 4; the last two are grouped side-by-side automatically.' },
+      fields: [
+        { name: 'number', type: 'text', required: true, label: 'Number (e.g. "15+")' },
+        { name: 'label', type: 'text', required: true, label: 'English Label' },
+        { name: 'chineseLabel', type: 'text', label: 'Chinese Label' },
+      ],
+    },
+    {
       name: 'ctaButtons',
       type: 'array',
       label: 'CTA Buttons',

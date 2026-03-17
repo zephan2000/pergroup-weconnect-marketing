@@ -37,9 +37,9 @@ export default async function HomePage() {
   }
 
   return (
-    <main>
+    <>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <BlockRenderer blocks={(page.blocks as any[]) ?? []} />
-    </main>
+    </>
   )
 }

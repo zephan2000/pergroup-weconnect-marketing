@@ -4,6 +4,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { Pages } from './src/payload/collections/Pages'
 import { Users } from './src/payload/collections/Users'
+import { PlatformSettings } from './src/payload/globals/PlatformSettings'
 
 export default buildConfig({
   admin: {
@@ -12,6 +13,8 @@ export default buildConfig({
   },
 
   collections: [Pages, Users],
+
+  globals: [PlatformSettings],
 
   db: postgresAdapter({
     pool: {
