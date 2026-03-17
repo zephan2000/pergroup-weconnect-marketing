@@ -9,10 +9,17 @@ import type { CollectionConfig } from 'payload'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    singular: { en: 'User', zh: '用户' },
+    plural: { en: 'Users', zh: '用户列表' },
+  },
   auth: true,
   admin: {
     useAsTitle: 'email',
-    description: 'CMS editor accounts. Login access to /admin only.',
+    description: {
+      en: 'CMS editor accounts. Login access to /admin only.',
+      zh: 'CMS 编辑账号。仅用于 /admin 登录。',
+    },
   },
   access: {
     // Only authenticated users can read/create/update/delete user records.
@@ -23,7 +30,7 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
-      label: 'Full Name',
+      label: { en: 'Full Name', zh: '姓名' },
     },
   ],
 }

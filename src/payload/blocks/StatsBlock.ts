@@ -6,18 +6,18 @@ import type { Block } from 'payload'
 
 export const StatsBlock: Block = {
   slug: 'stats',
-  labels: { singular: 'Stats Block', plural: 'Stats Blocks' },
+  labels: { singular: { en: 'Stats Block', zh: '数据统计区块' }, plural: { en: 'Stats Blocks', zh: '数据统计区块' } },
   fields: [
     {
       name: 'stats',
       type: 'array',
-      label: 'Stat Items',
+      label: { en: 'Stat Items', zh: '数据项' },
       required: true,
       minRows: 1,
       fields: [
-        { name: 'number', type: 'text', required: true, label: 'Number (e.g. "15+")' },
-        { name: 'label', type: 'text', required: true, label: 'English Label' },
-        { name: 'chineseLabel', type: 'text', label: 'Chinese Label' },
+        { name: 'number', type: 'text', required: true, label: { en: 'Number (e.g. "15+")', zh: '数字（如 "15+"）' } },
+        { name: 'label', type: 'text', required: true, label: { en: 'English Label', zh: '英文标签' } },
+        { name: 'chineseLabel', type: 'text', label: { en: 'Chinese Label', zh: '中文标签' } },
       ],
     },
   ],

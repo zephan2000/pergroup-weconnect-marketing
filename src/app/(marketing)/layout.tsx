@@ -13,6 +13,7 @@
 import '../globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import CursorEffect from '@/components/CursorEffect'
 import { WeConnectProvider } from '@/lib/weconnect/context'
 import WeConnectOverlay from '@/components/WeConnectOverlay'
 import {
@@ -20,46 +21,71 @@ import {
   type PlatformSettingsData,
 } from '@/lib/weconnect/platform-settings'
 
-async function fetchPlatformSettings(): Promise<PlatformSettingsData> {
+/** Color variable names that map from SiteSettings fields to CSS custom properties. */
+const COLOR_VAR_MAP: Record<string, string> = {
+  amber: '--amber',
+  green: '--green',
+  bg: '--bg',
+  bg2: '--bg2',
+  text: '--text',
+  muted: '--muted',
+  line: '--line',
+}
+
+async function fetchPayloadData() {
   try {
     const { getPayload } = await import('payload')
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
-    // findGlobal returns the saved document or field defaults if never saved.
-    const doc = await payload.findGlobal({ slug: 'platform-settings' })
-    return {
-      aiMatchingHeadline: doc.aiMatchingHeadline ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingHeadline,
-      aiMatchingDescription:
-        doc.aiMatchingDescription ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingDescription,
-      aiMatchingPlaceholder:
-        doc.aiMatchingPlaceholder ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingPlaceholder,
-      fundingPlaceholderTitle:
-        doc.fundingPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderTitle,
-      fundingPlaceholderBody:
-        doc.fundingPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderBody,
-      marketsPlaceholderTitle:
-        doc.marketsPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderTitle,
-      marketsPlaceholderBody:
-        doc.marketsPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderBody,
+
+    const [platformDoc, siteDoc] = await Promise.all([
+      payload.findGlobal({ slug: 'platform-settings' }),
+      payload.findGlobal({ slug: 'site-settings' }),
+    ])
+
+    const platformSettings: PlatformSettingsData = {
+      aiMatchingHeadline: platformDoc.aiMatchingHeadline ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingHeadline,
+      aiMatchingDescription: platformDoc.aiMatchingDescription ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingDescription,
+      aiMatchingPlaceholder: platformDoc.aiMatchingPlaceholder ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingPlaceholder,
+      fundingPlaceholderTitle: platformDoc.fundingPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderTitle,
+      fundingPlaceholderBody: platformDoc.fundingPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderBody,
+      marketsPlaceholderTitle: platformDoc.marketsPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderTitle,
+      marketsPlaceholderBody: platformDoc.marketsPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderBody,
     }
+
+    // Build CSS variable overrides from SiteSettings color fields.
+    const colorOverrides: Record<string, string> = {}
+    const colors = (siteDoc as Record<string, unknown>).colors as Record<string, string> | undefined
+    if (colors) {
+      for (const [field, cssVar] of Object.entries(COLOR_VAR_MAP)) {
+        if (colors[field]) colorOverrides[cssVar] = colors[field]
+      }
+    }
+
+    return { platformSettings, colorOverrides }
   } catch {
-    // DB not available (local dev without Supabase, or cold start error) — use defaults.
-    return DEFAULT_PLATFORM_SETTINGS
+    return { platformSettings: DEFAULT_PLATFORM_SETTINGS, colorOverrides: {} }
   }
 }
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
-  const settings = await fetchPlatformSettings()
+  const { platformSettings, colorOverrides } = await fetchPayloadData()
+
+  // If any CMS color overrides are set, inject them as inline CSS custom properties.
+  const styleOverrides = Object.keys(colorOverrides).length > 0
+    ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
+    : undefined
 
   return (
     <WeConnectProvider>
-      <div className="bg-bg text-pg-text font-syne antialiased min-h-screen">
+      <CursorEffect />
+      <div className="bg-bg text-pg-text font-syne antialiased min-h-screen" style={styleOverrides}>
         <Nav />
         {children}
         <Footer />
       </div>
       {/* Overlay sits outside the page div so it can cover Nav/Footer too */}
-      <WeConnectOverlay settings={settings} />
+      <WeConnectOverlay settings={platformSettings} />
     </WeConnectProvider>
   )
 }

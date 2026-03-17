@@ -4,6 +4,7 @@
  * Server component.
  */
 import Link from 'next/link'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 
 type Feature = {
   title: string
@@ -15,7 +16,7 @@ type PlatformTeaserBlockProps = {
   sectionLabel?: string
   headline?: string
   headlineAccent?: string
-  body?: string
+  body?: Record<string, unknown>
   features?: Feature[]
   launchCtaLabel?: string
 }
@@ -79,7 +80,10 @@ export default function PlatformTeaserBlock({
             </h2>
 
             {body && (
-              <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.9, marginBottom: 32 }}>{body}</p>
+              <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.9, marginBottom: 32 }}>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <RichText data={body as any} />
+              </div>
             )}
 
             {/* Feature list */}

@@ -3,8 +3,8 @@
  * Matches #about in /reference/pergroup-website.html.
  * Server component.
  */
+import { RichText } from '@payloadcms/richtext-lexical/react'
 
-type BodyParagraph = { text: string }
 type Advantage = { icon?: string; title: string; description?: string }
 type GlobeStat = { number?: string; label?: string }
 
@@ -12,7 +12,7 @@ type AboutBlockProps = {
   sectionLabel?: string
   headline?: string
   headlineAccent?: string
-  bodyParagraphs?: BodyParagraph[]
+  body?: Record<string, unknown>
   advantages?: Advantage[]
   globeStat?: GlobeStat
 }
@@ -33,7 +33,7 @@ export default function AboutBlock({
   sectionLabel = 'Who We Are · 我们是谁',
   headline = 'A Network Built on',
   headlineAccent = 'Genuine Trust',
-  bodyParagraphs = [],
+  body,
   advantages = [],
   globeStat,
 }: AboutBlockProps) {
@@ -86,14 +86,12 @@ export default function AboutBlock({
               <em style={{ fontStyle: 'normal', color: 'var(--amber)' }}>{headlineAccent}</em>
             </h2>
 
-            {bodyParagraphs.map((p, i) => (
-              <p
-                key={i}
-                style={{ fontSize: 14, lineHeight: 1.9, color: 'var(--muted)', marginBottom: 28 }}
-              >
-                {p.text}
-              </p>
-            ))}
+            {body && (
+              <div style={{ fontSize: 14, lineHeight: 1.9, color: 'var(--muted)', marginBottom: 28 }}>
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <RichText data={body as any} />
+              </div>
+            )}
 
             {/* Advantages 2×2 grid */}
             {advantages.length > 0 && (

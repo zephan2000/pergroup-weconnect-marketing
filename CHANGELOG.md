@@ -94,3 +94,18 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-17] MODIFY [src/app/(marketing)/layout.tsx] — Added WeConnectProvider, async fetchPlatformSettings() from Payload (falls back to defaults), WeConnectOverlay rendered outside page div.
 [2026-03-17] MODIFY [src/components/Nav.tsx] — Replaced /platform/* <Link> elements with WeConnectTrigger client components.
 [2026-03-17] MODIFY [src/components/blocks/HeroBlock.tsx] — Replaced inline <Link> CTA buttons with HeroCTAButtons client component.
+[2026-03-17] ADD [src/components/CursorEffect.tsx] — Custom cursor effect: amber dot + trailing ring + canvas particle background with grid, proximity glow, and connection lines. Disabled on touch devices.
+[2026-03-17] CONFIG [payload.config.ts] — Added i18n with zh (Simplified Chinese) support; registered SiteSettings global; added admin.livePreview config with responsive breakpoints.
+[2026-03-17] MODIFY [src/payload/collections/Pages.ts, Users.ts] — Added bilingual { en, zh } labels for all collection and field labels.
+[2026-03-17] MODIFY [src/payload/blocks/*.ts] — Added bilingual { en, zh } labels for all 7 block definitions (field labels, descriptions, select options).
+[2026-03-17] MODIFY [src/payload/globals/PlatformSettings.ts] — Added bilingual labels; converted fundingPlaceholderBody and marketsPlaceholderBody from textarea to richText.
+[2026-03-17] ADD [src/payload/globals/SiteSettings.ts] — Payload global for CMS-driven color palette (amber, green, bg, bg2, text, muted, line). Empty fields fall back to globals.css defaults.
+[2026-03-17] MODIFY [src/app/(marketing)/layout.tsx] — Fetches SiteSettings colors and injects as CSS custom property overrides on root div; added CursorEffect component.
+[2026-03-17] MODIFY [src/payload/blocks/AboutBlock.ts] — Replaced bodyParagraphs array with single body richText field.
+[2026-03-17] MODIFY [src/payload/blocks/PlatformTeaserBlock.ts] — Converted body from textarea to richText.
+[2026-03-17] MODIFY [src/components/blocks/AboutBlock.tsx] — Renders body via RichText component instead of paragraph map.
+[2026-03-17] MODIFY [src/components/blocks/PlatformTeaserBlock.tsx] — Renders body via RichText component instead of plain text.
+[2026-03-17] MODIFY [src/components/WeConnectOverlay.tsx] — PlaceholderContent handles richText or string description via RichText component.
+[2026-03-17] ADD [src/components/RefreshRouteOnSave.tsx] — Client wrapper for Payload Live Preview; triggers router.refresh() on document save.
+[2026-03-17] MODIFY [src/app/(marketing)/page.tsx] — Added RefreshRouteOnSave for live preview support.
+[2026-03-17] MODIFY [src/lib/weconnect/platform-settings.ts] — Updated PlatformSettingsData type: fundingPlaceholderBody and marketsPlaceholderBody now accept richText or string.

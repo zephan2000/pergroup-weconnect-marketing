@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import BlockRenderer from '@/components/BlockRenderer'
+import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
 
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise })
@@ -39,6 +40,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <RefreshRouteOnSave />
       <BlockRenderer blocks={(page.blocks as { blockType: string; [key: string]: unknown }[]) ?? []} />
     </>
   )

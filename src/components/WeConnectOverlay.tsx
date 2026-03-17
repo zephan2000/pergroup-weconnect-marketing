@@ -18,6 +18,7 @@ import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import { fetchSpacesListings } from '@/app/actions/weconnect'
 import type { Listing } from '@/lib/supabase/schema'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 
 // Inline CSS variables so the overlay is independent of globals.css load order.
 const WC_VARS: React.CSSProperties = {
@@ -725,7 +726,7 @@ function PlaceholderContent({
   section: string
   icon: string
   title: string
-  description: string
+  description: Record<string, unknown> | string | null
 }) {
   return (
     <div
@@ -757,9 +758,14 @@ function PlaceholderContent({
       >
         {title}
       </h2>
-      <p style={{ fontSize: 14, color: 'var(--wc-muted)', maxWidth: 400, lineHeight: 1.8 }}>
-        {description}
-      </p>
+      <div style={{ fontSize: 14, color: 'var(--wc-muted)', maxWidth: 400, lineHeight: 1.8 }}>
+        {typeof description === 'string' ? (
+          <p>{description}</p>
+        ) : description ? (
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          <RichText data={description as any} />
+        ) : null}
+      </div>
       <div
         style={{
           border: '1px solid rgba(245,166,35,.25)',

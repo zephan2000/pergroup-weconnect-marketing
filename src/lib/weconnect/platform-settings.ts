@@ -8,9 +8,9 @@ export interface PlatformSettingsData {
   aiMatchingDescription: string
   aiMatchingPlaceholder: string
   fundingPlaceholderTitle: string
-  fundingPlaceholderBody: string
+  fundingPlaceholderBody: Record<string, unknown> | string | null
   marketsPlaceholderTitle: string
-  marketsPlaceholderBody: string
+  marketsPlaceholderBody: Record<string, unknown> | string | null
 }
 
 export const DEFAULT_PLATFORM_SETTINGS: PlatformSettingsData = {
@@ -20,9 +20,7 @@ export const DEFAULT_PLATFORM_SETTINGS: PlatformSettingsData = {
   aiMatchingPlaceholder:
     'e.g. We are a biotech startup looking for a wet lab 500–1000 sqft near one-north Singapore, budget SGD 5 000/month…',
   fundingPlaceholderTitle: "We're still building this out",
-  fundingPlaceholderBody:
-    "VC, CVC, and government grant matching coming soon. Describe your funding needs and we'll find the best partners for your stage and sector.",
+  fundingPlaceholderBody: null,
   marketsPlaceholderTitle: "We're still building this out",
-  marketsPlaceholderBody:
-    'Market entry pathways, GTM partners, and accelerator programmes across 53+ countries. This module is in active development.',
+  marketsPlaceholderBody: null,
 }
