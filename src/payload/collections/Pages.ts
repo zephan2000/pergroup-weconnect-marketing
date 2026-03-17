@@ -27,13 +27,19 @@ export const Pages: CollectionConfig = {
       en: 'Marketing pages. Add a page with slug "home" to populate the homepage.',
       zh: '营销页面。添加 slug 为 "home" 的页面以填充首页。',
     },
-  },
-  versions: {
-    drafts: {
-      autosave: {
-        interval: 1500, // autosave every 1.5s while editing
+    preview: (doc) => {
+      const base = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'
+      const slug = doc?.slug && doc.slug !== 'home' ? `/${doc.slug}` : '/'
+      return `${base}/api/draft?secret=${process.env.PAYLOAD_SECRET}&slug=${slug}`
+    },
+    components: {
+      edit: {
+        PreviewButton: '@/payload/components/PreviewButton',
       },
     },
+  },
+  versions: {
+    drafts: true, // Save Draft + Publish buttons; no autosave (manual save only)
     // No maxPerDoc — all versions kept indefinitely. Editors can review/revert
     // any past version from the admin Versions tab. Storage is negligible.
     // RISK: See CHANGELOG.md and SECURITY.md for monitoring guidance.
