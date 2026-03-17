@@ -31,6 +31,17 @@ export function middleware(request: NextRequest) {
   const afterAdmin = pathname.replace(/^\/admin\/?/, '')
   const firstSegment = afterAdmin.split('/')[0]
 
+  // Handle logout: clear the cookie at the edge and redirect to login.
+  // Payload's client-side logOut() posts to /api/users/logout via fetch(),
+  // but Set-Cookie headers from fetch responses don't reliably clear browser
+  // cookies. Since Payload uses stateless JWTs, the token stays valid.
+  if (firstSegment === 'logout') {
+    const loginUrl = new URL('/admin/login', request.url)
+    const response = NextResponse.redirect(loginUrl)
+    response.cookies.delete('payload-token')
+    return response
+  }
+
   if (firstSegment && PUBLIC_ADMIN_SEGMENTS.includes(firstSegment)) {
     return NextResponse.next()
   }

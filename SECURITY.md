@@ -137,3 +137,9 @@ Severities: INFO | WARN | DEFERRED
   `export const dynamic = 'force-dynamic'` to prevent Next.js 15 from caching the admin page.
   Without this, static optimization could bypass Payload's server-side auth check in RootPage,
   allowing unauthenticated access to the admin panel.
+
+[2026-03-18] INFO [middleware.ts] — Middleware now handles /admin/logout directly: deletes the
+  payload-token cookie at the edge and redirects to /admin/login. Payload's built-in logout uses
+  fetch() to POST to the REST API, but Set-Cookie headers from fetch responses don't reliably
+  clear browser cookies. Since Payload uses stateless JWTs, the token remains valid until expiry.
+  Clearing the cookie in middleware ensures logout works regardless of client-side behavior.
