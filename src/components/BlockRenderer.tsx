@@ -19,8 +19,7 @@ import ServicesBlockComponent from './blocks/ServicesBlock'
 import PlatformTeaserBlockComponent from './blocks/PlatformTeaserBlock'
 import ClientsBlockComponent from './blocks/ClientsBlock'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BlockData = { blockType: string; [key: string]: any }
+type BlockData = { blockType: string; [key: string]: unknown }
 
 // Keys must exactly match the `slug` values in /src/payload/blocks/*.ts
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

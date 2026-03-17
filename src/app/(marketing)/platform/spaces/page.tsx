@@ -8,6 +8,8 @@
  *  import { getSpacesListings } from '@/lib/weconnect/listings'
  *  const listings = await getSpacesListings()
  */
+import Link from 'next/link'
+
 export default function SpacesPage() {
   return (
     <main
@@ -36,12 +38,12 @@ export default function SpacesPage() {
       <p style={{ color: 'rgba(232,234,240,0.45)', fontSize: '14px', marginBottom: '2rem' }}>
         Live listings from Supabase. Full UI coming next sprint.
       </p>
-      <a
+      <Link
         href="/"
         style={{ color: '#F5A623', fontSize: '13px', letterSpacing: '1px', textDecoration: 'none' }}
       >
         ← Back to PER GROUP
-      </a>
+      </Link>
     </main>
   )
 }

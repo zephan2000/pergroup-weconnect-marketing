@@ -2,6 +2,8 @@
  * 404 handler within the Payload admin route group.
  * Keeps the user inside the admin context if they navigate to a non-existent admin path.
  */
+import Link from 'next/link'
+
 export default function AdminNotFound() {
   return (
     <div
@@ -14,9 +16,9 @@ export default function AdminNotFound() {
       }}
     >
       <h1 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>404 — Page not found</h1>
-      <a href="/admin" style={{ color: '#F5A623' }}>
+      <Link href="/admin" style={{ color: '#F5A623' }}>
         ← Return to admin
-      </a>
+      </Link>
     </div>
   )
 }

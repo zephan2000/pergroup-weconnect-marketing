@@ -5,6 +5,7 @@
  * through BlockRenderer. All data comes from Supabase cms schema via Payload.
  * No data is hardcoded here.
  */
+import Link from 'next/link'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import BlockRenderer from '@/components/BlockRenderer'
@@ -29,7 +30,7 @@ export default async function HomePage() {
       <main style={{ padding: '4rem', fontFamily: 'monospace', color: '#F5A82A', minHeight: '100vh' }}>
         <p>No homepage content yet.</p>
         <p style={{ marginTop: '1rem', color: 'rgba(221,224,232,0.4)', fontSize: '13px' }}>
-          Go to <a href="/admin" style={{ color: '#F5A82A' }}>/admin</a>, create a Page with slug{' '}
+          Go to <Link href="/admin" style={{ color: '#F5A82A' }}>/admin</Link>, create a Page with slug{' '}
           <code>&quot;home&quot;</code>, and add blocks.
         </p>
       </main>
@@ -38,8 +39,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <BlockRenderer blocks={(page.blocks as any[]) ?? []} />
+      <BlockRenderer blocks={(page.blocks as { blockType: string; [key: string]: unknown }[]) ?? []} />
     </>
   )
 }

@@ -46,8 +46,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  weconnect,
 }: {
   children: React.ReactNode
+  weconnect: React.ReactNode
 }) {
   return (
     <html
@@ -57,6 +59,7 @@ export default function RootLayout({
       <body>
         <AnalyticsProvider>
           {children}
+          {weconnect}
         </AnalyticsProvider>
       </body>
     </html>

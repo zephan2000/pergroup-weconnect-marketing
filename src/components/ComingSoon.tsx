@@ -2,6 +2,8 @@
  * ComingSoon — shared placeholder for /platform/funding and /platform/markets.
  * Per CLAUDE.md WeConnect v1 Scope: these tabs are placeholder only.
  */
+import Link from 'next/link'
+
 interface ComingSoonProps {
   section: string
 }
@@ -57,7 +59,7 @@ export default function ComingSoon({ section }: ComingSoonProps) {
         meantime.
       </p>
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <a
+        <Link
           href="/platform/spaces"
           style={{
             background: '#F5A623',
@@ -71,8 +73,8 @@ export default function ComingSoon({ section }: ComingSoonProps) {
           }}
         >
           Explore Spaces →
-        </a>
-        <a
+        </Link>
+        <Link
           href="/"
           style={{
             border: '1px solid rgba(255,255,255,0.12)',
@@ -86,7 +88,7 @@ export default function ComingSoon({ section }: ComingSoonProps) {
           }}
         >
           ← Back to PER GROUP
-        </a>
+        </Link>
       </div>
     </main>
   )
