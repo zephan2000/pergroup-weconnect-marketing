@@ -112,3 +112,28 @@ Severities: INFO | WARN | DEFERRED
   tables. If editors make thousands of edits, these tables will grow unboundedly. To fix: add
   `maxPerDoc: N` to `versions` config and run a migration. Payload will auto-prune oldest versions
   silently (no user notification). Monitor with: `SELECT count(*) FROM cms.pages_v;`
+
+[2026-03-17] INFO [src/app/api/draft/route.ts] — Draft route auth updated: accepts PAYLOAD_SECRET
+  (for server-side livePreview iframe) or validates `payload-token` cookie (for client-side preview
+  button). Cookie check avoids opening DB connections. No secret is exposed in client-side URLs.
+
+[2026-03-17] INFO [payload.config.ts] — Switched DATABASE_URL to Supabase transaction mode pooler
+  (port 6543). Disabled prepared statements (prepare: false). Transaction mode returns connections
+  after each query, fixing MaxClientsInSessionMode errors on Vercel serverless. Pool max set to 5.
+
+[2026-03-17] INFO [src/app/layout.tsx] — Root layout no longer renders <html>/<body>. Each route
+  group owns its own document shell. This prevents Payload admin's <html> from nesting inside
+  the marketing <html>, which caused hydration errors.
+
+[2026-03-18] INFO [middleware.ts] — Created Next.js middleware to protect /admin routes.
+  Defense-in-depth layer: checks for payload-token cookie presence before requests reach the
+  Payload admin page component. Payload's RootPage performs authoritative JWT validation
+  server-side; middleware only checks cookie existence (not validity).
+  Public admin routes allowed without cookie: login, create-first-user, logout, forgot, reset,
+  unauthorized, inactivity, verify. Sourced from @payloadcms/next isPublicAdminRoute.js.
+  Matcher: ['/admin', '/admin/:path*'] — does not affect /api/*, /platform/*, or marketing routes.
+
+[2026-03-18] INFO [src/app/(payload)/admin/[[...segments]]/page.tsx] — Added
+  `export const dynamic = 'force-dynamic'` to prevent Next.js 15 from caching the admin page.
+  Without this, static optimization could bypass Payload's server-side auth check in RootPage,
+  allowing unauthenticated access to the admin panel.

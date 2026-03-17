@@ -116,3 +116,15 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-17] MODIFY [src/app/(marketing)/page.tsx] — Fetches draft content when draftMode is enabled; renders RefreshRouteOnSave only in draft mode.
 [2026-03-17] MODIFY [src/components/RefreshRouteOnSave.tsx] — Removed iframe guard; uses window.location.origin fallback for serverURL.
 [2026-03-17] RISK — Unbounded page versions: maxPerDoc is not set on the Pages collection. All draft versions are kept indefinitely in cms.pages_v. Monitor with: SELECT count(*) FROM cms.pages_v; To cap: add maxPerDoc to versions config in src/payload/collections/Pages.ts.
+[2026-03-17] MODIFY [src/payload/collections/Pages.ts] — Disabled autosave (changed from autosave interval to drafts: true). Changes only save on explicit Save Draft / Publish click.
+[2026-03-17] ADD [src/payload/components/PreviewButton.tsx] — Custom preview button replacing Payload's default eye icon. Shows "Open Preview" with external-link icon. Opens draft in new tab via /api/draft.
+[2026-03-17] ADD [src/payload/components/LanguageToggle.tsx] — Admin header button (🌐) to toggle between English and Chinese. Uses Payload's switchLanguage API.
+[2026-03-17] MODIFY [src/app/api/draft/route.ts] — Draft route now accepts PAYLOAD_SECRET (server-side) or validates payload-token cookie (client-side preview button). No DB connection used for auth.
+[2026-03-17] MODIFY [src/app/layout.tsx] — Root layout returns children directly (no html/body). Prevents nested html hydration error with Payload admin.
+[2026-03-17] ADD [src/app/fonts.ts] — Font definitions extracted from root layout (Next.js disallows non-standard exports from layouts).
+[2026-03-17] DELETE [src/app/@weconnect/] — Removed dead parallel route directory. WeConnect overlay is now state-driven via context.
+[2026-03-17] CONFIG [payload.config.ts] — Switched to Supabase transaction mode pooler (port 6543). Added prepare: false for compatibility. Bumped pool max to 5.
+[2026-03-17] FIX [src/components/CursorEffect.tsx] — Added instanceof Element guard for el.matches() to handle non-Element event targets.
+[2026-03-17] FIX [src/components/RefreshRouteOnSave.tsx] — Fixed postMessage error: only renders when NEXT_PUBLIC_PAYLOAD_URL is set. Removed iframe guard for draft mode compatibility.
+[2026-03-18] FIX [src/app/(payload)/admin/[[...segments]]/page.tsx] — Added `export const dynamic = 'force-dynamic'` to prevent Next.js 15 from caching the admin page, which was bypassing Payload's server-side auth check.
+[2026-03-18] ADD [middleware.ts] — Next.js middleware protecting /admin routes. Checks for payload-token cookie; redirects unauthenticated requests to /admin/login. Defense-in-depth layer alongside Payload's RootPage JWT validation.
