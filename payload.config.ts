@@ -44,7 +44,10 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      max: 3,
+      max: 5,
+      // Disable prepared statements — required for Supabase transaction mode pooler (port 6543).
+      // Transaction mode doesn't support persistent sessions needed for prepared statements.
+      prepare: false,
     },
     // DECISION: schemaName places all Payload-generated tables in the `cms`
     // Postgres schema, keeping them separate from weconnect.* tables.
