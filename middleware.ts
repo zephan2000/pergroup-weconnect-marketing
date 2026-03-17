@@ -31,15 +31,30 @@ export function middleware(request: NextRequest) {
   const afterAdmin = pathname.replace(/^\/admin\/?/, '')
   const firstSegment = afterAdmin.split('/')[0]
 
-  // Redirect logout to a dedicated route handler at /api/auth/logout.
-  // Previous approaches (cookie deletion via middleware pass-through or
-  // redirect) failed because Payload's RootPage re-sets the cookie during
-  // rendering (executeAuthStrategies refreshes the JWT), overriding any
-  // Set-Cookie: expire header from middleware. The API route handler runs
-  // in isolation — no Payload page component executes — so the cookie
-  // deletion sticks.
+  // Handle logout by returning a complete HTML response that:
+  // 1. Deletes the payload-token cookie via Set-Cookie header
+  // 2. Redirects to /admin/login via JavaScript
+  //
+  // Why a full HTML response? Payload's admin uses client-side navigation
+  // (<Link>), which means Next.js makes internal fetch() calls for RSC data.
+  // Set-Cookie headers on fetch redirect chains are NOT reliably processed
+  // by the browser. Returning HTML forces Next.js to do a full page load,
+  // which guarantees the browser processes the Set-Cookie header.
   if (firstSegment === 'logout') {
-    return NextResponse.redirect(new URL('/api/auth/logout', request.url))
+    const html = [
+      '<!DOCTYPE html><html><head>',
+      '<meta http-equiv="refresh" content="0;url=/admin/login">',
+      '<script>window.location.replace("/admin/login")</script>',
+      '</head><body></body></html>',
+    ].join('')
+
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+        'Set-Cookie': 'payload-token=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax',
+      },
+    })
   }
 
   if (firstSegment && PUBLIC_ADMIN_SEGMENTS.includes(firstSegment)) {
