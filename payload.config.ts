@@ -18,6 +18,9 @@ export default buildConfig({
   admin: {
     // Payload built-in auth — CMS editors only. See CLAUDE.md Authentication section.
     user: Users.slug,
+    components: {
+      actions: ['@/payload/components/LanguageToggle'],
+    },
     livePreview: {
       url: ({ data }) =>
         `${process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'}${
