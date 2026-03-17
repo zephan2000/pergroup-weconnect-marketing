@@ -40,6 +40,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
+      max: 3,
     },
     // DECISION: schemaName places all Payload-generated tables in the `cms`
     // Postgres schema, keeping them separate from weconnect.* tables.
