@@ -11,6 +11,10 @@ import configPromise from '@payload-config'
 import BlockRenderer from '@/components/BlockRenderer'
 import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
 
+// Dynamic rendering — page fetches from DB at request time, not at build time.
+// Required because Payload CMS data is not available during static generation.
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise })
 

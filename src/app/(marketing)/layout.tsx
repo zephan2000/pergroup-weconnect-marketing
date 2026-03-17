@@ -55,7 +55,7 @@ async function fetchPayloadData() {
 
     // Build CSS variable overrides from SiteSettings color fields.
     const colorOverrides: Record<string, string> = {}
-    const colors = (siteDoc as Record<string, unknown>).colors as Record<string, string> | undefined
+    const colors = (siteDoc as unknown as Record<string, unknown>).colors as Record<string, string> | undefined
     if (colors) {
       for (const [field, cssVar] of Object.entries(COLOR_VAR_MAP)) {
         if (colors[field]) colorOverrides[cssVar] = colors[field]

@@ -115,14 +115,33 @@ async function seed() {
           sectionLabel: 'Who We Are · 我们是谁',
           headline: 'A Network Built on',
           headlineAccent: 'Genuine Trust',
-          bodyParagraphs: [
-            {
-              text: 'PER GROUP has spent 15+ years weaving a bicultural network across 53 countries — connecting Chinese enterprises going global with world markets, and international companies entering Asia with local expertise.',
+          body: {
+            root: {
+              type: 'root',
+              children: [
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', text: 'PER GROUP has spent 15+ years weaving a bicultural network across 53 countries — connecting Chinese enterprises going global with world markets, and international companies entering Asia with local expertise.', version: 1 }],
+                  direction: 'ltr',
+                  format: '',
+                  indent: 0,
+                  version: 1,
+                },
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', text: '108 co-creation partners serve 1,700+ international company branches, guided by genuine insight, not just connections.', version: 1 }],
+                  direction: 'ltr',
+                  format: '',
+                  indent: 0,
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              version: 1,
             },
-            {
-              text: '108 co-creation partners serve 1,700+ international company branches, guided by genuine insight, not just connections.',
-            },
-          ],
+          },
           advantages: [
             {
               icon: '🔭',
@@ -209,7 +228,25 @@ async function seed() {
           sectionLabel: 'New Platform · 全新平台',
           headline: 'WeConnect —',
           headlineAccent: 'Global Demand & Supply Platform',
-          body: 'AI-powered marketplace connecting enterprises with verified global partners across 53+ countries. Find office and lab spaces, secure funding, discover market entry pathways — all in one intelligent platform.',
+          body: {
+            root: {
+              type: 'root',
+              children: [
+                {
+                  type: 'paragraph',
+                  children: [{ type: 'text', text: 'AI-powered marketplace connecting enterprises with verified global partners across 53+ countries. Find office and lab spaces, secure funding, discover market entry pathways — all in one intelligent platform.', version: 1 }],
+                  direction: 'ltr',
+                  format: '',
+                  indent: 0,
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              version: 1,
+            },
+          },
           features: [
             {
               title: 'Spaces — Offices, Labs, Factories · 办公室/实验室/厂房',
@@ -234,7 +271,6 @@ async function seed() {
         {
           blockType: 'clients',
           sectionLabel: 'Trusted By · 合作客户',
-          headline: 'Global Industry Leaders',
           clients: [
             { name: 'TCL' },
             { name: 'BAIDU 百度' },
