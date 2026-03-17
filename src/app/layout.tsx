@@ -3,7 +3,6 @@ import { Syne, Syne_Mono, Noto_Serif_SC, Inter } from 'next/font/google'
 // globals.css is intentionally NOT imported here.
 // It lives in (marketing)/layout.tsx so Tailwind preflight only applies
 // to marketing routes and never disrupts Payload's /admin CSS.
-import AnalyticsProvider from '@/components/AnalyticsProvider'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -46,22 +45,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  weconnect,
 }: {
   children: React.ReactNode
-  weconnect: React.ReactNode
 }) {
-  return (
-    <html
-      lang="en"
-      className={`${syne.variable} ${syneMono.variable} ${notoSerifSC.variable} ${inter.variable}`}
-    >
-      <body>
-        <AnalyticsProvider>
-          {children}
-          {weconnect}
-        </AnalyticsProvider>
-      </body>
-    </html>
-  )
+  // No <html> or <body> here — Payload's (payload)/layout.tsx renders its own
+  // <html>, and our (marketing)/layout.tsx renders ours. A root-level <html>
+  // would nest inside Payload's, causing a hydration error.
+  return children
 }
+
+/** Font class names exported for use in (marketing)/layout.tsx */
+export const fontVariables = `${syne.variable} ${syneMono.variable} ${notoSerifSC.variable} ${inter.variable}`

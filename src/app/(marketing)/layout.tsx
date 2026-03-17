@@ -14,8 +14,10 @@ import '../globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import CursorEffect from '@/components/CursorEffect'
+import AnalyticsProvider from '@/components/AnalyticsProvider'
 import { WeConnectProvider } from '@/lib/weconnect/context'
 import WeConnectOverlay from '@/components/WeConnectOverlay'
+import { fontVariables } from '../layout'
 import {
   DEFAULT_PLATFORM_SETTINGS,
   type PlatformSettingsData,
@@ -77,15 +79,20 @@ export default async function MarketingLayout({ children }: { children: React.Re
     : undefined
 
   return (
-    <WeConnectProvider>
-      <CursorEffect />
-      <div className="bg-bg text-pg-text font-syne antialiased min-h-screen" style={styleOverrides}>
-        <Nav />
-        {children}
-        <Footer />
-      </div>
-      {/* Overlay sits outside the page div so it can cover Nav/Footer too */}
-      <WeConnectOverlay settings={platformSettings} />
-    </WeConnectProvider>
+    <html lang="en" className={fontVariables}>
+      <body>
+        <AnalyticsProvider>
+          <WeConnectProvider>
+            <CursorEffect />
+            <div className="bg-bg text-pg-text font-syne antialiased min-h-screen" style={styleOverrides}>
+              <Nav />
+              {children}
+              <Footer />
+            </div>
+            <WeConnectOverlay settings={platformSettings} />
+          </WeConnectProvider>
+        </AnalyticsProvider>
+      </body>
+    </html>
   )
 }
