@@ -1,4 +1,5 @@
 import path from 'path'
+import type { PoolConfig } from 'pg'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -47,8 +48,9 @@ export default buildConfig({
       max: 5,
       // Disable prepared statements — required for Supabase transaction mode pooler (port 6543).
       // Transaction mode doesn't support persistent sessions needed for prepared statements.
+      // Not in pg's PoolConfig type but accepted at runtime.
       prepare: false,
-    },
+    } as PoolConfig,
     // DECISION: schemaName places all Payload-generated tables in the `cms`
     // Postgres schema, keeping them separate from weconnect.* tables.
     // Requires `CREATE SCHEMA IF NOT EXISTS cms;` in Supabase before first run.
