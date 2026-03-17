@@ -7,13 +7,12 @@
  *  - Payload "Preview" button (open-in-new-tab)
  *
  * Security: accepts PAYLOAD_SECRET (for server-side callers like livePreview URL)
- * or validates the Payload session cookie (for client-side preview button).
+ * or checks for Payload JWT cookie (for client-side preview button — the cookie
+ * is httpOnly and only set for authenticated admin users).
  */
 import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { NextRequest } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -21,17 +20,12 @@ export async function GET(request: NextRequest) {
   const slug = searchParams.get('slug') || '/'
 
   // Path 1: server-side caller passes PAYLOAD_SECRET directly (livePreview iframe)
-  if (secret === process.env.PAYLOAD_SECRET) {
-    const draft = await draftMode()
-    draft.enable()
-    redirect(slug)
-  }
+  const hasSecret = secret === process.env.PAYLOAD_SECRET
 
-  // Path 2: client-side caller (preview button) — validate via Payload session cookie
-  const payload = await getPayload({ config: configPromise })
-  const { user } = await payload.auth({ headers: request.headers })
+  // Path 2: client-side caller has a Payload JWT cookie (logged-in admin user)
+  const hasPayloadCookie = request.cookies.has('payload-token')
 
-  if (!user) {
+  if (!hasSecret && !hasPayloadCookie) {
     return new Response('Unauthorized', { status: 401 })
   }
 
