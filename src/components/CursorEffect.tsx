@@ -89,17 +89,18 @@ export default function CursorEffect() {
     rafRef.current = requestAnimationFrame(animateRing)
 
     // --- Interactive element hover (event delegation) ---
+    const INTERACTIVE = 'a, button, .svc, .stat-card, .h-item, .fi, .adv'
     function onMouseEnter(e: Event) {
-      const el = e.target as HTMLElement
-      if (el.matches('a, button, .svc, .stat-card, .h-item, .fi, .adv')) {
+      const el = e.target
+      if (el instanceof Element && el.matches(INTERACTIVE)) {
         cursor!.style.width = '20px'
         cursor!.style.height = '20px'
         cursor!.style.opacity = '0.5'
       }
     }
     function onMouseLeave(e: Event) {
-      const el = e.target as HTMLElement
-      if (el.matches('a, button, .svc, .stat-card, .h-item, .fi, .adv')) {
+      const el = e.target
+      if (el instanceof Element && el.matches(INTERACTIVE)) {
         cursor!.style.width = '8px'
         cursor!.style.height = '8px'
         cursor!.style.opacity = '1'
