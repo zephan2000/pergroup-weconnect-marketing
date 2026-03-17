@@ -138,11 +138,13 @@ Severities: INFO | WARN | DEFERRED
   Without this, static optimization could bypass Payload's server-side auth check in RootPage,
   allowing unauthenticated access to the admin panel.
 
-[2026-03-18] INFO [middleware.ts] — Middleware logout handling revised. Initial approach used
-  NextResponse.redirect() with cookies.delete(), but Set-Cookie headers on redirect responses
-  are not reliably processed during Next.js client-side navigation (the internal fetch that
-  powers App Router link transitions may discard Set-Cookie from 3xx responses).
-  Fix: use NextResponse.next() (pass-through) with an explicit Set-Cookie that expires the
-  payload-token cookie, matching its original attributes: httpOnly, secure, sameSite: lax,
-  path: /. The page response delivers the header, the browser clears the cookie, and Payload's
-  LogoutClient then navigates to /admin/login where the middleware blocks re-entry.
+[2026-03-18] INFO [middleware.ts, src/app/api/auth/logout/route.ts] — Logout cookie deletion
+  moved to a dedicated GET route handler at /api/auth/logout. Middleware redirects /admin/logout
+  to this endpoint. Previous approaches failed because:
+  1. NextResponse.redirect() with cookies.delete() — Set-Cookie on redirects lost during
+     client-side navigation (Next.js internal fetch discards Set-Cookie from 3xx).
+  2. NextResponse.next() with cookies.set(maxAge:0) — Payload's RootPage calls
+     executeAuthStrategies() which refreshes the JWT cookie, overriding the expire header.
+  The API route handler runs in isolation (no Payload page component), so cookies().delete()
+  is the only Set-Cookie on the response. The redirect to /admin/login then proceeds with
+  no cookie, showing the login page.

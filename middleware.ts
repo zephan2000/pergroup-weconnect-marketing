@@ -31,22 +31,15 @@ export function middleware(request: NextRequest) {
   const afterAdmin = pathname.replace(/^\/admin\/?/, '')
   const firstSegment = afterAdmin.split('/')[0]
 
-  // Handle logout: expire the cookie on the pass-through response.
-  // Payload's Auth provider calls the REST API via fetch() to logout,
-  // but the REST handler doesn't set a Set-Cookie header — only the
-  // server action does. Using NextResponse.next() (not redirect) ensures
-  // the Set-Cookie header is delivered with the page response, which
-  // the browser reliably processes even during client-side navigation.
+  // Redirect logout to a dedicated route handler at /api/auth/logout.
+  // Previous approaches (cookie deletion via middleware pass-through or
+  // redirect) failed because Payload's RootPage re-sets the cookie during
+  // rendering (executeAuthStrategies refreshes the JWT), overriding any
+  // Set-Cookie: expire header from middleware. The API route handler runs
+  // in isolation — no Payload page component executes — so the cookie
+  // deletion sticks.
   if (firstSegment === 'logout') {
-    const response = NextResponse.next()
-    response.cookies.set('payload-token', '', {
-      path: '/',
-      maxAge: 0,
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-    })
-    return response
+    return NextResponse.redirect(new URL('/api/auth/logout', request.url))
   }
 
   if (firstSegment && PUBLIC_ADMIN_SEGMENTS.includes(firstSegment)) {
