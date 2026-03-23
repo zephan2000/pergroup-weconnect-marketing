@@ -16,7 +16,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import { fetchSpacesListings } from '@/app/actions/weconnect'
-import type { Listing } from '@/lib/supabase/schema'
+import type { Space } from '@/lib/supabase/schema'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 
@@ -34,10 +34,10 @@ const WC_VARS: React.CSSProperties = {
 export default function WeConnectOverlay({ settings }: { settings: PlatformSettingsData }) {
   const { isOpen, activeTab, close, setActiveTab } = useWeConnect()
   const [visible, setVisible] = useState(false)
-  const [listings, setListings] = useState<Listing[]>([])
-  const [listingsLoading, setListingsLoading] = useState(false)
-  const [listingsError, setListingsError] = useState(false)
-  const [listingsFetched, setListingsFetched] = useState(false)
+  const [spaces, setSpaces] = useState<Space[]>([])
+  const [spacesLoading, setSpacesLoading] = useState(false)
+  const [spacesError, setSpacesError] = useState(false)
+  const [spacesFetched, setSpacesFetched] = useState(false)
 
   // Slide animation: defer setVisible(true) by one frame so the browser paints
   // the initial translateY(100%) state before the transition fires.
@@ -52,18 +52,18 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
 
   // Fetch listings when overlay opens on the Spaces tab (fetch once per session).
   useEffect(() => {
-    if (isOpen && activeTab === 'spaces' && !listingsFetched) {
-      setListingsLoading(true)
-      setListingsError(false)
+    if (isOpen && activeTab === 'spaces' && !spacesFetched) {
+      setSpacesLoading(true)
+      setSpacesError(false)
       fetchSpacesListings()
         .then((data) => {
-          setListings(data)
-          setListingsFetched(true)
+          setSpaces(data)
+          setSpacesFetched(true)
         })
-        .catch(() => setListingsError(true))
-        .finally(() => setListingsLoading(false))
+        .catch(() => setSpacesError(true))
+        .finally(() => setSpacesLoading(false))
     }
-  }, [isOpen, activeTab, listingsFetched])
+  }, [isOpen, activeTab, spacesFetched])
 
   const handleClose = useCallback(() => close(), [close])
 
@@ -376,9 +376,9 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
             >
               {activeTab === 'spaces' && (
                 <SpacesContent
-                  listings={listings}
-                  loading={listingsLoading}
-                  error={listingsError}
+                  listings={spaces}
+                  loading={spacesLoading}
+                  error={spacesError}
                   settings={settings}
                 />
               )}
@@ -414,7 +414,7 @@ function SpacesContent({
   error,
   settings,
 }: {
-  listings: Listing[]
+  listings: Space[]
   loading: boolean
   error: boolean
   settings: PlatformSettingsData
@@ -513,7 +513,7 @@ function SpacesContent({
         </div>
       </div>
 
-      {/* Listings */}
+      {/* Spaces */}
       <div>
         <div
           style={{
@@ -571,18 +571,30 @@ function SpacesContent({
 
 // ── Space card ──────────────────────────────────────────────────────────────
 
-function SpaceCard({ listing }: { listing: Listing }) {
-  const matchScore = listing.match_score ?? 0
-  const matchColor = matchScore >= 90 ? '#22C55E' : matchScore >= 75 ? '#F5A623' : '#EF4444'
-  const typeColor =
-    listing.type === 'space' ? '#F5A623' : listing.type === 'funding' ? '#22C55E' : '#60A5FA'
-  const typeBg =
-    listing.type === 'space'
-      ? 'rgba(245,166,35,.12)'
-      : listing.type === 'funding'
-        ? 'rgba(34,197,94,.12)'
-        : 'rgba(96,165,250,.12)'
-  const price = [listing.price, listing.price_unit].filter(Boolean).join(' ')
+function SpaceCard({ listing }: { listing: Space }) {
+  // Type-based colors for badges
+  const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
+    office:     { color: '#F5A623', bg: 'rgba(245,166,35,.12)' },
+    lab:        { color: '#22C55E', bg: 'rgba(34,197,94,.12)' },
+    coworking:  { color: '#60A5FA', bg: 'rgba(96,165,250,.12)' },
+    industrial: { color: '#A78BFA', bg: 'rgba(167,139,250,.12)' },
+    factory:    { color: '#F87171', bg: 'rgba(248,113,113,.12)' },
+    retail:     { color: '#FBBF24', bg: 'rgba(251,191,36,.12)' },
+    studio:     { color: '#34D399', bg: 'rgba(52,211,153,.12)' },
+  }
+  const { color: typeColor, bg: typeBg } = TYPE_COLORS[listing.type] ?? TYPE_COLORS.office
+
+  // Format price range
+  const priceMin = listing.price_sgd_min != null ? `SGD ${Number(listing.price_sgd_min).toLocaleString()}` : null
+  const priceMax = listing.price_sgd_max != null ? `SGD ${Number(listing.price_sgd_max).toLocaleString()}` : null
+  const price = priceMin && priceMax && priceMin !== priceMax
+    ? `${priceMin} – ${priceMax} /month`
+    : priceMin
+      ? `${priceMin} /month`
+      : null
+
+  // Location string from address + district
+  const location = [listing.district, listing.address].filter(Boolean).join(' · ')
 
   return (
     <div
@@ -619,57 +631,41 @@ function SpaceCard({ listing }: { listing: Listing }) {
         >
           {listing.type}
         </span>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            fontSize: 11,
-            fontWeight: 600,
-            color: 'var(--wc-text)',
-          }}
-        >
-          <div style={{ width: 5, height: 5, borderRadius: '50%', background: matchColor }} />
-          {matchScore}% match
-        </div>
+        {listing.operator && (
+          <span style={{ fontSize: 10, color: 'var(--wc-muted)' }}>{listing.operator}</span>
+        )}
       </div>
 
       <div
         style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, lineHeight: 1.3, color: 'var(--wc-text)' }}
       >
-        {listing.title}
+        {listing.name}
       </div>
-      {listing.location && (
+      {location && (
         <div style={{ fontSize: 11, color: 'var(--wc-muted)', marginBottom: 10 }}>
-          📍 {listing.location}
+          📍 {location}
         </div>
       )}
 
-      {/* Match score bar */}
-      <div style={{ marginBottom: 12 }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: 10,
-            color: 'var(--wc-muted)',
-            marginBottom: 3,
-          }}
-        >
-          <span>AI Match Score</span>
-          <span>{matchScore}%</span>
+      {/* Tags (amenities) */}
+      {listing.amenities && listing.amenities.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
+          {listing.amenities.slice(0, 4).map((tag) => (
+            <span
+              key={tag}
+              style={{
+                fontSize: 9,
+                padding: '2px 6px',
+                borderRadius: 3,
+                background: 'rgba(255,255,255,.06)',
+                color: 'var(--wc-muted)',
+              }}
+            >
+              {tag}
+            </span>
+          ))}
         </div>
-        <div style={{ height: 3, background: 'rgba(255,255,255,.06)', borderRadius: 3, overflow: 'hidden' }}>
-          <div
-            style={{
-              height: '100%',
-              borderRadius: 3,
-              background: `linear-gradient(90deg, ${matchColor}, ${matchColor}aa)`,
-              width: `${matchScore}%`,
-            }}
-          />
-        </div>
-      </div>
+      )}
 
       {price && (
         <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--wc-text)', marginBottom: 12 }}>

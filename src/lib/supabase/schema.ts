@@ -6,66 +6,53 @@
  *
  * Hallucination guard: never query a weconnect table whose type is not here.
  *
- * SQL to create the table (run once in Supabase SQL Editor):
- * ─────────────────────────────────────────────────────────────────────────
- *   -- Prerequisites
- *   CREATE SCHEMA IF NOT EXISTS weconnect;
- *   CREATE EXTENSION IF NOT EXISTS vector SCHEMA extensions; -- pgvector
- *
- *   CREATE TABLE weconnect.listings (
- *     id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
- *     title        TEXT        NOT NULL,
- *     type         TEXT        NOT NULL CHECK (type IN ('space', 'funding', 'market')),
- *     location     TEXT,
- *     description  TEXT,
- *     price        TEXT,
- *     price_unit   TEXT,
- *     tags         TEXT[]      DEFAULT '{}',
- *     match_score  INTEGER     DEFAULT 0,
- *     details      JSONB       DEFAULT '{}',
- *     created_at   TIMESTAMPTZ DEFAULT NOW(),
- *     -- Semantic search embedding (pgvector, 1536 dims = OpenAI text-embedding-3-small)
- *     embedding    vector(1536)
- *   );
- *
- *   -- Enable RLS (required before using the anon key)
- *   ALTER TABLE weconnect.listings ENABLE ROW LEVEL SECURITY;
- *
- *   -- Starter read policy (all rows readable by anyone — tighten as needed)
- *   CREATE POLICY "Public listings readable by everyone"
- *     ON weconnect.listings FOR SELECT USING (true);
- *
- *   -- Allow Supabase JS client to access the weconnect schema via PostgREST:
- *   -- Supabase Dashboard → Settings → API → Exposed schemas → add "weconnect"
- * ─────────────────────────────────────────────────────────────────────────
+ * SQL: see weconnect/supabase/migrations/001_spaces.sql
  */
 
-/** A row from weconnect.listings */
-export interface Listing {
+/** A row from weconnect.spaces */
+export interface Space {
   id: string // uuid
-  title: string
-  type: 'space' | 'funding' | 'market'
-  location: string | null
-  description: string | null
-  price: string | null
-  price_unit: string | null
-  tags: string[]
-  match_score: number
-  details: Record<string, unknown> // jsonb
-  created_at: string // ISO 8601 timestamp string from Supabase
+  name: string
+  operator: string | null
+  type: 'office' | 'lab' | 'coworking' | 'industrial' | 'factory' | 'retail' | 'studio'
+  address: string | null
+  district: string | null
+  area_sqft_min: number | null
+  area_sqft_max: number | null
+  price_sgd_min: number | null
+  price_sgd_max: number | null
+  lease_type: string | null
+  amenities: string[]
+  suitable_industries: string[]
+  available: boolean
+  description_en: string | null
+  description_zh: string | null
+  source_url: string | null
+  source_name: string | null
+  is_verified: boolean
+  last_scraped_at: string | null
+  created_at: string // ISO 8601
+  updated_at: string // ISO 8601
 
-  /**
-   * TODO (STUB): pgvector embedding column for semantic search.
-   * Dimensions: 1536 (OpenAI text-embedding-3-small / ada-002 compatible).
-   * Do NOT read/write this column yet — semantic search is not implemented in v1.
-   * When implementing: use pgvector's <-> operator for cosine similarity search.
-   * Reference: https://supabase.com/docs/guides/ai/vector-columns
-   */
-  embedding?: number[] // vector(1536) — excluded from default SELECT queries
+  /** pgvector embedding (1536 dims). Excluded from default SELECT queries. */
+  embedding?: number[]
 }
 
-/** Insert payload for weconnect.listings (id and created_at are auto-generated) */
-export type ListingInsert = Omit<Listing, 'id' | 'created_at' | 'embedding'>
+/** A row from weconnect.crawl_jobs */
+export interface CrawlJob {
+  id: string
+  source: string
+  status: string
+  pages_crawled: number
+  spaces_upserted: number
+  error: string | null
+  started_at: string
+  finished_at: string | null
+}
 
-/** Update payload for weconnect.listings */
-export type ListingUpdate = Partial<ListingInsert>
+// ── Legacy alias ──────────────────────────────────────────────────────────
+// The old Listing interface mapped to weconnect.listings which has been
+// replaced by weconnect.spaces. This alias keeps existing imports working
+// during migration. Remove once all references are updated.
+/** @deprecated Use Space instead */
+export type Listing = Space

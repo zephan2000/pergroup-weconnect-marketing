@@ -7,8 +7,8 @@
  */
 
 import { getSpacesListings } from '@/lib/weconnect/listings'
-import type { Listing } from '@/lib/supabase/schema'
+import type { Space } from '@/lib/supabase/schema'
 
-export async function fetchSpacesListings(): Promise<Listing[]> {
+export async function fetchSpacesListings(): Promise<Space[]> {
   return getSpacesListings()
 }
