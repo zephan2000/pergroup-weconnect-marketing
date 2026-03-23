@@ -1,14 +1,12 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { createCrawlJob, updateCrawlJob } from '../../lib/supabase'
-import { extractSpace } from './extract'
-import { embedAndUpsert } from './embed'
-import { scrapeJTCSpaces } from './sources/jtc'
-import { scrapeJustCo } from './sources/justco'
-import { scrapeWeWork } from './sources/wework'
-import { scrapeCommercialGuru } from './sources/commercialguru'
-import type { ScrapedPage } from '../../lib/firecrawl'
-
-export const config = { runtime: 'edge' }
+import { NextRequest, NextResponse } from 'next/server'
+import { createCrawlJob, updateCrawlJob } from '@/lib/weconnect/ingest-db'
+import { extractSpace } from '@/lib/weconnect/extract'
+import { embedAndUpsert } from '@/lib/weconnect/embed'
+import { scrapeJTCSpaces } from '@/lib/weconnect/sources/jtc'
+import { scrapeJustCo } from '@/lib/weconnect/sources/justco'
+import { scrapeWeWork } from '@/lib/weconnect/sources/wework'
+import { scrapeCommercialGuru } from '@/lib/weconnect/sources/commercialguru'
+import type { ScrapedPage } from '@/lib/weconnect/firecrawl'
 
 interface SourceDef {
   name: string
@@ -29,14 +27,9 @@ const sources: SourceDef[] = [
  * Runs all 4 scrapers sequentially, extracts structured data, generates
  * embeddings, and upserts into weconnect.spaces.
  */
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Auth check
-  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+export async function POST(request: NextRequest) {
+  if (request.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const summary: {
@@ -58,12 +51,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       console.log(`\n── ${source.name.toUpperCase()} ──`)
 
-      // 1. Scrape
       const pages = await source.scrape()
       pagesCount = pages.length
       console.log(`${source.name}: got ${pagesCount} pages`)
 
-      // 2. Extract + embed + upsert each page
       for (const page of pages) {
         try {
           const extracted = await extractSpace(page.markdown, page.url)
@@ -111,5 +102,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const statusCode = summary.ok ? 200 : 207
-  return res.status(statusCode).json(summary)
+  return NextResponse.json(summary, { status: statusCode })
 }

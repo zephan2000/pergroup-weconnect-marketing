@@ -1,4 +1,4 @@
-import { scrapePage, sleep, type ScrapedPage } from '../../../lib/firecrawl'
+import { scrapePage, sleep, type ScrapedPage } from '../firecrawl'
 
 const BASE_URL = 'https://www.jtc.gov.sg/find-space'
 const MAX_PAGES = 10
@@ -20,7 +20,6 @@ export async function scrapeJTCSpaces(): Promise<ScrapedPage[]> {
       break
     }
 
-    // Stop if the page doesn't contain pricing indicators
     if (!scraped.markdown.includes('per sqm/mth')) {
       console.log(`JTC: page ${page} has no pricing data, stopping`)
       break

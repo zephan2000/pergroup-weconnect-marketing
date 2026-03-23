@@ -1,5 +1,5 @@
-import { openrouter, EMBEDDING_MODEL } from '../../lib/openrouter'
-import { upsertSpace, type SpaceRow } from '../../lib/supabase'
+import { openrouter, EMBEDDING_MODEL } from './openrouter'
+import { upsertSpace, type SpaceRow } from './ingest-db'
 import type { ExtractedSpace } from './extract'
 
 /**
@@ -67,3 +67,6 @@ export async function embedAndUpsert(
 
   await upsertSpace(row)
 }
+
+/** Re-export for search endpoint */
+export { generateEmbedding }

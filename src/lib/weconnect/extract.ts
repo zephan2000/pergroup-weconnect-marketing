@@ -1,4 +1,4 @@
-import { openrouter, EXTRACTION_MODEL } from '../../lib/openrouter'
+import { openrouter, EXTRACTION_MODEL } from './openrouter'
 
 /** Shape returned by the LLM extraction */
 export interface ExtractedSpace {
@@ -56,7 +56,6 @@ export async function extractSpace(
   sourceUrl: string
 ): Promise<ExtractedSpace | null> {
   try {
-    // Truncate to 6000 chars to stay within Haiku's sweet spot
     const truncated = markdown.slice(0, 6000)
 
     const response = await openrouter.chat.completions.create({
@@ -77,7 +76,6 @@ export async function extractSpace(
     }
 
     const parsed = JSON.parse(content) as ExtractedSpace
-    // Basic validation — must have a name at minimum
     if (!parsed.name || typeof parsed.name !== 'string') {
       console.warn(`extractSpace: invalid extraction (no name) for ${sourceUrl}`)
       return null

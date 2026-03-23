@@ -1,4 +1,4 @@
-import { crawlSite, scrapePage, sleep, type ScrapedPage } from '../../../lib/firecrawl'
+import { crawlSite, scrapePage, sleep, type ScrapedPage } from '../firecrawl'
 
 const INDEX_URL = 'https://www.commercialguru.com.sg/singapore/office-for-rent'
 const DETAIL_URL_REGEX =
@@ -13,7 +13,6 @@ const DETAIL_URL_REGEX =
 export async function scrapeCommercialGuru(): Promise<ScrapedPage[]> {
   console.log(`CommercialGuru: crawling index — ${INDEX_URL}`)
 
-  // Step 1: Crawl index pages
   const indexPages = await crawlSite(INDEX_URL, {
     limit: 50,
     includePaths: ['/singapore/office-for-rent*'],
@@ -22,7 +21,6 @@ export async function scrapeCommercialGuru(): Promise<ScrapedPage[]> {
 
   console.log(`CommercialGuru: crawled ${indexPages.length} index pages`)
 
-  // Step 2: Extract and deduplicate listing detail URLs from all index pages
   const allUrls = new Set<string>()
   for (const page of indexPages) {
     const matches = page.markdown.match(DETAIL_URL_REGEX)
@@ -34,7 +32,6 @@ export async function scrapeCommercialGuru(): Promise<ScrapedPage[]> {
   const detailUrls = [...allUrls]
   console.log(`CommercialGuru: found ${detailUrls.length} unique detail URLs`)
 
-  // Step 3: Scrape detail pages in chunks of 10
   const results: ScrapedPage[] = []
   const chunkSize = 10
 

@@ -12,8 +12,8 @@ export interface ScrapedPage {
  */
 export async function scrapePage(url: string): Promise<ScrapedPage | null> {
   try {
-    const result = await firecrawl.scrapeUrl(url, { formats: ['markdown'] })
-    if (!result.success || !result.markdown) {
+    const result = await firecrawl.scrape(url, { formats: ['markdown'] })
+    if (!result.markdown) {
       console.warn(`Firecrawl: no markdown returned for ${url}`)
       return null
     }
@@ -37,21 +37,21 @@ export async function crawlSite(
   } = {}
 ): Promise<ScrapedPage[]> {
   try {
-    const result = await firecrawl.crawlUrl(url, {
+    const result = await firecrawl.crawl(url, {
       limit: options.limit ?? 50,
       includePaths: options.includePaths,
       excludePaths: options.excludePaths,
       scrapeOptions: { formats: ['markdown'] },
     })
 
-    if (!result.success || !result.data) {
-      console.warn(`Firecrawl: crawl failed for ${url}`)
+    if (result.status === 'failed' || !result.data) {
+      console.warn(`Firecrawl: crawl failed for ${url} (status: ${result.status})`)
       return []
     }
 
     return result.data
-      .filter((page: { markdown?: string; metadata?: { sourceURL?: string } }) => page.markdown)
-      .map((page: { markdown?: string; metadata?: { sourceURL?: string } }) => ({
+      .filter((page) => page.markdown)
+      .map((page) => ({
         markdown: page.markdown!,
         url: page.metadata?.sourceURL ?? url,
       }))

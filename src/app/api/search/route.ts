@@ -1,8 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { openrouter, EMBEDDING_MODEL } from '../../lib/openrouter'
-import { supabase } from '../../lib/supabase'
-
-export const config = { runtime: 'edge' }
+import { NextRequest, NextResponse } from 'next/server'
+import { generateEmbedding } from '@/lib/weconnect/embed'
+import { createServerClient } from '@/lib/supabase/server'
 
 interface SearchRequest {
   query: string
@@ -18,34 +16,18 @@ interface SearchRequest {
  *
  * Semantic search over weconnect.spaces.
  * Embeds the query, calls match_spaces RPC, applies optional filters.
- *
- * Request body:
- *   { query: string, filters?: { type?, district?, budget_max? } }
- *
- * Response:
- *   { results: SpaceRow[] }
  */
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  const body = req.body as SearchRequest
+export async function POST(request: NextRequest) {
+  const body = (await request.json()) as SearchRequest
 
   if (!body.query || typeof body.query !== 'string') {
-    return res.status(400).json({ error: 'query is required' })
+    return NextResponse.json({ error: 'query is required' }, { status: 400 })
   }
 
   try {
-    // 1. Embed the search query
-    const embeddingResponse = await openrouter.embeddings.create({
-      model: EMBEDDING_MODEL,
-      input: body.query,
-    })
-    const queryEmbedding = embeddingResponse.data[0].embedding
+    const queryEmbedding = await generateEmbedding(body.query)
 
-    // 2. Call match_spaces RPC (filters pushed into post-processing for now;
-    //    if performance becomes an issue, add filter params to the SQL function)
+    const supabase = createServerClient()
     const { data, error } = await supabase
       .schema('weconnect')
       .rpc('match_spaces', {
@@ -56,10 +38,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (error) {
       console.error('match_spaces RPC error:', error.message)
-      return res.status(500).json({ error: error.message })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // 3. Apply optional filters
     let results = data ?? []
 
     if (body.filters?.type) {
@@ -82,10 +63,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       )
     }
 
-    return res.status(200).json({ results: results.slice(0, 10) })
+    return NextResponse.json({ results: results.slice(0, 10) })
   } catch (err) {
     console.error('Search error:', err)
     const msg = err instanceof Error ? err.message : 'Internal server error'
-    return res.status(500).json({ error: msg })
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

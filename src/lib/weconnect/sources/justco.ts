@@ -1,4 +1,4 @@
-import { crawlSite, type ScrapedPage } from '../../../lib/firecrawl'
+import { crawlSite, type ScrapedPage } from '../firecrawl'
 
 const JUSTCO_URL = 'https://www.justcoglobal.com/en/'
 

@@ -1,16 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
 /**
- * Supabase client using the service_role key.
- * Bypasses RLS — used for ingestion writes only.
- * NEVER expose this client or its key to the browser.
+ * Supabase helpers for the ingestion pipeline.
+ * Uses the existing server client (service_role key).
+ * Role: service_role (bypasses RLS).
  */
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
-})
+import { createServerClient } from '@/lib/supabase/server'
 
 /** Shape of a space row for upsert */
 export interface SpaceRow {
@@ -37,9 +30,9 @@ export interface SpaceRow {
 /**
  * Upsert a space into weconnect.spaces.
  * Deduplicates on source_url — re-scraping the same URL updates the existing row.
- * Role: service_role (bypasses RLS).
  */
 export async function upsertSpace(space: SpaceRow): Promise<void> {
+  const supabase = createServerClient()
   const { error } = await supabase
     .schema('weconnect')
     .from('spaces')
@@ -52,9 +45,9 @@ export async function upsertSpace(space: SpaceRow): Promise<void> {
 
 /**
  * Insert a crawl_jobs row. Returns the job ID.
- * Role: service_role.
  */
 export async function createCrawlJob(source: string): Promise<string> {
+  const supabase = createServerClient()
   const { data, error } = await supabase
     .schema('weconnect')
     .from('crawl_jobs')
@@ -68,7 +61,6 @@ export async function createCrawlJob(source: string): Promise<string> {
 
 /**
  * Update a crawl_jobs row with final status.
- * Role: service_role.
  */
 export async function updateCrawlJob(
   jobId: string,
@@ -79,6 +71,7 @@ export async function updateCrawlJob(
     error?: string
   }
 ): Promise<void> {
+  const supabase = createServerClient()
   const { error } = await supabase
     .schema('weconnect')
     .from('crawl_jobs')
