@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCrawlJob, updateCrawlJob } from '@/lib/weconnect/ingest-db'
-import { extractSpace } from '@/lib/weconnect/extract'
+import { extractSpace, extractSpaces } from '@/lib/weconnect/extract'
 import { embedAndUpsert } from '@/lib/weconnect/embed'
 import { scrapeJTCSpaces } from '@/lib/weconnect/sources/jtc'
 import { scrapeJustCo } from '@/lib/weconnect/sources/justco'
@@ -11,13 +11,15 @@ import type { ScrapedPage } from '@/lib/weconnect/firecrawl'
 interface SourceDef {
   name: string
   scrape: () => Promise<ScrapedPage[]>
+  /** If true, each scraped page contains multiple listings (search results page) */
+  multiExtract: boolean
 }
 
 const sources: SourceDef[] = [
-  { name: 'jtc', scrape: scrapeJTCSpaces },
-  { name: 'justco', scrape: scrapeJustCo },
-  { name: 'wework', scrape: scrapeWeWork },
-  { name: 'commercialguru', scrape: scrapeCommercialGuru },
+  { name: 'jtc', scrape: scrapeJTCSpaces, multiExtract: true },
+  { name: 'justco', scrape: scrapeJustCo, multiExtract: false },
+  { name: 'wework', scrape: scrapeWeWork, multiExtract: false },
+  { name: 'commercialguru', scrape: scrapeCommercialGuru, multiExtract: true },
 ]
 
 /**
@@ -57,15 +59,37 @@ export async function POST(request: NextRequest) {
 
       for (const page of pages) {
         try {
-          const extracted = await extractSpace(page.markdown, page.url)
-          if (!extracted) {
-            errors.push(`extraction failed: ${page.url}`)
-            continue
-          }
+          if (source.multiExtract) {
+            // Search results page — extract multiple spaces
+            const spaces = await extractSpaces(page.markdown, page.url)
+            for (const space of spaces) {
+              try {
+                // Use a synthetic source_url with the space name for dedup
+                const spaceUrl = `${page.url}#${encodeURIComponent(space.name)}`
+                await embedAndUpsert(space, spaceUrl, source.name)
+                upsertedCount++
+                console.log(`${source.name}: upserted "${space.name}"`)
+              } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err)
+                errors.push(`${space.name}: ${msg}`)
+                console.error(`${source.name}: embed/upsert failed for "${space.name}":`, msg)
+              }
+            }
+            if (spaces.length === 0) {
+              errors.push(`no spaces extracted: ${page.url}`)
+            }
+          } else {
+            // Detail page — extract single space
+            const extracted = await extractSpace(page.markdown, page.url)
+            if (!extracted) {
+              errors.push(`extraction failed: ${page.url}`)
+              continue
+            }
 
-          await embedAndUpsert(extracted, page.url, source.name)
-          upsertedCount++
-          console.log(`${source.name}: upserted "${extracted.name}"`)
+            await embedAndUpsert(extracted, page.url, source.name)
+            upsertedCount++
+            console.log(`${source.name}: upserted "${extracted.name}"`)
+          }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err)
           errors.push(`${page.url}: ${msg}`)
