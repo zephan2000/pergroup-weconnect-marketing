@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ results: results.slice(0, 10) })
+    return NextResponse.json({ results: results.slice(0, 20) })
   } catch (err) {
     console.error('Search error:', err)
     const msg = err instanceof Error ? err.message : 'Internal server error'

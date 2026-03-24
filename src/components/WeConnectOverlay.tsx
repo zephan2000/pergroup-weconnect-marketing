@@ -9,6 +9,9 @@
  *    PlatformSettings global, fetched server-side in (marketing)/layout.tsx.
  *  - Live listings are fetched via the fetchSpacesListings server action when the
  *    Spaces tab first becomes active.
+ *  - Search has two modes:
+ *    1. Filter mode (default): client-side text matching + chip-based facet filtering
+ *    2. AI mode: semantic search via /api/search with pgvector cosine similarity
  *  - The panel is always in the DOM; visibility is driven by CSS transform so the
  *    liquid-glass slide animation is smooth.
  */
@@ -18,6 +21,7 @@ import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import { fetchSpacesListings } from '@/app/actions/weconnect'
 import type { Space } from '@/lib/supabase/schema'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
+import { useSpacesSearch, type SpaceWithSimilarity, type SearchMode, type Facets } from '@/hooks/useSpacesSearch'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 
 // Inline CSS variables so the overlay is independent of globals.css load order.
@@ -38,6 +42,8 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
   const [spacesLoading, setSpacesLoading] = useState(false)
   const [spacesError, setSpacesError] = useState(false)
   const [spacesFetched, setSpacesFetched] = useState(false)
+
+  const search = useSpacesSearch(spaces)
 
   // Slide animation: defer setVisible(true) by one frame so the browser paints
   // the initial translateY(100%) state before the transition fires.
@@ -376,10 +382,27 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
             >
               {activeTab === 'spaces' && (
                 <SpacesContent
-                  listings={spaces}
+                  listings={search.filteredSpaces}
+                  totalCount={spaces.length}
                   loading={spacesLoading}
                   error={spacesError}
-                  settings={settings}
+                  searchMode={search.searchMode}
+                  searchQuery={search.searchQuery}
+                  setSearchQuery={search.setSearchQuery}
+                  activeTypes={search.activeTypes}
+                  activeDistricts={search.activeDistricts}
+                  activePriceRanges={search.activePriceRanges}
+                  toggleType={search.toggleType}
+                  toggleDistrict={search.toggleDistrict}
+                  togglePriceRange={search.togglePriceRange}
+                  facets={search.facets}
+                  toggleMode={search.toggleMode}
+                  handleAiSearch={search.handleAiSearch}
+                  aiLoading={search.aiLoading}
+                  clearSearch={search.clearSearch}
+                  showAiSuggestion={search.showAiSuggestion}
+                  dismissAiSuggestion={search.dismissAiSuggestion}
+                  acceptAiSuggestion={search.acceptAiSuggestion}
                 />
               )}
               {activeTab === 'funding' && (
@@ -406,114 +429,340 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
   )
 }
 
+// ── Chip styles ──────────────────────────────────────────────────────────────
+
+const chipBase: React.CSSProperties = {
+  padding: '5px 11px',
+  borderRadius: 20,
+  fontSize: 11,
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  whiteSpace: 'nowrap',
+}
+
+const chipInactive: React.CSSProperties = {
+  ...chipBase,
+  border: '1px solid var(--wc-border)',
+  color: 'var(--wc-muted)',
+  background: 'none',
+}
+
+const chipActive: React.CSSProperties = {
+  ...chipBase,
+  border: '1px solid rgba(245,166,35,.3)',
+  color: '#F5A623',
+  background: 'rgba(245,166,35,.15)',
+}
+
+// ── AI suggestion chips for AI mode ──────────────────────────────────────────
+
+const AI_SUGGESTIONS = [
+  'Biotech lab near NUS with grant eligibility',
+  'Affordable coworking in CBD for 5-person team',
+  'Industrial space with clean room certification',
+  'Serviced office near MRT under $3k/month',
+]
+
 // ── Spaces content ──────────────────────────────────────────────────────────
+
+interface SpacesContentProps {
+  listings: SpaceWithSimilarity[]
+  totalCount: number
+  loading: boolean
+  error: boolean
+  searchMode: SearchMode
+  searchQuery: string
+  setSearchQuery: (q: string) => void
+  activeTypes: Set<string>
+  activeDistricts: Set<string>
+  activePriceRanges: Set<string>
+  toggleType: (t: string) => void
+  toggleDistrict: (d: string) => void
+  togglePriceRange: (r: string) => void
+  facets: Facets
+  toggleMode: () => void
+  handleAiSearch: (query?: string) => void
+  aiLoading: boolean
+  clearSearch: () => void
+  showAiSuggestion: boolean
+  dismissAiSuggestion: () => void
+  acceptAiSuggestion: () => void
+}
 
 function SpacesContent({
   listings,
+  totalCount,
   loading,
   error,
-  settings,
-}: {
-  listings: Space[]
-  loading: boolean
-  error: boolean
-  settings: PlatformSettingsData
-}) {
+  searchMode,
+  searchQuery,
+  setSearchQuery,
+  activeTypes,
+  activeDistricts,
+  activePriceRanges,
+  toggleType,
+  toggleDistrict,
+  togglePriceRange,
+  facets,
+  toggleMode,
+  handleAiSearch,
+  aiLoading,
+  clearSearch,
+  showAiSuggestion,
+  dismissAiSuggestion,
+  acceptAiSuggestion,
+}: SpacesContentProps) {
+  const isAi = searchMode === 'ai'
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      toggleMode()
+    } else if (e.key === 'Enter' && isAi) {
+      e.preventDefault()
+      handleAiSearch()
+    }
+  }
+
+  const hasActiveFilters =
+    activeTypes.size > 0 || activeDistricts.size > 0 || activePriceRanges.size > 0 || searchQuery.trim().length > 0
+
+  // Price range chip config
+  const priceChips: { key: string; label: string; count: number }[] = [
+    { key: 'under2k', label: 'Under $2k', count: facets.priceRanges.under2k },
+    { key: '2k5k', label: '$2k – $5k', count: facets.priceRanges.range2k5k },
+    { key: '5kplus', label: '$5k+', count: facets.priceRanges.over5k },
+  ]
+
   return (
     <>
-      {/* AI matching card */}
+      {/* ── Search bar ──────────────────────────────────────────────── */}
       <div
         style={{
           background: 'linear-gradient(135deg, rgba(245,166,35,.08), rgba(139,92,246,.05))',
           border: '1px solid rgba(245,166,35,.2)',
           borderRadius: 14,
-          padding: 24,
+          padding: '18px 20px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <div
-            style={{
-              background: 'rgba(245,166,35,.15)',
-              border: '1px solid rgba(245,166,35,.3)',
-              color: '#F5A623',
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: 1,
-              padding: '4px 10px',
-              borderRadius: 20,
-            }}
-          >
-            ✦ AI Matching · 智能匹配
-          </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
-            {settings.aiMatchingHeadline}
-          </div>
-        </div>
-        <p style={{ fontSize: 12, color: 'var(--wc-muted)', marginBottom: 14 }}>
-          {settings.aiMatchingDescription}
-        </p>
-        <div style={{ position: 'relative' }}>
-          <textarea
-            placeholder={settings.aiMatchingPlaceholder}
-            style={{
-              width: '100%',
-              background: 'rgba(0,0,0,.3)',
-              border: '1px solid var(--wc-border)',
-              borderRadius: 9,
-              padding: '12px 120px 12px 14px',
-              color: 'var(--wc-text)',
-              fontFamily: 'inherit',
-              fontSize: 13,
-              resize: 'none',
-              minHeight: 68,
-              lineHeight: 1.6,
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-          />
-          <button
-            style={{
-              position: 'absolute',
-              right: 10,
-              bottom: 10,
-              background: '#F5A623',
-              color: 'white',
-              border: 'none',
-              padding: '7px 14px',
-              borderRadius: 7,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
-          >
-            ✦ Match
-          </button>
-        </div>
-        <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginTop: 10 }}>
-          {['🔬 Lab near NUS', '🏢 CBD Office', '🏭 Factory SEA', '💰 AI Health Fund', '🌍 EU MedTech'].map(
-            (chip) => (
+        {/* Input row */}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ position: 'relative', flex: 1 }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                isAi
+                  ? 'Describe your ideal space in natural language...'
+                  : 'Search by name, address, district...'
+              }
+              style={{
+                width: '100%',
+                background: 'rgba(0,0,0,.3)',
+                border: `1px solid ${isAi ? 'rgba(245,166,35,.3)' : 'var(--wc-border)'}`,
+                borderRadius: 9,
+                padding: '10px 14px',
+                paddingRight: isAi ? 80 : 14,
+                color: 'var(--wc-text)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+            {/* Match button (AI mode only) */}
+            {isAi && (
               <button
-                key={chip}
+                onClick={() => handleAiSearch()}
+                disabled={aiLoading || !searchQuery.trim()}
                 style={{
-                  padding: '5px 11px',
-                  borderRadius: 20,
-                  border: '1px solid var(--wc-border)',
+                  position: 'absolute',
+                  right: 6,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: aiLoading ? 'rgba(245,166,35,.5)' : '#F5A623',
+                  color: 'white',
+                  border: 'none',
+                  padding: '5px 12px',
+                  borderRadius: 6,
                   fontSize: 11,
-                  color: 'var(--wc-muted)',
-                  cursor: 'pointer',
-                  background: 'none',
+                  fontWeight: 600,
+                  cursor: aiLoading ? 'wait' : 'pointer',
                   fontFamily: 'inherit',
                 }}
               >
-                {chip}
+                {aiLoading ? '...' : 'Match'}
               </button>
-            ),
+            )}
+          </div>
+
+          {/* AI toggle pill */}
+          <button
+            onClick={toggleMode}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 20,
+              fontSize: 11,
+              fontWeight: 600,
+              cursor: 'pointer',
+              border: isAi ? '1px solid rgba(245,166,35,.4)' : '1px solid var(--wc-border)',
+              background: isAi ? 'rgba(245,166,35,.2)' : 'none',
+              color: isAi ? '#F5A623' : 'var(--wc-muted)',
+              fontFamily: 'inherit',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            ✦ AI Search
+          </button>
+
+          {/* Clear button */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearSearch}
+              style={{
+                padding: '8px 12px',
+                borderRadius: 20,
+                fontSize: 11,
+                cursor: 'pointer',
+                border: '1px solid var(--wc-border)',
+                background: 'none',
+                color: 'var(--wc-muted)',
+                fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Tab hint */}
+        <div style={{ fontSize: 10, color: 'var(--wc-muted)', marginTop: 6, paddingLeft: 2 }}>
+          {isAi
+            ? 'Press Tab to switch to filter search · Press Enter to search'
+            : 'Press Tab for AI Search'}
+        </div>
+
+        {/* AI suggestion banner (auto-detect) */}
+        {showAiSuggestion && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: '8px 14px',
+              borderRadius: 8,
+              background: 'rgba(245,166,35,.08)',
+              border: '1px solid rgba(245,166,35,.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: 12,
+            }}
+          >
+            <span style={{ color: 'var(--wc-muted)' }}>
+              This looks like a natural language query.
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={acceptAiSuggestion}
+                style={{
+                  background: 'rgba(245,166,35,.15)',
+                  border: '1px solid rgba(245,166,35,.3)',
+                  color: '#F5A623',
+                  padding: '3px 10px',
+                  borderRadius: 5,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Try AI Search
+              </button>
+              <button
+                onClick={dismissAiSuggestion}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--wc-muted)',
+                  fontSize: 11,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Chip bar */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10, alignItems: 'center' }}>
+          {isAi ? (
+            // AI mode: suggestion chips
+            AI_SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => handleAiSearch(suggestion)}
+                style={chipInactive}
+              >
+                {suggestion}
+              </button>
+            ))
+          ) : (
+            // Filter mode: facet chips
+            <>
+              {/* Type chips */}
+              {[...facets.typeCounts.entries()]
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => (
+                  <button
+                    key={`type-${type}`}
+                    onClick={() => toggleType(type)}
+                    style={activeTypes.has(type) ? chipActive : chipInactive}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)} ({count})
+                  </button>
+                ))}
+
+              {/* Divider */}
+              <span style={{ color: 'rgba(255,255,255,.12)', fontSize: 14, padding: '0 2px' }}>|</span>
+
+              {/* District chips */}
+              {facets.topDistricts.map(([district, count]) => (
+                <button
+                  key={`dist-${district}`}
+                  onClick={() => toggleDistrict(district)}
+                  style={activeDistricts.has(district) ? chipActive : chipInactive}
+                >
+                  {district} ({count})
+                </button>
+              ))}
+
+              {/* Divider */}
+              <span style={{ color: 'rgba(255,255,255,.12)', fontSize: 14, padding: '0 2px' }}>|</span>
+
+              {/* Price range chips */}
+              {priceChips
+                .filter((p) => p.count > 0)
+                .map((p) => (
+                  <button
+                    key={`price-${p.key}`}
+                    onClick={() => togglePriceRange(p.key)}
+                    style={activePriceRanges.has(p.key) ? chipActive : chipInactive}
+                  >
+                    {p.label} ({p.count})
+                  </button>
+                ))}
+            </>
           )}
         </div>
       </div>
 
-      {/* Spaces */}
+      {/* ── Results ─────────────────────────────────────────────────── */}
       <div>
         <div
           style={{
@@ -524,18 +773,22 @@ function SpacesContent({
           }}
         >
           <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
-            Available Spaces
+            {isAi ? 'AI Matches' : 'Available Spaces'}
           </h2>
           {!loading && !error && (
             <span style={{ fontSize: 12, color: 'var(--wc-muted)' }}>
-              {listings.length} listing{listings.length !== 1 ? 's' : ''} · sorted by match score
+              {isAi
+                ? aiLoading
+                  ? 'Searching...'
+                  : `${listings.length} AI match${listings.length !== 1 ? 'es' : ''}`
+                : `${listings.length} of ${totalCount} space${totalCount !== 1 ? 's' : ''}`}
             </span>
           )}
         </div>
 
         {loading && (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--wc-muted)', fontSize: 13 }}>
-            Loading listings…
+            Loading listings...
           </div>
         )}
 
@@ -547,7 +800,13 @@ function SpacesContent({
 
         {!loading && !error && listings.length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--wc-muted)', fontSize: 13 }}>
-            No spaces available yet.
+            {isAi
+              ? searchQuery.trim()
+                ? 'No AI matches found. Try rephrasing your query.'
+                : 'Type a description and press Enter to search with AI.'
+              : hasActiveFilters
+                ? 'No spaces match your filters.'
+                : 'No spaces available yet.'}
           </div>
         )}
 
@@ -560,7 +819,11 @@ function SpacesContent({
             }}
           >
             {listings.map((listing) => (
-              <SpaceCard key={listing.id} listing={listing} />
+              <SpaceCard
+                key={listing.id}
+                listing={listing}
+                similarity={isAi ? listing.similarity : undefined}
+              />
             ))}
           </div>
         )}
@@ -571,7 +834,7 @@ function SpacesContent({
 
 // ── Space card ──────────────────────────────────────────────────────────────
 
-function SpaceCard({ listing }: { listing: Space }) {
+function SpaceCard({ listing, similarity }: { listing: SpaceWithSimilarity; similarity?: number }) {
   // Type-based colors for badges
   const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
     office:     { color: '#F5A623', bg: 'rgba(245,166,35,.12)' },
@@ -583,6 +846,15 @@ function SpaceCard({ listing }: { listing: Space }) {
     studio:     { color: '#34D399', bg: 'rgba(52,211,153,.12)' },
   }
   const { color: typeColor, bg: typeBg } = TYPE_COLORS[listing.type] ?? TYPE_COLORS.office
+
+  // Match badge color based on similarity
+  const matchPct = similarity != null ? Math.round(similarity * 100) : null
+  const matchColor =
+    matchPct != null && matchPct >= 80
+      ? '#22C55E'
+      : matchPct != null && matchPct >= 60
+        ? '#F5A623'
+        : '#9CA3AF'
 
   // Format price range
   const priceMin = listing.price_sgd_min != null ? `SGD ${Number(listing.price_sgd_min).toLocaleString()}` : null
@@ -607,8 +879,29 @@ function SpaceCard({ listing }: { listing: Space }) {
         cursor: 'pointer',
         overflow: 'hidden',
         borderTop: `2px solid ${typeColor}`,
+        position: 'relative',
       }}
     >
+      {/* Match badge (AI mode only) */}
+      {matchPct != null && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            fontSize: 10,
+            fontWeight: 600,
+            padding: '2px 8px',
+            borderRadius: 10,
+            background: `${matchColor}18`,
+            color: matchColor,
+            border: `1px solid ${matchColor}40`,
+          }}
+        >
+          {matchPct}% match
+        </div>
+      )}
+
       <div
         style={{
           display: 'flex',
