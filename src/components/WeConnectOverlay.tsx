@@ -386,6 +386,7 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
                   totalCount={spaces.length}
                   loading={spacesLoading}
                   error={spacesError}
+                  settings={settings}
                   searchMode={search.searchMode}
                   searchQuery={search.searchQuery}
                   setSearchQuery={search.setSearchQuery}
@@ -470,6 +471,7 @@ interface SpacesContentProps {
   totalCount: number
   loading: boolean
   error: boolean
+  settings: PlatformSettingsData
   searchMode: SearchMode
   searchQuery: string
   setSearchQuery: (q: string) => void
@@ -494,6 +496,7 @@ function SpacesContent({
   totalCount,
   loading,
   error,
+  settings,
   searchMode,
   searchQuery,
   setSearchQuery,
@@ -545,6 +548,32 @@ function SpacesContent({
           padding: '18px 20px',
         }}
       >
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+          <div
+            style={{
+              background: 'rgba(245,166,35,.15)',
+              border: '1px solid rgba(245,166,35,.3)',
+              color: '#F5A623',
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: 1,
+              padding: '4px 10px',
+              borderRadius: 20,
+            }}
+          >
+            {isAi ? '✦ AI Matching · 智能匹配' : '🔍 Search · 搜索'}
+          </div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
+            {settings.aiMatchingHeadline}
+          </div>
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--wc-muted)', marginBottom: 14, marginTop: 0 }}>
+          {isAi
+            ? settings.aiMatchingDescription
+            : 'Filter by type, district, or price — or switch to AI for natural language search'}
+        </p>
+
         {/* Input row */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1 }}>
@@ -555,7 +584,7 @@ function SpacesContent({
               onKeyDown={handleKeyDown}
               placeholder={
                 isAi
-                  ? 'Describe your ideal space in natural language...'
+                  ? settings.aiMatchingPlaceholder
                   : 'Search by name, address, district...'
               }
               style={{
