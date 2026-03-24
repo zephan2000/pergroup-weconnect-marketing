@@ -69,11 +69,14 @@ export async function extractSpace(
       response_format: { type: 'json_object' },
     })
 
-    const content = response.choices[0]?.message?.content
+    let content = response.choices[0]?.message?.content
     if (!content) {
       console.warn(`extractSpace: empty response for ${sourceUrl}`)
       return null
     }
+
+    // Strip markdown fences if the LLM wraps the JSON in ```json ... ```
+    content = content.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim()
 
     const parsed = JSON.parse(content) as ExtractedSpace
     if (!parsed.name || typeof parsed.name !== 'string') {
