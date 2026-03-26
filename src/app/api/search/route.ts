@@ -30,19 +30,21 @@ export async function POST(request: NextRequest) {
     const supabase = createServerClient()
     const { data, error } = await supabase
       .schema('weconnect')
-      .rpc('match_spaces', {
+      .rpc('hybrid_search_spaces', {
+        query_text: body.query,
         query_embedding: queryEmbedding,
-        match_threshold: 0.5,
         match_count: 20,
+        rrf_k: 60,
       })
 
     if (error) {
-      console.error('match_spaces RPC error:', error.message)
+      console.error('hybrid_search_spaces RPC error:', error.message)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     let results = data ?? []
 
+    // Post-filter if structured filters are provided
     if (body.filters?.type) {
       results = results.filter(
         (r: { type: string }) => r.type === body.filters!.type
