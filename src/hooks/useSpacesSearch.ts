@@ -205,10 +205,20 @@ export function useSpacesSearch(spaces: Space[]) {
     switchToAi()
   }, [switchToAi])
 
+  // Auto-switch back to filter mode when query is cleared (e.g. backspace to empty)
+  const setSearchQueryWithAutoReset = useCallback((q: string) => {
+    setSearchQuery(q)
+    if (q.trim() === '' && searchMode === 'ai') {
+      setSearchMode('filter')
+      setAiResults([])
+      setAiSuggestionDismissed(false)
+    }
+  }, [searchMode])
+
   return {
     searchMode,
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: setSearchQueryWithAutoReset,
     activeTypes,
     activeDistricts,
     activePriceRanges,

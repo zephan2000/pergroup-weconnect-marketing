@@ -400,7 +400,7 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
                   toggleMode={search.toggleMode}
                   handleAiSearch={search.handleAiSearch}
                   aiLoading={search.aiLoading}
-                  clearSearch={search.clearSearch}
+
                   showAiSuggestion={search.showAiSuggestion}
                   dismissAiSuggestion={search.dismissAiSuggestion}
                   acceptAiSuggestion={search.acceptAiSuggestion}
@@ -485,7 +485,6 @@ interface SpacesContentProps {
   toggleMode: () => void
   handleAiSearch: (query?: string) => void
   aiLoading: boolean
-  clearSearch: () => void
   showAiSuggestion: boolean
   dismissAiSuggestion: () => void
   acceptAiSuggestion: () => void
@@ -510,7 +509,6 @@ function SpacesContent({
   toggleMode,
   handleAiSearch,
   aiLoading,
-  clearSearch,
   showAiSuggestion,
   dismissAiSuggestion,
   acceptAiSuggestion,
@@ -647,26 +645,7 @@ function SpacesContent({
             ✦ AI Search
           </button>
 
-          {/* Clear button */}
-          {hasActiveFilters && (
-            <button
-              onClick={clearSearch}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 20,
-                fontSize: 11,
-                cursor: 'pointer',
-                border: '1px solid var(--wc-border)',
-                background: 'none',
-                color: 'var(--wc-muted)',
-                fontFamily: 'inherit',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              Clear
-            </button>
-          )}
+
         </div>
 
         {/* Tab hint */}
