@@ -464,6 +464,69 @@ const AI_SUGGESTIONS = [
   'Serviced office near MRT under $3k/month',
 ]
 
+// ── AI thinking animation ───────────────────────────────────────────────────
+
+const AI_STATUS_PHASES = [
+  'Analyzing your query · 分析查询中',
+  'Matching spaces · 匹配空间中',
+  'Ranking results · 排列结果中',
+]
+
+function AiThinkingIndicator() {
+  const [phase, setPhase] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhase((p) => (p + 1) % AI_STATUS_PHASES.length)
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '56px 0',
+        gap: 16,
+      }}
+    >
+      {/* Pulsing dots */}
+      <div style={{ display: 'flex', gap: 6 }}>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: '#F5A623',
+              opacity: phase % 3 === i ? 1 : 0.3,
+              transition: 'opacity 0.4s ease',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Status text */}
+      <div style={{ fontSize: 13, fontWeight: 500, color: '#F5A623' }}>
+        ✦ Searching with AI · AI搜索中
+      </div>
+      <div
+        style={{
+          fontSize: 12,
+          color: 'var(--wc-muted)',
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        {AI_STATUS_PHASES[phase]}
+      </div>
+    </div>
+  )
+}
+
 // ── Spaces content ──────────────────────────────────────────────────────────
 
 interface SpacesContentProps {
@@ -620,7 +683,7 @@ function SpacesContent({
                   fontFamily: 'inherit',
                 }}
               >
-                {aiLoading ? '...' : 'Match'}
+                {aiLoading ? '✦ Searching…' : '✦ Match'}
               </button>
             )}
           </div>
@@ -671,7 +734,7 @@ function SpacesContent({
             }}
           >
             <span style={{ color: 'var(--wc-muted)' }}>
-              This looks like a natural language query.
+              This looks like a natural language query · 检测到自然语言查询
             </span>
             <div style={{ display: 'flex', gap: 8 }}>
               <button
@@ -783,12 +846,10 @@ function SpacesContent({
           <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
             {isAi ? 'AI Matches' : 'Available Spaces'}
           </h2>
-          {!loading && !error && (
+          {!loading && !error && !aiLoading && (
             <span style={{ fontSize: 12, color: 'var(--wc-muted)' }}>
               {isAi
-                ? aiLoading
-                  ? 'Searching...'
-                  : `${listings.length} AI match${listings.length !== 1 ? 'es' : ''}`
+                ? `${listings.length} AI match${listings.length !== 1 ? 'es' : ''}`
                 : `${listings.length} of ${totalCount} space${totalCount !== 1 ? 's' : ''}`}
             </span>
           )}
@@ -796,9 +857,11 @@ function SpacesContent({
 
         {loading && (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--wc-muted)', fontSize: 13 }}>
-            Loading listings...
+            Loading listings…
           </div>
         )}
+
+        {aiLoading && <AiThinkingIndicator />}
 
         {error && (
           <div style={{ textAlign: 'center', padding: '48px 0', color: '#EF4444', fontSize: 13 }}>
