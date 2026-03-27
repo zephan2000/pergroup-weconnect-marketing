@@ -14,8 +14,9 @@ interface SearchRequest {
 /**
  * POST /api/search
  *
- * Semantic search over weconnect.spaces.
- * Embeds the query, calls match_spaces RPC, applies optional filters.
+ * Hybrid search over weconnect.spaces.
+ * Combines vector cosine similarity with BM25-style full-text search,
+ * fused via Reciprocal Rank Fusion (RRF) in the hybrid_search_spaces RPC.
  */
 export async function POST(request: NextRequest) {
   const body = (await request.json()) as SearchRequest
@@ -42,7 +43,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    let results = data ?? []
+    let results = (data ?? []) as {
+      type: string; district: string; price_sgd_max: number | null
+      similarity: number; text_rank: number; combined_score: number
+    }[]
+
+    // Drop results with no meaningful signal from either search method.
+    // Keeps results that had a keyword match (text_rank > 0) OR strong semantic
+    // similarity (>= 0.3). Prevents pure-vector noise when the user queries
+    // specific keywords like "gym" or "CapitaLand".
+    results = results.filter(
+      (r) => r.text_rank > 0 || r.similarity >= 0.3
+    )
 
     // Post-filter if structured filters are provided
     if (body.filters?.type) {
