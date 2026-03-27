@@ -56,5 +56,31 @@ export const PlatformSettings: GlobalConfig = {
       type: 'richText',
       label: { en: 'Markets Placeholder Body', zh: '市场占位正文' },
     },
+    // ── Contact Modal (Space Detail) ──────────────────────────────────────
+    {
+      type: 'collapsible',
+      label: { en: 'Contact Modal (Space Detail)', zh: '联系弹窗（空间详情）' },
+      fields: [
+        { name: 'contactModalHeading', type: 'text', label: { en: 'Heading', zh: '标题' }, defaultValue: 'Connect with this partner · 联系合作方' },
+        { name: 'contactModalSuccessTitle', type: 'text', label: { en: 'Success Title', zh: '成功标题' }, defaultValue: 'Introduction Sent!' },
+        { name: 'contactModalSuccessMessage', type: 'text', label: { en: 'Success Message', zh: '成功消息' }, defaultValue: 'WeConnect will facilitate the connection within 1–2 business days. · 已发送，1-2个工作日内回复。' },
+        { name: 'detailLabelSize', type: 'text', label: { en: 'Size Label', zh: '面积标签' }, defaultValue: 'Size' },
+        { name: 'detailLabelZone', type: 'text', label: { en: 'Zone Label', zh: '区域标签' }, defaultValue: 'Zone' },
+        { name: 'detailLabelSetup', type: 'text', label: { en: 'Setup Label', zh: '设施标签' }, defaultValue: 'Setup' },
+        { name: 'detailLabelLease', type: 'text', label: { en: 'Lease Label', zh: '租期标签' }, defaultValue: 'Lease' },
+        { name: 'detailLabelPrice', type: 'text', label: { en: 'Price Label', zh: '价格标签' }, defaultValue: 'Price' },
+      ],
+    },
+    // ── Post Requirement Modal ────────────────────────────────────────────
+    {
+      type: 'collapsible',
+      label: { en: 'Requirement Modal', zh: '需求弹窗' },
+      fields: [
+        { name: 'requirementModalHeading', type: 'text', label: { en: 'Heading', zh: '标题' }, defaultValue: 'Post a Requirement · 发布需求' },
+        { name: 'requirementModalDescription', type: 'text', label: { en: 'Description', zh: '描述' }, defaultValue: 'Tell the WeConnect network what you need' },
+        { name: 'requirementModalSuccessTitle', type: 'text', label: { en: 'Success Title', zh: '成功标题' }, defaultValue: 'Requirement Posted!' },
+        { name: 'requirementModalSuccessMessage', type: 'text', label: { en: 'Success Message', zh: '成功消息' }, defaultValue: 'AI is matching with verified partners. You\'ll hear back within 24–48 hours. · AI正在匹配认证合作伙伴，24-48小时内回复。' },
+      ],
+    },
   ],
 }

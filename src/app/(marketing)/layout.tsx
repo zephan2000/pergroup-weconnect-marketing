@@ -45,14 +45,30 @@ async function fetchPayloadData() {
       payload.findGlobal({ slug: 'site-settings' }),
     ])
 
+    const d = DEFAULT_PLATFORM_SETTINGS
+    const p = platformDoc as unknown as Record<string, unknown>
     const platformSettings: PlatformSettingsData = {
-      aiMatchingHeadline: platformDoc.aiMatchingHeadline ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingHeadline,
-      aiMatchingDescription: platformDoc.aiMatchingDescription ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingDescription,
-      aiMatchingPlaceholder: platformDoc.aiMatchingPlaceholder ?? DEFAULT_PLATFORM_SETTINGS.aiMatchingPlaceholder,
-      fundingPlaceholderTitle: platformDoc.fundingPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderTitle,
-      fundingPlaceholderBody: platformDoc.fundingPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.fundingPlaceholderBody,
-      marketsPlaceholderTitle: platformDoc.marketsPlaceholderTitle ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderTitle,
-      marketsPlaceholderBody: platformDoc.marketsPlaceholderBody ?? DEFAULT_PLATFORM_SETTINGS.marketsPlaceholderBody,
+      aiMatchingHeadline: (p.aiMatchingHeadline as string) ?? d.aiMatchingHeadline,
+      aiMatchingDescription: (p.aiMatchingDescription as string) ?? d.aiMatchingDescription,
+      aiMatchingPlaceholder: (p.aiMatchingPlaceholder as string) ?? d.aiMatchingPlaceholder,
+      fundingPlaceholderTitle: (p.fundingPlaceholderTitle as string) ?? d.fundingPlaceholderTitle,
+      fundingPlaceholderBody: (p.fundingPlaceholderBody as PlatformSettingsData['fundingPlaceholderBody']) ?? d.fundingPlaceholderBody,
+      marketsPlaceholderTitle: (p.marketsPlaceholderTitle as string) ?? d.marketsPlaceholderTitle,
+      marketsPlaceholderBody: (p.marketsPlaceholderBody as PlatformSettingsData['marketsPlaceholderBody']) ?? d.marketsPlaceholderBody,
+      // Contact Modal
+      contactModalHeading: (p.contactModalHeading as string) ?? d.contactModalHeading,
+      contactModalSuccessTitle: (p.contactModalSuccessTitle as string) ?? d.contactModalSuccessTitle,
+      contactModalSuccessMessage: (p.contactModalSuccessMessage as string) ?? d.contactModalSuccessMessage,
+      detailLabelSize: (p.detailLabelSize as string) ?? d.detailLabelSize,
+      detailLabelZone: (p.detailLabelZone as string) ?? d.detailLabelZone,
+      detailLabelSetup: (p.detailLabelSetup as string) ?? d.detailLabelSetup,
+      detailLabelLease: (p.detailLabelLease as string) ?? d.detailLabelLease,
+      detailLabelPrice: (p.detailLabelPrice as string) ?? d.detailLabelPrice,
+      // Requirement Modal
+      requirementModalHeading: (p.requirementModalHeading as string) ?? d.requirementModalHeading,
+      requirementModalDescription: (p.requirementModalDescription as string) ?? d.requirementModalDescription,
+      requirementModalSuccessTitle: (p.requirementModalSuccessTitle as string) ?? d.requirementModalSuccessTitle,
+      requirementModalSuccessMessage: (p.requirementModalSuccessMessage as string) ?? d.requirementModalSuccessMessage,
     }
 
     // Build CSS variable overrides from SiteSettings color fields.

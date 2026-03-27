@@ -146,3 +146,18 @@ Severities: INFO | WARN | DEFERRED
   Set-Cookie headers within fetch redirect chains are not reliably processed by the browser.
   Returning a full HTML response forces a hard page load, guaranteeing Set-Cookie processing.
   The /api/auth/logout route handler remains as a fallback for direct navigation.
+
+[2026-03-27] INFO [src/app/api/contact/route.ts] — Public POST endpoint (no auth required).
+  Accepts contact form data and sends email to pergroup.sg@gmail.com via Resend.
+  No database writes. No Supabase client used. Server-only: Resend API key never exposed.
+  Rate limiting not implemented (v1 scope) — REVISIT before production to prevent abuse.
+
+[2026-03-27] INFO [src/app/api/requirement/route.ts] — Public POST endpoint (no auth required).
+  Accepts requirement form data and sends email to pergroup.sg@gmail.com via Resend.
+  No database writes. No Supabase client used. Server-only: Resend API key never exposed.
+  Rate limiting not implemented (v1 scope) — REVISIT before production to prevent abuse.
+
+[2026-03-27] INFO [.env.local] — Added RESEND_API_KEY (server-only, not NEXT_PUBLIC_).
+  Used by src/lib/weconnect/email.ts to initialise the Resend client.
+  Optional RESEND_FROM_EMAIL to override sending address (defaults to onboarding@resend.dev).
+  Neither variable is exposed to the browser.
