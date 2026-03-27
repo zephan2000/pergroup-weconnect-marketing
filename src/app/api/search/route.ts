@@ -48,13 +48,24 @@ export async function POST(request: NextRequest) {
       similarity: number; text_rank: number; combined_score: number
     }[]
 
-    // Drop results with no meaningful signal from either search method.
-    // Keeps results that had a keyword match (text_rank > 0) OR strong semantic
-    // similarity (>= 0.3). Prevents pure-vector noise when the user queries
-    // specific keywords like "gym" or "CapitaLand".
-    results = results.filter(
-      (r) => r.text_rank > 0 || r.similarity >= 0.3
-    )
+    // Quality filter: if ANY result has a positive text_rank (keyword match),
+    // only keep results that also have a keyword match. This prevents vector-only
+    // noise from diluting precise keyword queries like "gym" or "2 toilets".
+    // If NO result has a keyword match, fall back to vector similarity >= 0.3.
+    // If any result has a strong keyword match (text_rank >= 0.15), only keep
+    // results that also have keyword signal. For weak/no text matches, fall back
+    // to vector similarity. This prevents vector noise from diluting precise
+    // keyword queries like "gym" or "2 toilets" while keeping broad semantic
+    // queries like "near expo" working.
+    const bestTextRank = Math.max(...results.map((r) => r.text_rank), 0)
+    if (bestTextRank >= 0.15) {
+      // Strong keyword signal exists — keep results with meaningful text match
+      // (at least half the best match's score) OR high vector similarity
+      const textThreshold = bestTextRank * 0.5
+      results = results.filter((r) => r.text_rank >= textThreshold || r.similarity >= 0.45)
+    } else {
+      results = results.filter((r) => r.similarity >= 0.3)
+    }
 
     // Post-filter if structured filters are provided
     if (body.filters?.type) {
