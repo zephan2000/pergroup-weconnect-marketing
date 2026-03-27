@@ -75,7 +75,7 @@ export function useSpacesSearch(spaces: Space[]) {
 
     let result: SpaceWithSimilarity[] = spaces
 
-    // Text search (case-insensitive substring on name, address, district, operator)
+    // Text search (case-insensitive substring on structured/identity fields)
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase()
       result = result.filter(
@@ -83,7 +83,10 @@ export function useSpacesSearch(spaces: Space[]) {
           s.name.toLowerCase().includes(q) ||
           (s.address?.toLowerCase().includes(q)) ||
           (s.district?.toLowerCase().includes(q)) ||
-          (s.operator?.toLowerCase().includes(q))
+          (s.operator?.toLowerCase().includes(q)) ||
+          (s.amenities?.some((a) => a.toLowerCase().includes(q))) ||
+          (s.suitable_industries?.some((i) => i.toLowerCase().includes(q))) ||
+          (s.lease_type?.toLowerCase().includes(q))
       )
     }
 

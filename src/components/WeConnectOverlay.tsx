@@ -23,6 +23,8 @@ import type { Space } from '@/lib/supabase/schema'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import { useSpacesSearch, type SpaceWithSimilarity, type SearchMode, type Facets } from '@/hooks/useSpacesSearch'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import SpaceDetailModal from '@/components/weconnect/SpaceDetailModal'
+import PostRequirementModal from '@/components/weconnect/PostRequirementModal'
 
 // Inline CSS variables so the overlay is independent of globals.css load order.
 const WC_VARS: React.CSSProperties = {
@@ -44,6 +46,10 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
   const [spacesFetched, setSpacesFetched] = useState(false)
 
   const search = useSpacesSearch(spaces)
+
+  // Modal state
+  const [selectedSpace, setSelectedSpace] = useState<SpaceWithSimilarity | null>(null)
+  const [showRequirementModal, setShowRequirementModal] = useState(false)
 
   // Slide animation: defer setVisible(true) by one frame so the browser paints
   // the initial translateY(100%) state before the transition fires.
@@ -188,6 +194,7 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
               🔔
             </button>
             <button
+              onClick={() => setShowRequirementModal(true)}
               style={{
                 padding: '7px 14px',
                 borderRadius: 7,
@@ -387,6 +394,7 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
                   loading={spacesLoading}
                   error={spacesError}
                   settings={settings}
+                  onSelectSpace={setSelectedSpace}
                   searchMode={search.searchMode}
                   searchQuery={search.searchQuery}
                   setSearchQuery={search.setSearchQuery}
@@ -426,6 +434,22 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
           </main>
         </div>
       </div>
+
+      {/* Modals */}
+      {selectedSpace && (
+        <SpaceDetailModal
+          space={selectedSpace}
+          similarity={selectedSpace.similarity}
+          isOpen={!!selectedSpace}
+          onClose={() => setSelectedSpace(null)}
+          settings={settings}
+        />
+      )}
+      <PostRequirementModal
+        isOpen={showRequirementModal}
+        onClose={() => setShowRequirementModal(false)}
+        settings={settings}
+      />
     </div>
   )
 }
@@ -551,6 +575,7 @@ interface SpacesContentProps {
   showAiSuggestion: boolean
   dismissAiSuggestion: () => void
   acceptAiSuggestion: () => void
+  onSelectSpace: (space: SpaceWithSimilarity) => void
 }
 
 function SpacesContent({
@@ -575,6 +600,7 @@ function SpacesContent({
   showAiSuggestion,
   dismissAiSuggestion,
   acceptAiSuggestion,
+  onSelectSpace,
 }: SpacesContentProps) {
   const isAi = searchMode === 'ai'
 
@@ -894,6 +920,7 @@ function SpacesContent({
                 key={listing.id}
                 listing={listing}
                 similarity={isAi ? listing.similarity : undefined}
+                onSelect={() => onSelectSpace(listing)}
               />
             ))}
           </div>
@@ -905,7 +932,7 @@ function SpacesContent({
 
 // ── Space card ──────────────────────────────────────────────────────────────
 
-function SpaceCard({ listing, similarity }: { listing: SpaceWithSimilarity; similarity?: number }) {
+function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimilarity; similarity?: number; onSelect?: () => void }) {
   // Type-based colors for badges
   const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
     office:     { color: '#F5A623', bg: 'rgba(245,166,35,.12)' },
@@ -941,6 +968,7 @@ function SpaceCard({ listing, similarity }: { listing: SpaceWithSimilarity; simi
 
   return (
     <div
+      onClick={onSelect}
       style={{
         background: 'rgba(26, 29, 39, 0.7)',
         backdropFilter: 'blur(8px)',
@@ -1055,6 +1083,7 @@ function SpaceCard({ listing, similarity }: { listing: SpaceWithSimilarity; simi
           Save
         </button>
         <button
+          onClick={(e) => { e.stopPropagation(); onSelect?.() }}
           style={{
             flex: 1,
             padding: 7,
@@ -1068,7 +1097,7 @@ function SpaceCard({ listing, similarity }: { listing: SpaceWithSimilarity; simi
             fontFamily: 'inherit',
           }}
         >
-          Connect →
+          View & Connect →
         </button>
       </div>
     </div>
