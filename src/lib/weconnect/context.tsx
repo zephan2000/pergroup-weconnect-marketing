@@ -4,11 +4,13 @@
  * WeConnect overlay state — open/close and active tab.
  * Provided by WeConnectProvider in (marketing)/layout.tsx.
  * Consumed by WeConnectOverlay and any trigger button.
+ *
+ * Tabs: needs (default), alerts, profile.
  */
 
 import { createContext, useCallback, useContext, useState } from 'react'
 
-export type WeConnectTab = 'spaces' | 'funding' | 'markets'
+export type WeConnectTab = 'needs' | 'alerts' | 'profile'
 
 interface WeConnectContextValue {
   isOpen: boolean
@@ -22,9 +24,9 @@ const WeConnectContext = createContext<WeConnectContextValue | null>(null)
 
 export function WeConnectProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<WeConnectTab>('spaces')
+  const [activeTab, setActiveTab] = useState<WeConnectTab>('needs')
 
-  const open = useCallback((tab: WeConnectTab = 'spaces') => {
+  const open = useCallback((tab: WeConnectTab = 'needs') => {
     setActiveTab(tab)
     setIsOpen(true)
   }, [])

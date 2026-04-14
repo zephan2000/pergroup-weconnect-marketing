@@ -7,8 +7,22 @@
   schema.ts          → TypeScript types for all weconnect schema tables — source of truth
   
 /src/lib/weconnect/
-  listings.ts        → All queries against weconnect.listings table
-  
+  context.tsx        → WeConnectProvider + useWeConnect hook
+                       Tab type: 'needs' | 'alerts' | 'profile'
+                       State: isOpen, activeTab, open(), close(), setActiveTab()
+  listings.ts        → Queries against weconnect.spaces table (used in NeedsScreen)
+  email.ts           → Resend email functions (server-only):
+                       - sendContactEmail(data)   → space introduction request
+                       - sendRequirementEmail(data) → requirement submission
+                       - sendNeedEmail(data)       → need submission (new)
+                       - sendOfferingEmail(data)   → offering submission (new)
+  platform-settings.ts → PlatformSettingsData type + defaults for overlay copy
+  embed.ts           → Generate embeddings for search
+  openrouter.ts      → LLM API client
+  extract.ts         → Data extraction logic
+  firecrawl.ts       → Web crawling
+  ingest-db.ts       → Database ingestion
+
 /src/lib/auth/
   weconnect-auth.stub.ts  → Stubbed auth interface with TODO comments — DO NOT implement yet
 
@@ -20,6 +34,7 @@
 - schema.ts must be updated any time a Supabase table is created or altered
 - Server client (service role key) must NEVER be imported in client components
 - Firebase Analytics: only initialise if window is defined (SSR guard required)
+- Email functions follow a consistent pattern: validate → build HTML template → send via Resend
 
 ## Security Rules
 - server.ts uses the SERVICE_ROLE key — this must never be imported in any file 

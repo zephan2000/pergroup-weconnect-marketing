@@ -2,7 +2,7 @@
 
 ## Project Overview
 Marketing website for PER GROUP (global tech innovation consultancy)
-with WeConnect AI matchmaking platform embedded as a route group.
+with WeConnect proactive relationship intelligence platform embedded as a full-screen overlay.
 
 ## Stack — LOCKED. Do not deviate without explicit instruction.
 - Framework: Next.js 14 (App Router)
@@ -12,6 +12,16 @@ with WeConnect AI matchmaking platform embedded as a route group.
 - Deployment: Vercel
 - Package manager: npm (never suggest pnpm or yarn)
 - Styling: Tailwind CSS
+- Fonts: Sora (display), Inter (body), Noto Sans SC (Chinese)
+- Icons: lucide-react
+- Email: Resend (transactional emails)
+
+## Design System
+- **Light mode is the default.** Warm white background `hsl(40 33% 97%)`, dark text.
+- Dark mode is an additional feature toggled via `.dark` class on the root element.
+- Brand colour: warm amber `hsl(36 90% 47%)`
+- Glass morphism utilities: `.glass`, `.glass-dark`, `.glass-card`, `.glass-light` (defined in globals.css)
+- Bilingual: English + Simplified Chinese throughout all sections
 
 ## Database Schema Separation — CRITICAL
 Supabase has two logical schemas:
@@ -26,16 +36,27 @@ Never mix data between schemas. Never store WeConnect data in Payload collection
 - Leave a clearly commented placeholder in /src/lib/auth/weconnect-auth.stub.ts
 
 ## WeConnect v1 Scope
-- Spaces tab: FULLY implemented with live Supabase data
-- Funding tab: Placeholder page only ("We're still building this out")
-- Markets tab: Placeholder page only ("We're still building this out")
-- Do not build data models or UI for Funding or Markets beyond the placeholder
+The WeConnect overlay has three tabs: **Needs**, **Alerts**, **Profile**.
+- Needs tab: Contains "Post a Need" and "Share an Offering" cards, plus the Spaces browser
+  (fully implemented with live Supabase data, hybrid vector/BM25 search)
+- Alerts tab: Advisory alerts in preview/coming-soon state (hardcoded sample data for v1)
+- Profile tab: Stub user profile (no auth in v1)
+- Do not build data models or UI beyond what is specified for v1
 
-## Reference File
-The file at /reference/pergroup-website.html is the visual and structural
-reference for the entire site. All page sections, copy, colour tokens,
-and layout decisions should be derived from this file.
-Do not invent sections, copy, or components not present in the reference.
+## Email Infrastructure
+All form submissions route through Resend to PER GROUP's inbox. Pattern:
+1. Client form component → POST to API route
+2. API route validates → calls email function in `src/lib/weconnect/email.ts`
+3. Email function sends via Resend SDK
+
+Existing email functions: `sendContactEmail()`, `sendRequirementEmail()`
+New Need/Offering modals follow the same pattern.
+
+## Reference Files
+- `/per-group-connect-main/` — React/Vite reference app for the new visual aesthetic.
+  All page sections, component patterns, colour tokens, and glass morphism effects
+  should be derived from this reference.
+- `/per-group-connect-main/WeConnect_PRD.docx` — Product Requirements Document for WeConnect.
 
 ## Changelog
 Every time you make a meaningful change (new file, schema change, new component,
@@ -61,4 +82,3 @@ and state when it should be revisited.
 - Never assume Payload collection slugs — always check /src/payload/collections/
 - Never install a new package without stating why and confirming the package name exactly
 - If unsure about a Payload v3 API — say so, do not guess
-

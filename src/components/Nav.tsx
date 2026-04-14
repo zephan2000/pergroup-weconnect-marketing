@@ -1,112 +1,112 @@
+'use client'
+
 /**
- * Nav — fixed top navigation bar for all PER GROUP marketing routes.
- * Matches the <nav> in /reference/pergroup-website.html.
- * Server component — WeConnect buttons are client components (WeConnectTrigger).
+ * Nav — sticky glass navbar for all PER GROUP marketing routes.
+ * Adapted from per-group-connect-main reference.
+ * Client component — needs scroll detection and mobile menu state.
  */
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { Menu, X } from 'lucide-react'
 import WeConnectTrigger from '@/components/WeConnectTrigger'
 
+const navLinks = [
+  { label: 'Philosophy', href: '/#values' },
+  { label: 'About', href: '/#about' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Partners', href: '/#clients' },
+]
+
 export default function Nav() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <nav
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 500,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '22px 60px',
-        borderBottom: '1px solid rgba(255,255,255,0.03)',
-        background: 'rgba(5,6,10,0.85)',
-        backdropFilter: 'blur(20px)',
-      }}
+      className={`sticky top-0 z-[500] transition-all duration-300 ${
+        scrolled ? 'glass-light-scrolled' : 'glass-light'
+      }`}
     >
-      {/* Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-        <div
-          style={{
-            width: 34,
-            height: 34,
-            background: 'var(--amber)',
-            clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: 13,
-            color: 'var(--bg)',
-            flexShrink: 0,
-          }}
-        >
-          P
-        </div>
-        <span
-          style={{
-            fontSize: 15,
-            fontWeight: 800,
-            letterSpacing: 3,
-            textTransform: 'uppercase',
-            color: 'var(--text)',
-          }}
-        >
-          PER GROUP
-        </span>
-      </Link>
-
-      {/* Links */}
-      <div style={{ display: 'flex', gap: 38, alignItems: 'center' }}>
-        {[
-          { label: 'Philosophy', href: '/#values' },
-          { label: 'About', href: '/#about' },
-          { label: 'Services', href: '/#services' },
-          { label: 'Partners', href: '/#clients' },
-        ].map(({ label, href }) => (
-          <Link
-            key={label}
-            href={href}
-            style={{
-              textDecoration: 'none',
-              color: 'var(--muted)',
-              fontSize: 13,
-              letterSpacing: 1,
-            }}
-            className="nav-link"
+      <div className="max-w-[1400px] mx-auto flex items-center justify-between h-16 px-4 md:px-8">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 no-underline">
+          <div className="w-8 h-8 bg-amber flex items-center justify-center font-extrabold text-xs text-white rounded-lg flex-shrink-0"
+            style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
           >
-            {label}
-          </Link>
-        ))}
+            P
+          </div>
+          <span className="text-sm font-extrabold tracking-[3px] uppercase text-pg-text font-sora">
+            PER GROUP
+          </span>
+        </Link>
+
+        {/* Desktop nav links */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className="text-muted text-sm no-underline hover:text-amber transition-colors"
+            >
+              {label}
+            </Link>
+          ))}
+          <WeConnectTrigger
+            tab="needs"
+            className="text-amber text-sm font-semibold hover:text-amber/80 transition-colors bg-transparent border-none cursor-pointer font-sora"
+          >
+            WeConnect ✦
+          </WeConnectTrigger>
+        </div>
+
+        {/* Desktop CTA */}
         <WeConnectTrigger
-          tab="spaces"
-          style={{
-            color: 'var(--amber)',
-            fontSize: 13,
-            letterSpacing: 1,
-            fontFamily: 'inherit',
-          }}
+          tab="needs"
+          className="hidden md:inline-flex items-center gap-2 bg-amber text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
         >
-          WeConnect ✦
+          WECONNECT PLATFORM →
         </WeConnectTrigger>
+
+        {/* Mobile hamburger */}
+        <button
+          className="md:hidden text-pg-text bg-transparent border-none cursor-pointer"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
-      {/* CTA */}
-      <WeConnectTrigger
-        tab="spaces"
-        style={{
-          border: '1px solid rgba(245,168,42,0.4)',
-          color: 'var(--amber)',
-          padding: '9px 22px',
-          fontSize: 12,
-          letterSpacing: 2,
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          fontFamily: 'inherit',
-        }}
-      >
-        WeConnect Platform →
-      </WeConnectTrigger>
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden absolute inset-x-0 top-16 bg-bg border-b border-line shadow-lg z-50 animate-fade-in">
+          <div className="flex flex-col py-2">
+            {navLinks.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                onClick={() => setMobileOpen(false)}
+                className="text-pg-text/80 text-base font-sora font-semibold px-6 py-3 no-underline hover:bg-faint hover:text-amber transition-colors border-b border-line/50 last:border-b-0"
+              >
+                {label}
+              </Link>
+            ))}
+            <div className="px-4 py-3">
+              <WeConnectTrigger
+                tab="needs"
+                className="w-full bg-amber text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
+              >
+                WECONNECT PLATFORM →
+              </WeConnectTrigger>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

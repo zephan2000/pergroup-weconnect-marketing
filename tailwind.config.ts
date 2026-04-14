@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,28 +9,33 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Colour tokens derived from /reference/pergroup-website.html :root vars
       colors: {
-        // PER GROUP marketing site
+        // ── PER GROUP marketing site (light mode default) ──
         amber: {
-          DEFAULT: '#F5A82A',
-          glow: 'rgba(245,168,42,0.15)',
+          DEFAULT: 'hsl(36 90% 47%)',       // warm golden orange
+          glow: 'hsla(36, 90%, 47%, 0.15)',
         },
         green: {
-          DEFAULT: '#39E07A',
+          DEFAULT: 'hsl(140 35% 44%)',      // match green
         },
         bg: {
-          DEFAULT: '#05060A',
-          2: '#080B12',
+          DEFAULT: 'hsl(40 33% 97%)',       // warm white
+          2: 'hsl(33 100% 95%)',            // pale cream (card surfaces)
         },
         line: {
-          DEFAULT: 'rgba(255,255,255,0.06)',
-          2: 'rgba(255,255,255,0.03)',
+          DEFAULT: 'hsla(20, 10%, 10%, 0.08)',
+          2: 'hsla(20, 10%, 10%, 0.04)',
         },
-        'pg-text': '#DDE0E8',
-        muted: 'rgba(221,224,232,0.4)',
-        faint: 'rgba(221,224,232,0.12)',
-        // WeConnect platform
+        'pg-text': 'hsl(20 10% 10%)',       // near-black warm text
+        muted: 'hsl(25 10% 49%)',           // warm grey
+        faint: 'hsla(20, 10%, 10%, 0.06)',
+
+        // ── Accent colours ──
+        'deep-orange': 'hsl(20 75% 48%)',
+        'alert-red': 'hsl(7 72% 48%)',
+        'intro-blue': 'hsl(210 40% 50%)',
+
+        // ── WeConnect platform (dark overlay) ──
         'wc-amber': {
           DEFAULT: '#F5A623',
           2: '#D4880A',
@@ -45,10 +51,31 @@ const config: Config = {
         'wc-muted': 'rgba(232,234,240,0.45)',
       },
       fontFamily: {
-        syne: ['var(--font-syne)', 'sans-serif'],
-        'syne-mono': ['var(--font-syne-mono)', 'monospace'],
-        'noto-serif-sc': ['var(--font-noto-serif-sc)', 'serif'],
+        sora: ['var(--font-sora)', 'sans-serif'],
+        'noto-sans-sc': ['var(--font-noto-sans-sc)', 'sans-serif'],
         inter: ['var(--font-inter)', 'sans-serif'],
+      },
+      keyframes: {
+        'slide-up': {
+          from: { transform: 'translateY(20px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'dot-pulse': {
+          '0%, 100%': { opacity: '0.5', transform: 'scale(0.8)' },
+          '50%': { opacity: '1', transform: 'scale(1.2)' },
+        },
+      },
+      animation: {
+        'slide-up': 'slide-up 0.3s ease-out',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'dot-pulse': 'dot-pulse 2s ease-in-out infinite',
+      },
+      borderRadius: {
+        DEFAULT: '0.75rem',
       },
     },
   },

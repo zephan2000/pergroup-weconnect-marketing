@@ -1,7 +1,7 @@
 /**
- * StatsBlock — standalone stat card row.
- * Used when stats need to appear as their own page section.
- * Matches .stat-card in /reference/pergroup-website.html.
+ * StatsBlock — stats bar with warm gradient background.
+ * Adapted from per-group-connect-main StatsBar.
+ * Server component.
  */
 
 type StatItem = {
@@ -16,61 +16,19 @@ type StatsBlockProps = {
 
 export default function StatsBlock({ stats = [] }: StatsBlockProps) {
   return (
-    <section
-      style={{
-        position: 'relative',
-        zIndex: 10,
-        background: 'var(--bg)',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 1400,
-          margin: '0 auto',
-          padding: '80px 80px',
-          display: 'grid',
-          gridTemplateColumns: `repeat(${Math.max(stats.length, 1)}, 1fr)`,
-          border: '1px solid var(--line)',
-        }}
-      >
-        {stats.map((stat, i) => (
-          <div
-            key={stat.label}
-            style={{
-              padding: '32px 36px',
-              borderRight: i < stats.length - 1 ? '1px solid var(--line)' : 'none',
-            }}
-          >
-            <div
-              style={{
-                fontSize: 48,
-                fontWeight: 800,
-                lineHeight: 1,
-                background: 'linear-gradient(135deg, var(--amber), #FFD080)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
+    <section className="bg-gradient-to-r from-amber/5 to-deep-orange/5 py-12 border-y border-line">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        {stats.map((stat) => (
+          <div key={stat.label}>
+            <div className="font-sora font-extrabold text-3xl md:text-4xl text-amber">
               {stat.number}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--muted)', letterSpacing: 1, marginTop: 6 }}>
-              {stat.label}
-              {stat.chineseLabel && (
-                <span
-                  style={{
-                    display: 'block',
-                    fontFamily: 'var(--font-noto-serif-sc), serif',
-                    fontSize: 10,
-                    color: 'var(--faint)',
-                    marginTop: 2,
-                  }}
-                >
-                  {stat.chineseLabel}
-                </span>
-              )}
-            </div>
+            <div className="text-pg-text text-sm font-semibold mt-1">{stat.label}</div>
+            {stat.chineseLabel && (
+              <div className="font-noto-sans-sc text-muted text-xs mt-0.5">
+                {stat.chineseLabel}
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -3,24 +3,28 @@
 @tailwind utilities;
 
 /*
-  CSS custom properties mirroring /reference/pergroup-website.html :root vars.
-  These are used alongside Tailwind tokens for inline-style interop and
-  any component that can't use Tailwind classes.
+  CSS custom properties — light mode default, warm amber palette.
+  Dark mode overrides via .dark class.
 */
 :root {
-  /* PER GROUP marketing palette */
-  --amber: #F5A82A;
-  --amber-glow: rgba(245, 168, 42, 0.15);
-  --green: #39E07A;
-  --bg: #05060A;
-  --bg2: #080B12;
-  --line: rgba(255, 255, 255, 0.06);
-  --line2: rgba(255, 255, 255, 0.03);
-  --text: #DDE0E8;
-  --muted: rgba(221, 224, 232, 0.4);
-  --faint: rgba(221, 224, 232, 0.12);
+  /* PER GROUP marketing palette — light mode */
+  --amber: hsl(36 90% 47%);
+  --amber-glow: hsla(36, 90%, 47%, 0.15);
+  --green: hsl(140 35% 44%);
+  --bg: hsl(40 33% 97%);
+  --bg2: hsl(33 100% 95%);
+  --line: hsla(20, 10%, 10%, 0.08);
+  --line2: hsla(20, 10%, 10%, 0.04);
+  --text: hsl(20 10% 10%);
+  --muted: hsl(25 10% 49%);
+  --faint: hsla(20, 10%, 10%, 0.06);
 
-  /* WeConnect platform palette */
+  /* Accent colours */
+  --deep-orange: hsl(20 75% 48%);
+  --alert-red: hsl(7 72% 48%);
+  --intro-blue: hsl(210 40% 50%);
+
+  /* WeConnect platform palette (dark overlay) */
   --wc-amber: #F5A623;
   --wc-amber2: #D4880A;
   --wc-green: #22C55E;
@@ -30,6 +34,17 @@
   --wc-border: rgba(255, 255, 255, 0.08);
   --wc-text: #E8EAF0;
   --wc-muted: rgba(232, 234, 240, 0.45);
+}
+
+/* ── Dark mode overrides ──────────────────────────────────────────────── */
+.dark {
+  --bg: hsl(20 10% 7%);
+  --bg2: hsl(20 8% 10%);
+  --line: rgba(255, 255, 255, 0.06);
+  --line2: rgba(255, 255, 255, 0.03);
+  --text: hsl(40 33% 93%);
+  --muted: hsla(40, 20%, 90%, 0.45);
+  --faint: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -47,13 +62,74 @@ html {
   so they only apply to marketing routes and do not bleed into Payload's /admin.
 */
 
-/* ─── Marketing keyframe animations ────────────────────────────────────────
+/* ─── Glass morphism utilities ─────────────────────────────────────────
+   Used on cards, navbars, and panels throughout the marketing site.
+──────────────────────────────────────────────────────────────────────── */
+.glass {
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  background: hsla(40, 33%, 97%, 0.7);
+  border: 1px solid hsla(20, 10%, 10%, 0.06);
+}
+
+.dark .glass {
+  background: rgba(10, 9, 8, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  background: rgba(10, 9, 8, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-light {
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  background: hsla(40, 33%, 97%, 0.85);
+  border-bottom: 1px solid hsla(20, 10%, 10%, 0.06);
+}
+
+.dark .glass-light {
+  background: rgba(5, 6, 10, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.glass-light-scrolled {
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  background: hsla(40, 33%, 97%, 0.92);
+  border-bottom: 1px solid hsla(20, 10%, 10%, 0.08);
+  box-shadow: 0 1px 12px hsla(20, 10%, 10%, 0.06);
+}
+
+.dark .glass-light-scrolled {
+  background: rgba(5, 6, 10, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: hsla(33, 100%, 95%, 0.6);
+  border-radius: 0.75rem;
+  border: 1px solid hsla(20, 10%, 10%, 0.06);
+}
+
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Marketing keyframe animations ────────────────────────────────────
    Loaded ONLY via (marketing)/layout.tsx — never applied to /admin routes.
-─────────────────────────────────────────────────────────────────────────── */
+─────────────────────────────────────────────────────────────────────── */
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245, 168, 42, .4); }
-  50%       { opacity: .7; box-shadow: 0 0 0 6px rgba(245, 168, 42, 0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 hsla(36, 90%, 47%, 0.4); }
+  50%       { opacity: .7; box-shadow: 0 0 0 6px hsla(36, 90%, 47%, 0); }
 }
 
 @keyframes shimmer {
@@ -80,4 +156,19 @@ html {
 @keyframes gdotGlow {
   from { opacity: .5; transform: translate(-50%, -50%) scale(.8); }
   to   { opacity: 1;  transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.8); }
+  50%      { opacity: 1;   transform: scale(1.2); }
 }

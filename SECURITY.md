@@ -161,3 +161,11 @@ Severities: INFO | WARN | DEFERRED
   Used by src/lib/weconnect/email.ts to initialise the Resend client.
   Optional RESEND_FROM_EMAIL to override sending address (defaults to onboarding@resend.dev).
   Neither variable is exposed to the browser.
+
+[2026-04-14] INFO [src/app/api/need/route.ts] — Public POST endpoint for need submissions.
+  No auth required (v1 scope). Validates required fields, sends email via Resend.
+  No Supabase access — email-only. Same pattern as /api/requirement.
+
+[2026-04-14] INFO [src/app/api/offering/route.ts] — Public POST endpoint for supplier offering submissions.
+  No auth required (v1 scope). Validates required fields, sends email via Resend.
+  No Supabase access — email-only. Same pattern as /api/requirement.

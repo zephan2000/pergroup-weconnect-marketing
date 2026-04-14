@@ -1,8 +1,10 @@
 /**
- * ServicesBlock — "End-to-End Global Services" 3-column grid.
- * Matches #services in /reference/pergroup-website.html.
+ * ServicesBlock — "End-to-End Global Services" grid with Lucide icons.
+ * Adapted from per-group-connect-main ServicesSection with glass cards.
  * Server component.
  */
+import { Search, MapPin, Users, Shield, Leaf, Rocket } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type ServiceItem = {
   number: string
@@ -19,6 +21,17 @@ type ServicesBlockProps = {
   services?: ServiceItem[]
 }
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  search: Search,
+  mappin: MapPin,
+  users: Users,
+  shield: Shield,
+  leaf: Leaf,
+  rocket: Rocket,
+}
+
+const DEFAULT_ICONS: LucideIcon[] = [Search, MapPin, Users, Shield, Leaf, Rocket]
+
 export default function ServicesBlock({
   sectionLabel = 'What We Do · 服务内容',
   headline = 'End-to-End',
@@ -26,122 +39,42 @@ export default function ServicesBlock({
   services = [],
 }: ServicesBlockProps) {
   return (
-    <section
-      id="services"
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',
-        background: 'var(--bg2)',
-      }}
-    >
-      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '120px 80px' }}>
-        {/* Heading */}
-        <div style={{ marginBottom: 56 }}>
-          <div
-            style={{
-              fontFamily: 'var(--font-syne-mono), monospace',
-              fontSize: 11,
-              letterSpacing: 3,
-              color: 'var(--amber)',
-              textTransform: 'uppercase',
-              marginBottom: 20,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <span style={{ width: 30, height: 1, background: 'var(--amber)', display: 'inline-block' }} />
+    <section id="services" className="bg-bg py-20 md:py-28">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+        <div className="text-center mb-14">
+          <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
             {sectionLabel}
-          </div>
-          <h2
-            style={{
-              fontSize: 'clamp(34px, 4.5vw, 60px)',
-              fontWeight: 800,
-              letterSpacing: -2,
-              color: 'var(--text)',
-            }}
-          >
-            {headline}
-            <br />
-            <span style={{ color: 'var(--amber)' }}>{headlineAccent}</span>
+          </p>
+          <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-pg-text">
+            {headline} <span className="text-amber">{headlineAccent}</span>
           </h2>
+          <p className="font-noto-sans-sc text-muted text-lg mt-2">全方位全球化服务</p>
         </div>
 
-        {/* 3-column service grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            border: '1px solid var(--line)',
-          }}
-        >
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((svc, i) => {
-            const col = i % 3
-            const row = Math.floor(i / 3)
-            const totalRows = Math.ceil(services.length / 3)
-            const isLastRow = row === totalRows - 1
-            const isLastCol = col === 2
+            const IconComponent = svc.icon
+              ? ICON_MAP[svc.icon.toLowerCase()] || DEFAULT_ICONS[i % DEFAULT_ICONS.length]
+              : DEFAULT_ICONS[i % DEFAULT_ICONS.length]
 
             return (
-              <div
-                key={svc.number}
-                style={{
-                  padding: '44px 38px',
-                  borderRight: isLastCol ? 'none' : '1px solid var(--line)',
-                  borderBottom: isLastRow ? 'none' : '1px solid var(--line)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: 'var(--font-syne-mono), monospace',
-                    fontSize: 10,
-                    color: 'var(--faint)',
-                    marginBottom: 18,
-                    letterSpacing: 2,
-                  }}
-                >
-                  {svc.number}
-                </div>
-                {svc.icon && (
-                  <div style={{ fontSize: 26, marginBottom: 18 }}>{svc.icon}</div>
-                )}
-                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 5, color: 'var(--text)' }}>
-                  {svc.title}
-                </div>
-                {svc.chineseTitle && (
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-noto-serif-sc), serif',
-                      fontSize: 11,
-                      color: 'var(--amber)',
-                      marginBottom: 12,
-                      letterSpacing: 2,
-                    }}
-                  >
-                    {svc.chineseTitle}
+              <div key={svc.number} className="glass-card rounded-xl p-6 hover:shadow-md transition-all group">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-amber/15 flex items-center justify-center flex-shrink-0 group-hover:bg-amber/25 transition-colors">
+                    <IconComponent className="w-5 h-5 text-amber" />
                   </div>
-                )}
-                {svc.description && (
-                  <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.8 }}>
-                    {svc.description}
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-amber/40 font-sora font-extrabold text-xs">{svc.number}</span>
+                      <h3 className="font-sora font-bold text-base text-pg-text">{svc.title}</h3>
+                    </div>
+                    {svc.chineseTitle && (
+                      <p className="font-noto-sans-sc text-muted text-sm mt-0.5">{svc.chineseTitle}</p>
+                    )}
+                    {svc.description && (
+                      <p className="text-sm text-muted mt-2 leading-relaxed">{svc.description}</p>
+                    )}
                   </div>
-                )}
-                {/* Arrow */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 28,
-                    right: 28,
-                    fontSize: 16,
-                    color: 'var(--faint)',
-                  }}
-                >
-                  ↗
                 </div>
               </div>
             )

@@ -150,3 +150,34 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-03-27] ADD [src/components/weconnect/SpaceDetailModal.tsx] — Space detail view + contact form. Shows type badge, name, location, AI match bar, detail rows (Size/Zone/Setup/Lease/Price from schema), amenity tags, contact form. State machine: idle → loading → success | error.
 [2026-03-27] ADD [src/components/weconnect/PostRequirementModal.tsx] — Requirement submission form. Type dropdown (5 options), company, location, budget, description, email. Same state machine. Bilingual placeholders.
 [2026-03-27] MODIFY [src/components/WeConnectOverlay.tsx] — Wired modal state (selectedSpace, showRequirementModal). "Connect" button on SpaceCard opens SpaceDetailModal. "+ Post Requirement" topbar button opens PostRequirementModal. Both modals rendered at end of JSX tree.
+
+[2026-04-14] MODIFY [src/app/fonts.ts] — Font swap: Syne→Sora, Noto Serif SC→Noto Sans SC, dropped Syne Mono
+[2026-04-14] MODIFY [tailwind.config.ts] — Updated color palette to warm amber light-mode default, added dark mode support via 'class', added slide-up/fade-in/dot-pulse animations, new font families (sora, noto-sans-sc)
+[2026-04-14] MODIFY [src/app/globals.css] — Light-mode default CSS variables, .dark overrides, glass morphism utilities (.glass, .glass-dark, .glass-card, .glass-light, .glass-light-scrolled), new keyframes
+[2026-04-14] MODIFY [src/app/(marketing)/layout.tsx] — font-syne→font-sora class
+[2026-04-14] CONFIG [package.json] — Added lucide-react dependency for icons
+[2026-04-14] ADD [src/components/DotMotif.tsx] — Decorative SVG sunburst dot motif component
+[2026-04-14] MODIFY [src/components/Nav.tsx] — Converted to client component with glass navbar, scroll detection, mobile hamburger menu, Tailwind classes
+[2026-04-14] MODIFY [src/components/blocks/HeroBlock.tsx] — Restyled with DotMotif, glass stat cards, Tailwind classes, light-mode default
+[2026-04-14] MODIFY [src/components/blocks/ValuesBlock.tsx] — Glass cards for Four Harmonies + Five Unities, hover effects, Tailwind classes
+[2026-04-14] MODIFY [src/components/blocks/AboutBlock.tsx] — Timeline with gradient lines, brand pillars as glass cards, DotMotif
+[2026-04-14] MODIFY [src/components/blocks/ServicesBlock.tsx] — 6-service grid with Lucide icons, glass card hover effects
+[2026-04-14] MODIFY [src/components/blocks/ClientsBlock.tsx] — Partner types + regional presence grids with Lucide icons, glass cards
+[2026-04-14] MODIFY [src/components/blocks/StatsBlock.tsx] — Stats bar with warm gradient background
+[2026-04-14] MODIFY [src/components/blocks/PlatformTeaserBlock.tsx] — WeConnect teaser CTA with DotMotif, WeConnectTrigger
+[2026-04-14] MODIFY [src/components/Footer.tsx] — Dark bg footer with bilingual content, Tailwind classes
+[2026-04-14] MODIFY [src/components/HeroCTAButtons.tsx] — Converted from inline styles to Tailwind classes
+[2026-04-14] MODIFY [src/lib/weconnect/context.tsx] — WeConnectTab changed from 'spaces'|'funding'|'markets' to 'needs'|'alerts'|'profile'
+[2026-04-14] MODIFY [src/components/WeConnectTrigger.tsx] — Default tab changed to 'needs'
+[2026-04-14] MODIFY [src/components/WeConnectOverlay.tsx] — Decomposed into thin shell with sidebar (Lucide icons), mobile bottom nav, composing NeedsScreen/AlertsScreen/ProfileScreen
+[2026-04-14] ADD [src/components/weconnect/SpacesContent.tsx] — Extracted Spaces browser (search bar, facets, cards) from WeConnectOverlay
+[2026-04-14] ADD [src/components/weconnect/NeedsScreen.tsx] — Post a Need + Share an Offering cards + embedded SpacesContent
+[2026-04-14] ADD [src/components/weconnect/AlertsScreen.tsx] — Advisory alerts with severity levels (preview/coming-soon)
+[2026-04-14] ADD [src/components/weconnect/ProfileScreen.tsx] — Stub user profile, company info, settings
+[2026-04-14] MODIFY [src/lib/weconnect/email.ts] — Added sendNeedEmail() + sendOfferingEmail() with HTML templates
+[2026-04-14] ADD [src/app/api/need/route.ts] — POST handler for need submissions via Resend
+[2026-04-14] ADD [src/app/api/offering/route.ts] — POST handler for offering submissions via Resend
+[2026-04-14] MODIFY [CLAUDE.md] — Updated for new design system, tab structure, email patterns, reference files
+[2026-04-14] MODIFY [src/app/CLAUDE.md] — Updated route docs, WeConnect overlay tab names, new API routes
+[2026-04-14] MODIFY [src/payload/CLAUDE.md] — Updated PlatformSettings docs
+[2026-04-14] MODIFY [src/lib/CLAUDE.md] — Updated context.tsx tab types, email.ts docs

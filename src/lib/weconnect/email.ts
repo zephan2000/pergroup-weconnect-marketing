@@ -62,6 +62,45 @@ export async function sendRequirementEmail(data: RequirementPayload): Promise<vo
   })
 }
 
+// ── Need / Offering types ───────────────────────────────────────────────────
+
+export interface NeedPayload {
+  category: string
+  description: string
+  urgency: string
+  budget?: string
+  contactEmail: string
+  companyName?: string
+}
+
+export interface OfferingPayload {
+  category: string
+  capability: string
+  idealClient?: string
+  availability: string
+  trackRecord?: string
+  contactEmail: string
+  companyName?: string
+}
+
+export async function sendNeedEmail(data: NeedPayload): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: TO_EMAIL,
+    subject: `[WeConnect] New Need: ${data.category}${data.companyName ? ` — ${data.companyName}` : ''}`,
+    html: buildNeedHtml(data),
+  })
+}
+
+export async function sendOfferingEmail(data: OfferingPayload): Promise<void> {
+  await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: TO_EMAIL,
+    subject: `[WeConnect] Supplier Offering: ${data.category}${data.companyName ? ` — ${data.companyName}` : ''}`,
+    html: buildOfferingHtml(data),
+  })
+}
+
 // ── HTML templates ───────────────────────────────────────────────────────────
 
 function buildContactHtml(d: ContactPayload): string {
@@ -95,6 +134,45 @@ function buildRequirementHtml(d: RequirementPayload): string {
         ${row('Target Location', d.targetLocation)}
         ${d.budget ? row('Budget', d.budget) : ''}
         ${row('Description', d.description)}
+        ${row('Contact Email', d.contactEmail)}
+      </table>
+      <p style="font-size:11px;color:rgba(232,234,240,0.3);margin-top:32px;">Sent via WeConnect by PER GROUP</p>
+    </div>
+  `
+}
+
+function buildNeedHtml(d: NeedPayload): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0F1117;color:#E8EAF0;padding:32px;border-radius:12px;">
+      <div style="border-bottom:2px solid #F5A623;padding-bottom:16px;margin-bottom:24px;">
+        <h1 style="font-size:20px;margin:0;color:#F5A623;">WeConnect — New Need</h1>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        ${row('Category', d.category)}
+        ${d.companyName ? row('Company', d.companyName) : ''}
+        ${row('Description', d.description)}
+        ${row('Urgency', d.urgency)}
+        ${d.budget ? row('Budget', d.budget) : ''}
+        ${row('Contact Email', d.contactEmail)}
+      </table>
+      <p style="font-size:11px;color:rgba(232,234,240,0.3);margin-top:32px;">Sent via WeConnect by PER GROUP</p>
+    </div>
+  `
+}
+
+function buildOfferingHtml(d: OfferingPayload): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0F1117;color:#E8EAF0;padding:32px;border-radius:12px;">
+      <div style="border-bottom:2px solid #22C55E;padding-bottom:16px;margin-bottom:24px;">
+        <h1 style="font-size:20px;margin:0;color:#22C55E;">WeConnect — Supplier Offering</h1>
+      </div>
+      <table style="width:100%;border-collapse:collapse;">
+        ${row('Category', d.category)}
+        ${d.companyName ? row('Company', d.companyName) : ''}
+        ${row('Capability', d.capability)}
+        ${d.idealClient ? row('Ideal Client', d.idealClient) : ''}
+        ${row('Availability', d.availability)}
+        ${d.trackRecord ? row('Track Record', d.trackRecord) : ''}
         ${row('Contact Email', d.contactEmail)}
       </table>
       <p style="font-size:11px;color:rgba(232,234,240,0.3);margin-top:32px;">Sent via WeConnect by PER GROUP</p>

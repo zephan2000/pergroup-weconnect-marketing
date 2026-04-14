@@ -1,9 +1,10 @@
 /**
- * AboutBlock — "A Network Built on Genuine Trust" section.
- * Matches #about in /reference/pergroup-website.html.
+ * AboutBlock — "15 Years Bridging East & West" section with timeline.
+ * Adapted from per-group-connect-main AboutSection with glass cards.
  * Server component.
  */
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import DotMotif from '@/components/DotMotif'
 
 type Advantage = { icon?: string; title: string; description?: string }
 type GlobeStat = { number?: string; label?: string }
@@ -17,106 +18,54 @@ type AboutBlockProps = {
   globeStat?: GlobeStat
 }
 
-// Globe dot positions matching the reference
-const GLOBE_DOTS = [
-  { top: '30%', left: '48%', delay: '0s', green: false },
-  { top: '42%', left: '72%', delay: '.5s', green: true },
-  { top: '55%', left: '30%', delay: '1s', green: false },
-  { top: '25%', left: '60%', delay: '1.5s', green: true },
-  { top: '68%', left: '55%', delay: '.3s', green: false },
-  { top: '38%', left: '20%', delay: '.8s', green: true },
-  { top: '60%', left: '75%', delay: '1.2s', green: false },
-  { top: '20%', left: '35%', delay: '.6s', green: false },
+const milestones = [
+  { year: '2009', en: 'Founded in Singapore', cn: '新加坡成立' },
+  { year: '2015', en: 'Expanded to 20+ countries', cn: '拓展至20+国家' },
+  { year: '2019', en: 'E-Harbor ecosystem launched', cn: 'E-Harbor生态平台启动' },
+  { year: '2024', en: 'WeConnect AI platform', cn: 'WeConnect智能平台上线' },
 ]
 
 export default function AboutBlock({
-  sectionLabel = 'Who We Are · 我们是谁',
-  headline = 'A Network Built on',
-  headlineAccent = 'Genuine Trust',
+  sectionLabel = 'About Us · 关于我们',
+  headline = '15 Years Bridging',
+  headlineAccent = 'East & West',
   body,
   advantages = [],
-  globeStat,
 }: AboutBlockProps) {
   return (
-    <section
-      id="about"
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',
-        background: 'var(--bg)',
-      }}
-    >
-      <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', padding: '120px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+    <section id="about" className="py-20 md:py-28 relative overflow-hidden">
+      {/* Subtle warm gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg-2/30 to-bg" />
 
-          {/* Left — text */}
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          {/* Left — Story */}
           <div>
-            <div
-              style={{
-                fontFamily: 'var(--font-syne-mono), monospace',
-                fontSize: 11,
-                letterSpacing: 3,
-                color: 'var(--amber)',
-                textTransform: 'uppercase',
-                marginBottom: 20,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-              }}
-            >
-              <span style={{ width: 30, height: 1, background: 'var(--amber)', display: 'inline-block' }} />
+            <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
               {sectionLabel}
-            </div>
-
-            <h2
-              style={{
-                fontSize: 'clamp(34px, 4.5vw, 60px)',
-                fontWeight: 800,
-                letterSpacing: -2,
-                lineHeight: 1,
-                marginBottom: 28,
-                color: 'var(--text)',
-              }}
-            >
-              {headline}
-              <br />
-              <em style={{ fontStyle: 'normal', color: 'var(--amber)' }}>{headlineAccent}</em>
+            </p>
+            <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-pg-text leading-tight">
+              {headline} <br />
+              <span className="text-amber">{headlineAccent}</span>
             </h2>
+            <p className="font-noto-sans-sc text-muted text-base mt-2">连接东西方的桥梁</p>
 
             {body && (
-              <div style={{ fontSize: 14, lineHeight: 1.9, color: 'var(--muted)', marginBottom: 28 }}>
+              <div className="mt-8 text-muted text-sm leading-relaxed space-y-4">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <RichText data={body as any} />
               </div>
             )}
 
-            {/* Advantages 2×2 grid */}
+            {/* Brand pillars / Advantages */}
             {advantages.length > 0 && (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 1,
-                  marginTop: 44,
-                }}
-              >
+              <div className="flex flex-wrap gap-3 mt-8">
                 {advantages.map((adv) => (
-                  <div
-                    key={adv.title}
-                    style={{
-                      padding: '22px 24px',
-                      border: '1px solid var(--line)',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    {adv.icon && <div style={{ fontSize: 18, marginBottom: 9 }}>{adv.icon}</div>}
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3, color: 'var(--text)' }}>{adv.title}</div>
+                  <div key={adv.title} className="glass-card rounded-lg px-4 py-2">
+                    {adv.icon && <span className="mr-2">{adv.icon}</span>}
+                    <span className="font-noto-sans-sc text-amber text-sm font-bold">{adv.title}</span>
                     {adv.description && (
-                      <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5 }}>{adv.description}</div>
+                      <span className="text-muted text-xs ml-2">{adv.description}</span>
                     )}
                   </div>
                 ))}
@@ -124,93 +73,27 @@ export default function AboutBlock({
             )}
           </div>
 
-          {/* Right — globe visualisation */}
-          <div style={{ position: 'relative', width: '100%', paddingBottom: '100%' }}>
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(circle at 35% 35%, rgba(245,168,42,.08), transparent 60%), radial-gradient(circle at 70% 70%, rgba(57,224,122,.05), transparent 50%)',
-                border: '1px solid rgba(245,168,42,.1)',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Meridian lines */}
-              {[0, 30, 60, 90, 120, 150].map((deg) => (
-                <div
-                  key={deg}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: '50%',
-                    height: '100%',
-                    borderLeft: '1px solid rgba(245,168,42,.07)',
-                    transform: `rotate(${deg}deg)`,
-                    transformOrigin: 'center',
-                  }}
-                />
-              ))}
-              {/* Parallel lines */}
-              {['20%', '35%', '50%', '65%', '80%'].map((top) => (
-                <div
-                  key={top}
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top,
-                    borderTop: '1px solid rgba(245,168,42,.07)',
-                  }}
-                />
-              ))}
-              {/* Glowing dots */}
-              {GLOBE_DOTS.map((dot, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    background: dot.green ? '#39E07A' : 'var(--amber)',
-                    top: dot.top,
-                    left: dot.left,
-                    transform: 'translate(-50%, -50%)',
-                    boxShadow: dot.green
-                      ? '0 0 12px rgba(57,224,122,.8)'
-                      : '0 0 12px rgba(245,168,42,.8)',
-                    animation: `gdotGlow 2s ${dot.delay} infinite alternate`,
-                  }}
-                />
-              ))}
-              {/* Centre stat */}
-              {globeStat && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    textAlign: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 68,
-                      fontWeight: 800,
-                      color: 'var(--amber)',
-                      lineHeight: 1,
-                    }}
-                  >
-                    {globeStat.number}
+          {/* Right — Timeline */}
+          <div className="relative">
+            <DotMotif className="absolute -top-8 -right-4 w-24 h-24" opacity={0.05} />
+            <div className="space-y-0">
+              {milestones.map((m, i) => (
+                <div key={m.year} className="flex gap-4 group">
+                  {/* Timeline line */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-3 h-3 rounded-full bg-amber group-hover:scale-125 transition-transform" />
+                    {i < milestones.length - 1 && (
+                      <div className="w-px h-full min-h-[60px] bg-gradient-to-b from-amber/40 to-line" />
+                    )}
                   </div>
-                  <div style={{ fontSize: 11, letterSpacing: 3, color: 'var(--muted)' }}>
-                    {globeStat.label}
+                  {/* Content */}
+                  <div className="pb-8">
+                    <span className="font-sora font-extrabold text-amber text-lg">{m.year}</span>
+                    <div className="font-sora font-semibold text-pg-text text-sm mt-1">{m.en}</div>
+                    <div className="font-noto-sans-sc text-muted text-xs">{m.cn}</div>
                   </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>

@@ -100,7 +100,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
         <AnalyticsProvider>
           <WeConnectProvider>
             <CursorEffect />
-            <div className="bg-bg text-pg-text font-syne antialiased min-h-screen" style={styleOverrides}>
+            <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
               <Nav />
               {children}
               <Footer />

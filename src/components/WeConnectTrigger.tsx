@@ -15,7 +15,7 @@ interface WeConnectTriggerProps {
 }
 
 export default function WeConnectTrigger({
-  tab = 'spaces',
+  tab = 'needs',
   style,
   className,
   children,
