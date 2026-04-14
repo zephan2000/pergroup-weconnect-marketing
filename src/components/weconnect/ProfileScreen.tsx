@@ -2,132 +2,102 @@
 
 /**
  * ProfileScreen — stub user profile for v1 (no auth).
- * Shows placeholder profile, company info, and settings.
+ * Uses warm light aesthetic matching reference.
  */
 
-import { Building2, Settings, Globe, Mail } from 'lucide-react'
+import { Clock } from 'lucide-react'
+import DotMotif from '@/components/DotMotif'
 
 export default function ProfileScreen() {
   return (
-    <div>
-      {/* Profile header */}
-      <div
-        style={{
-          background: 'rgba(26, 29, 39, 0.7)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid var(--wc-border)',
-          borderLeft: '3px solid #F5A623',
-          borderRadius: 10,
-          padding: 20,
-          marginBottom: 20,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 14,
-        }}
-      >
-        <div
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #F5A623, #D4880A)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 16,
-            fontWeight: 700,
-            color: 'white',
-            flexShrink: 0,
-          }}
-        >
-          PG
+    <div className="space-y-4 pb-4">
+      {/* Profile Card */}
+      <div className="glass-card rounded-xl p-5 relative overflow-hidden border-l-4 border-l-amber">
+        <div className="absolute top-0 right-0">
+          <DotMotif className="w-24 h-24" opacity={0.08} />
         </div>
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--wc-text)' }}>PER GROUP User</div>
-          <div style={{ fontSize: 12, color: 'var(--wc-muted)' }}>
-            <span className="font-noto-sans-sc">企业会员</span> · Enterprise Member
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-amber flex items-center justify-center font-sora font-extrabold text-pg-text text-lg">
+            PG
           </div>
-          <div style={{ fontSize: 11, color: 'var(--wc-muted)', marginTop: 2 }}>
-            Member since 2024
+          <div>
+            <h3 className="font-noto-sans-sc font-bold text-pg-text text-lg">企业用户</h3>
+            <p className="text-muted text-sm">PER GROUP Enterprise</p>
+            <p className="text-muted text-xs mt-1">
+              E-Harbor Member since 2024 / <span className="font-noto-sans-sc">E-Harbor会员 2024年起</span>
+            </p>
           </div>
         </div>
       </div>
 
+      {/* My Posts */}
+      <div>
+        <h4 className="font-sora font-bold text-sm text-pg-text mb-2">
+          My Posts / <span className="font-noto-sans-sc">我的发布</span>
+        </h4>
+        {[
+          { en: 'Alternative logistics supplier — SEA', cn: '东南亚替代物流供应商', time: '2d ago' },
+          { en: 'FX hedging advisory', cn: '汇率对冲咨询', time: '4d ago' },
+          { en: 'Legal counsel — SG entity', cn: '新加坡法律顾问', time: '1w ago' },
+        ].map((r) => (
+          <div key={r.en} className="glass-card rounded-xl p-3 mb-2 flex items-center justify-between">
+            <div>
+              <div className="text-sm font-semibold text-pg-text">{r.en}</div>
+              <div className="font-noto-sans-sc text-xs text-muted">{r.cn}</div>
+            </div>
+            <span className="text-[10px] text-muted">{r.time}</span>
+          </div>
+        ))}
+      </div>
+
       {/* Company Profile */}
-      <div style={{ marginBottom: 20 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--wc-text)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Building2 size={16} color="#F5A623" />
-          Company Profile · 公司资料
-        </h3>
-        <div
-          style={{
-            background: 'rgba(26, 29, 39, 0.7)',
-            border: '1px solid var(--wc-border)',
-            borderRadius: 10,
-            overflow: 'hidden',
-          }}
-        >
+      <div>
+        <h4 className="font-sora font-bold text-sm text-pg-text mb-2">
+          Company Profile / <span className="font-noto-sans-sc">公司档案</span>
+        </h4>
+        <div className="glass-card rounded-xl p-4 space-y-3">
           {[
-            { label: 'Industry', value: 'Technology / Innovation', icon: Globe },
-            { label: 'Headquarters', value: 'Singapore', icon: Building2 },
-            { label: 'Markets', value: 'Southeast Asia, Greater China', icon: Globe },
-          ].map((field, i) => (
-            <div
-              key={field.label}
-              style={{
-                padding: '14px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderBottom: i < 2 ? '1px solid var(--wc-border)' : 'none',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <field.icon size={14} color="var(--wc-muted)" />
-                <span style={{ fontSize: 12, color: 'var(--wc-muted)' }}>{field.label}</span>
-              </div>
-              <span style={{ fontSize: 12, color: 'var(--wc-text)' }}>{field.value}</span>
+            { label: 'Industry / 行业', value: 'Technology / 科技' },
+            { label: 'HQ / 总部', value: 'Singapore / 新加坡' },
+            { label: 'Markets / 市场', value: 'SEA, Greater China / 东南亚、大中华' },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center justify-between">
+              <span className="text-xs text-muted font-noto-sans-sc">{item.label}</span>
+              <span className="bg-amber/10 text-deep-orange text-xs font-semibold px-2 py-0.5 rounded-md font-noto-sans-sc">
+                {item.value}
+              </span>
             </div>
           ))}
+          <button className="text-amber text-xs font-semibold hover:underline mt-2 bg-transparent border-none cursor-pointer">
+            Update profile → talk to PER GROUP / <span className="font-noto-sans-sc">更新档案→联系PER GROUP</span>
+          </button>
         </div>
       </div>
 
       {/* Settings */}
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--wc-text)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Settings size={16} color="#F5A623" />
-          Settings · 设置
-        </h3>
-        <div
-          style={{
-            background: 'rgba(26, 29, 39, 0.7)',
-            border: '1px solid var(--wc-border)',
-            borderRadius: 10,
-            overflow: 'hidden',
-          }}
-        >
+        <h4 className="font-sora font-bold text-sm text-pg-text mb-2">
+          Settings / <span className="font-noto-sans-sc">设置</span>
+        </h4>
+        <div className="glass-card rounded-xl divide-y divide-line">
           {[
-            { label: 'Language · 语言', value: 'English + 中文', action: false },
-            { label: 'Notification Preferences', value: 'Coming Soon', action: false },
-            { label: 'Contact PER GROUP', value: '', action: true },
-            { label: 'About WeConnect', value: 'v1.0', action: false },
-          ].map((item, i) => (
-            <div
-              key={item.label}
-              style={{
-                padding: '14px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderBottom: i < 3 ? '1px solid var(--wc-border)' : 'none',
-                cursor: item.action ? 'pointer' : 'default',
-              }}
-            >
-              <span style={{ fontSize: 12, color: 'var(--wc-text)' }}>{item.label}</span>
-              {item.action ? (
-                <Mail size={14} color="#F5A623" />
+            { en: 'Language', cn: '语言', extra: 'EN | 中文' },
+            { en: 'Notification preferences', cn: '通知设置', comingSoon: true },
+            { en: 'Contact PER GROUP', cn: '联系我们' },
+            { en: 'About WeConnect', cn: '关于WeConnect' },
+          ].map((s) => (
+            <div key={s.en} className="p-3 flex items-center justify-between">
+              <span className="text-sm text-pg-text">
+                {s.en} / <span className="font-noto-sans-sc text-muted">{s.cn}</span>
+              </span>
+              {s.comingSoon ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber bg-amber/10 px-2 py-0.5 rounded-full">
+                  <Clock size={10} /> Coming Soon
+                </span>
+              ) : s.extra ? (
+                <span className="text-xs font-semibold text-amber">{s.extra}</span>
               ) : (
-                <span style={{ fontSize: 12, color: 'var(--wc-muted)' }}>{item.value}</span>
+                <span className="text-muted">›</span>
               )}
             </div>
           ))}

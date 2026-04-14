@@ -36,7 +36,7 @@ export default function Nav() {
       <div className="max-w-[1400px] mx-auto flex items-center justify-between h-16 px-4 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 no-underline">
-          <div className="w-8 h-8 bg-amber flex items-center justify-center font-extrabold text-xs text-white rounded-lg flex-shrink-0"
+          <div className="w-8 h-8 bg-amber flex items-center justify-center font-extrabold text-xs text-pg-text rounded-lg flex-shrink-0"
             style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
           >
             P
@@ -68,7 +68,7 @@ export default function Nav() {
         {/* Desktop CTA */}
         <WeConnectTrigger
           tab="needs"
-          className="hidden md:inline-flex items-center gap-2 bg-amber text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
+          className="hidden md:inline-flex items-center gap-2 bg-amber text-pg-text text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
         >
           WECONNECT PLATFORM →
         </WeConnectTrigger>
@@ -99,7 +99,7 @@ export default function Nav() {
             <div className="px-4 py-3">
               <WeConnectTrigger
                 tab="needs"
-                className="w-full bg-amber text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
+                className="w-full bg-amber text-pg-text text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
               >
                 WECONNECT PLATFORM →
               </WeConnectTrigger>

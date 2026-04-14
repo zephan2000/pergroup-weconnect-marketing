@@ -23,9 +23,9 @@ export default function HeroCTAButtons({ buttons }: { buttons: HeroButton[] }) {
         const isPlatformLink = btn.href.startsWith('/platform') || btn.variant === 'weconnect'
 
         const fillClass =
-          'inline-flex items-center bg-amber text-white font-semibold text-sm px-6 py-3 rounded-lg hover:opacity-90 transition-opacity no-underline border-none cursor-pointer font-sora'
+          'inline-flex items-center bg-amber text-pg-text font-semibold text-sm px-6 py-3 rounded-lg hover:opacity-90 transition-opacity no-underline border-none cursor-pointer font-sora'
         const ghostClass =
-          'inline-flex items-center border-[1.5px] border-amber text-amber font-semibold text-sm px-6 py-3 rounded-lg hover:bg-amber hover:text-white transition-colors no-underline cursor-pointer font-sora bg-transparent'
+          'inline-flex items-center border-[1.5px] border-amber text-amber font-semibold text-sm px-6 py-3 rounded-lg hover:bg-amber hover:text-pg-text transition-colors no-underline cursor-pointer font-sora bg-transparent'
 
         const className = btn.variant === 'fill' ? fillClass : ghostClass
 

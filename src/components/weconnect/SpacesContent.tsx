@@ -22,8 +22,8 @@ const chipBase: React.CSSProperties = {
 
 const chipInactive: React.CSSProperties = {
   ...chipBase,
-  border: '1px solid var(--wc-border)',
-  color: 'var(--wc-muted)',
+  border: '1px solid var(--line)',
+  color: 'var(--muted)',
   background: 'none',
 }
 
@@ -123,7 +123,7 @@ export default function SpacesContent({
       {/* ── Search bar ── */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(245,166,35,.08), rgba(139,92,246,.05))',
+          background: 'linear-gradient(135deg, hsla(36,90%,47%,.08), hsla(20,75%,48%,.05))',
           border: '1px solid rgba(245,166,35,.2)',
           borderRadius: 14,
           padding: '18px 20px',
@@ -144,11 +144,11 @@ export default function SpacesContent({
           >
             {isAi ? '✦ AI Matching · 智能匹配' : '🔍 Search · 搜索'}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>
             {settings.aiMatchingHeadline}
           </div>
         </div>
-        <p style={{ fontSize: 12, color: 'var(--wc-muted)', marginBottom: 14, marginTop: 0 }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 14, marginTop: 0 }}>
           {isAi
             ? settings.aiMatchingDescription
             : 'Filter by type, district, or price — or switch to AI for natural language search'}
@@ -165,12 +165,12 @@ export default function SpacesContent({
               placeholder={isAi ? settings.aiMatchingPlaceholder : 'Search by name, address, district...'}
               style={{
                 width: '100%',
-                background: 'rgba(0,0,0,.3)',
-                border: `1px solid ${isAi ? 'rgba(245,166,35,.3)' : 'var(--wc-border)'}`,
+                background: 'var(--bg2)',
+                border: `1px solid ${isAi ? 'rgba(245,166,35,.3)' : 'var(--line)'}`,
                 borderRadius: 9,
                 padding: '10px 14px',
                 paddingRight: isAi ? 80 : 14,
-                color: 'var(--wc-text)',
+                color: 'var(--text)',
                 fontFamily: 'inherit',
                 fontSize: 13,
                 outline: 'none',
@@ -210,9 +210,9 @@ export default function SpacesContent({
               fontSize: 11,
               fontWeight: 600,
               cursor: 'pointer',
-              border: isAi ? '1px solid rgba(245,166,35,.4)' : '1px solid var(--wc-border)',
+              border: isAi ? '1px solid rgba(245,166,35,.4)' : '1px solid var(--line)',
               background: isAi ? 'rgba(245,166,35,.2)' : 'none',
-              color: isAi ? '#F5A623' : 'var(--wc-muted)',
+              color: isAi ? '#F5A623' : 'var(--muted)',
               fontFamily: 'inherit',
               whiteSpace: 'nowrap',
               flexShrink: 0,
@@ -222,7 +222,7 @@ export default function SpacesContent({
           </button>
         </div>
 
-        <div style={{ fontSize: 10, color: 'var(--wc-muted)', marginTop: 6, paddingLeft: 2 }}>
+        <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, paddingLeft: 2 }}>
           {isAi ? 'Press Tab to switch to filter search · Press Enter to search' : 'Press Tab for AI Search'}
         </div>
 
@@ -241,7 +241,7 @@ export default function SpacesContent({
               fontSize: 12,
             }}
           >
-            <span style={{ color: 'var(--wc-muted)' }}>
+            <span style={{ color: 'var(--muted)' }}>
               This looks like a natural language query · 检测到自然语言查询
             </span>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -266,7 +266,7 @@ export default function SpacesContent({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--wc-muted)',
+                  color: 'var(--muted)',
                   fontSize: 11,
                   cursor: 'pointer',
                   fontFamily: 'inherit',
@@ -299,7 +299,7 @@ export default function SpacesContent({
                     {type.charAt(0).toUpperCase() + type.slice(1)} ({count})
                   </button>
                 ))}
-              <span style={{ color: 'rgba(255,255,255,.12)', fontSize: 14, padding: '0 2px' }}>|</span>
+              <span style={{ color: 'var(--line)', fontSize: 14, padding: '0 2px' }}>|</span>
               {facets.topDistricts.map(([district, count]) => (
                 <button
                   key={`dist-${district}`}
@@ -309,7 +309,7 @@ export default function SpacesContent({
                   {district} ({count})
                 </button>
               ))}
-              <span style={{ color: 'rgba(255,255,255,.12)', fontSize: 14, padding: '0 2px' }}>|</span>
+              <span style={{ color: 'var(--line)', fontSize: 14, padding: '0 2px' }}>|</span>
               {priceChips
                 .filter((p) => p.count > 0)
                 .map((p) => (
@@ -329,11 +329,11 @@ export default function SpacesContent({
       {/* ── Results ── */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--wc-text)' }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>
             {isAi ? 'AI Matches' : 'Available Spaces'}
           </h2>
           {!loading && !error && !aiLoading && (
-            <span style={{ fontSize: 12, color: 'var(--wc-muted)' }}>
+            <span style={{ fontSize: 12, color: 'var(--muted)' }}>
               {isAi
                 ? `${listings.length} AI match${listings.length !== 1 ? 'es' : ''}`
                 : `${listings.length} of ${totalCount} space${totalCount !== 1 ? 's' : ''}`}
@@ -342,7 +342,7 @@ export default function SpacesContent({
         </div>
 
         {loading && (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--wc-muted)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--muted)', fontSize: 13 }}>
             Loading listings…
           </div>
         )}
@@ -356,7 +356,7 @@ export default function SpacesContent({
         )}
 
         {!loading && !error && listings.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--wc-muted)', fontSize: 13 }}>
+          <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--muted)', fontSize: 13 }}>
             {isAi
               ? searchQuery.trim()
                 ? 'No AI matches found. Try rephrasing your query.'
@@ -420,7 +420,7 @@ function AiThinkingIndicator() {
         ))}
       </div>
       <div style={{ fontSize: 13, fontWeight: 500, color: '#F5A623' }}>✦ Searching with AI · AI搜索中</div>
-      <div style={{ fontSize: 12, color: 'var(--wc-muted)', transition: 'opacity 0.3s ease' }}>
+      <div style={{ fontSize: 12, color: 'var(--muted)', transition: 'opacity 0.3s ease' }}>
         {AI_STATUS_PHASES[phase]}
       </div>
     </div>
@@ -454,9 +454,8 @@ function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimila
     <div
       onClick={onSelect}
       style={{
-        background: 'rgba(26, 29, 39, 0.7)',
-        backdropFilter: 'blur(8px)',
-        border: '1px solid var(--wc-border)',
+        background: 'var(--bg2)',
+        border: '1px solid var(--line)',
         borderRadius: 10,
         padding: 18,
         cursor: 'pointer',
@@ -499,13 +498,13 @@ function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimila
         >
           {listing.type}
         </span>
-        {listing.operator && <span style={{ fontSize: 10, color: 'var(--wc-muted)' }}>{listing.operator}</span>}
+        {listing.operator && <span style={{ fontSize: 10, color: 'var(--muted)' }}>{listing.operator}</span>}
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, lineHeight: 1.3, color: 'var(--wc-text)' }}>
+      <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, lineHeight: 1.3, color: 'var(--text)' }}>
         {listing.name}
       </div>
-      {location && <div style={{ fontSize: 11, color: 'var(--wc-muted)', marginBottom: 10 }}>📍 {location}</div>}
+      {location && <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10 }}>📍 {location}</div>}
 
       {listing.amenities && listing.amenities.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
@@ -516,8 +515,8 @@ function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimila
                 fontSize: 9,
                 padding: '2px 6px',
                 borderRadius: 3,
-                background: 'rgba(255,255,255,.06)',
-                color: 'var(--wc-muted)',
+                background: 'var(--faint)',
+                color: 'var(--muted)',
               }}
             >
               {tag}
@@ -527,7 +526,7 @@ function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimila
       )}
 
       {price && (
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--wc-text)', marginBottom: 12 }}>{price}</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>{price}</div>
       )}
 
       <div style={{ display: 'flex', gap: 7 }}>
@@ -539,9 +538,9 @@ function SpaceCard({ listing, similarity, onSelect }: { listing: SpaceWithSimila
             fontSize: 11,
             fontWeight: 500,
             cursor: 'pointer',
-            border: '1px solid var(--wc-border)',
+            border: '1px solid var(--line)',
             background: 'none',
-            color: 'var(--wc-muted)',
+            color: 'var(--muted)',
             fontFamily: 'inherit',
           }}
         >

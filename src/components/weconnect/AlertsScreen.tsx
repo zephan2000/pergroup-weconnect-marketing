@@ -2,131 +2,111 @@
 
 /**
  * AlertsScreen — Advisory alerts with severity levels.
- * v1: preview/coming-soon state with hardcoded sample alerts.
+ * v1: preview/coming-soon state with sample alerts.
+ * Uses warm light aesthetic matching reference.
  */
 
-import { Zap, Eye, Info } from 'lucide-react'
+import { Zap, Eye, Info, Clock } from 'lucide-react'
 
-const sampleAlerts = [
+const alerts = [
   {
     severity: 'urgent' as const,
-    category: 'Supply Chain',
-    title: 'Gulf Oil Supply Disruption — Alternative Sourcing Recommended',
-    description: 'Brent crude exceeds USD 111. Companies with energy or logistics exposure in the Gulf region should consider diversifying suppliers.',
-    timestamp: '2 hours ago',
+    accentClass: 'border-l-alert-red',
+    pillBgClass: 'bg-alert-red/15 text-alert-red',
+    pillIcon: Zap,
+    pillEn: 'Urgent',
+    pillCn: '紧急',
+    tagEn: 'Supply Chain',
+    tagCn: '供应链',
+    time: '2h ago',
+    titleEn: 'Gulf Crisis: Oil at $111 — Review Your Logistics Exposure',
+    titleCn: '海湾危机：油价破111美元——审查物流敞口',
+    bodyEn: 'Escalating Gulf tensions push Brent crude above $111. Companies with Southeast Asian supply chains face rising cost risk.',
   },
   {
     severity: 'monitor' as const,
-    category: 'Regulatory',
-    title: 'MAS Updates AML Compliance Framework — Review Required',
-    description: 'New anti-money laundering rules from MAS may affect cross-border payment flows for fintech companies operating in Singapore.',
-    timestamp: '1 day ago',
+    accentClass: 'border-l-amber',
+    pillBgClass: 'bg-amber/15 text-amber',
+    pillIcon: Eye,
+    pillEn: 'Monitor',
+    pillCn: '关注',
+    tagEn: 'Regulatory',
+    tagCn: '监管',
+    time: '1d ago',
+    titleEn: 'MAS Tightens AML Rules for Cross-Border Transactions',
+    titleCn: '新加坡金管局收紧跨境交易反洗钱规定',
+    bodyEn: 'New AML reporting requirements effective Q3. Chinese companies with Singapore entities should review compliance posture.',
   },
   {
     severity: 'info' as const,
-    category: 'Market Access',
-    title: 'EU Carbon Border Tax Phase 2 — Impact Assessment Available',
-    description: 'The EU CBAM enters its second phase in Q3 2026. Manufacturing exporters to the EU should review carbon reporting obligations.',
-    timestamp: '3 days ago',
+    accentClass: 'border-l-muted',
+    pillBgClass: 'bg-faint text-muted',
+    pillIcon: Info,
+    pillEn: 'Info',
+    pillCn: '资讯',
+    tagEn: 'Market Access',
+    tagCn: '市场准入',
+    time: '3d ago',
+    titleEn: 'EU Carbon Border Tax: Implications for Chinese Exporters',
+    titleCn: '欧盟碳边境税：对中国出口商的影响',
+    bodyEn: 'CBAM takes effect for key sectors. PER GROUP has vetted carbon advisory partners if you need readiness support.',
   },
 ]
 
-const severityConfig = {
-  urgent: { icon: Zap, color: '#EF4444', bg: 'rgba(239,68,68,.12)', label: 'Urgent' },
-  monitor: { icon: Eye, color: '#F5A623', bg: 'rgba(245,166,35,.12)', label: 'Monitor' },
-  info: { icon: Info, color: '#6B7280', bg: 'rgba(107,114,128,.12)', label: 'Info' },
-}
-
 export default function AlertsScreen() {
   return (
-    <div style={{ opacity: 0.7 }}>
-      {/* Header */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--wc-text)', marginBottom: 4 }}>
-          Advisory Alerts
-        </h2>
-        <p style={{ fontSize: 11, color: 'var(--wc-muted)' }}>
-          风险预警 · 智能推送
-        </p>
+    <div className="space-y-4 pb-4">
+      <div>
+        <h3 className="font-sora font-bold text-pg-text">Advisory Alerts</h3>
+        <p className="font-noto-sans-sc text-muted text-sm">顾问预警</p>
       </div>
 
-      {/* Coming soon banner */}
-      <div
-        style={{
-          background: 'rgba(245,166,35,.08)',
-          border: '1px solid rgba(245,166,35,.2)',
-          borderRadius: 10,
-          padding: '14px 18px',
-          marginBottom: 20,
-          fontSize: 13,
-          color: '#F5A623',
-        }}
-      >
-        Coming Soon — Personalised alerts based on your company profile and market exposure.
-        <span style={{ display: 'block', fontSize: 11, color: 'var(--wc-muted)', marginTop: 4 }}>
-          即将推出 — 基于您的公司概况和市场风险的个性化提醒
-        </span>
+      {/* Coming Soon Banner */}
+      <div className="glass-card rounded-xl p-4 flex items-center gap-3 border-l-4 border-l-amber">
+        <Clock className="w-5 h-5 text-amber flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-pg-text">
+            Coming Soon / <span className="font-noto-sans-sc">即将推出</span>
+          </p>
+          <p className="text-xs text-muted">
+            Personalised alerts based on your business profile will be available in a future update.
+          </p>
+          <p className="text-xs text-muted font-noto-sans-sc">
+            基于您的业务档案的个性化预警将在未来版本中推出。
+          </p>
+        </div>
       </div>
+
+      {/* Preview label */}
+      <p className="text-xs text-muted">
+        Preview / <span className="font-noto-sans-sc">示例预览</span>
+      </p>
 
       {/* Sample alerts */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {sampleAlerts.map((alert) => {
-          const config = severityConfig[alert.severity]
-          const IconComponent = config.icon
-
-          return (
-            <div
-              key={alert.title}
-              style={{
-                background: 'rgba(26, 29, 39, 0.7)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid var(--wc-border)',
-                borderLeft: `3px solid ${config.color}`,
-                borderRadius: 10,
-                padding: 18,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <div
-                  style={{
-                    background: config.bg,
-                    borderRadius: 6,
-                    padding: '4px 8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <IconComponent size={12} color={config.color} />
-                  <span style={{ fontSize: 10, fontWeight: 600, color: config.color, textTransform: 'uppercase' }}>
-                    {config.label}
-                  </span>
-                </div>
-                <span
-                  style={{
-                    fontSize: 10,
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    background: 'rgba(255,255,255,.06)',
-                    color: 'var(--wc-muted)',
-                  }}
-                >
-                  {alert.category}
+      {alerts.map((a) => {
+        const IconComponent = a.pillIcon
+        return (
+          <div
+            key={a.titleEn}
+            className={`glass-card rounded-xl overflow-hidden border-l-4 ${a.accentClass} opacity-60`}
+          >
+            <div className="p-4">
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${a.pillBgClass}`}>
+                  <IconComponent size={10} /> {a.pillEn} / <span className="font-noto-sans-sc">{a.pillCn}</span>
                 </span>
-                <span style={{ fontSize: 10, color: 'var(--wc-muted)', marginLeft: 'auto' }}>
-                  {alert.timestamp}
+                <span className="bg-amber/10 text-deep-orange text-[10px] font-semibold px-2 py-0.5 rounded-md">
+                  {a.tagEn} / <span className="font-noto-sans-sc">{a.tagCn}</span>
                 </span>
+                <span className="text-[10px] text-muted ml-auto">{a.time}</span>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--wc-text)', marginBottom: 6 }}>
-                {alert.title}
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--wc-muted)', lineHeight: 1.6, margin: 0 }}>
-                {alert.description}
-              </p>
+              <h4 className="font-sora font-semibold text-sm text-pg-text">{a.titleEn}</h4>
+              <p className="font-noto-sans-sc text-xs text-muted mt-0.5">{a.titleCn}</p>
+              <p className="text-xs text-muted mt-2 leading-relaxed">{a.bodyEn}</p>
             </div>
-          )
-        })}
-      </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

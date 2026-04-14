@@ -88,7 +88,7 @@ export default function PlatformTeaserBlock({
 
         <WeConnectTrigger
           tab="needs"
-          className="mt-8 inline-flex items-center bg-amber text-white font-semibold text-sm px-8 py-3 rounded-lg hover:opacity-90 transition-opacity border-none cursor-pointer font-sora"
+          className="mt-8 inline-flex items-center bg-amber text-pg-text font-semibold text-sm px-8 py-3 rounded-lg hover:opacity-90 transition-opacity border-none cursor-pointer font-sora"
         >
           {launchCtaLabel}
         </WeConnectTrigger>
