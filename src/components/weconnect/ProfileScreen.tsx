@@ -5,7 +5,7 @@
  * Shows placeholder profile, company info, and settings.
  */
 
-import { User, Building2, Settings, Globe, Mail } from 'lucide-react'
+import { Building2, Settings, Globe, Mail } from 'lucide-react'
 
 export default function ProfileScreen() {
   return (

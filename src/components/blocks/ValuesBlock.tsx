@@ -21,7 +21,7 @@ type ValuesBlockProps = {
 
 export default function ValuesBlock({
   sectionLabel = 'Our Philosophy · 我们的哲学',
-  headline = 'Core Philosophy',
+  headline: _headline = 'Core Philosophy',
   chineseHeadline = '四和五一',
   fourHarmoniesItems = [],
   fiveUnitiesItems = [],

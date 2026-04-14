@@ -53,7 +53,7 @@ const regions = [
 
 export default function ClientsBlock({
   sectionLabel = 'Our Network · 合作网络',
-  headline = 'Global Industry Leaders',
+  headline: _headline = 'Global Industry Leaders',
   clients = [],
 }: ClientsBlockProps) {
   return (
