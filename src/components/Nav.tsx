@@ -2,10 +2,10 @@
 
 /**
  * Nav — sticky glass navbar for all PER GROUP marketing routes.
- * Adapted from per-group-connect-main reference.
  * Client component — needs scroll detection and mobile menu state.
  */
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import WeConnectTrigger from '@/components/WeConnectTrigger'
@@ -36,11 +36,13 @@ export default function Nav() {
       <div className="max-w-[1400px] mx-auto flex items-center justify-between h-16 px-4 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 no-underline">
-          <div className="w-8 h-8 bg-amber flex items-center justify-center font-extrabold text-xs text-pg-text rounded-lg flex-shrink-0"
-            style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
-          >
-            P
-          </div>
+          <Image
+            src="/e-harbour-logo.png"
+            alt="PER GROUP by E-Harbor"
+            width={36}
+            height={36}
+            className="object-contain flex-shrink-0"
+          />
           <span className="text-sm font-extrabold tracking-[3px] uppercase text-pg-text font-sora">
             PER GROUP
           </span>
@@ -68,7 +70,7 @@ export default function Nav() {
         {/* Desktop CTA */}
         <WeConnectTrigger
           tab="needs"
-          className="hidden md:inline-flex items-center gap-2 bg-amber text-pg-text text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
+          className="hidden md:inline-flex items-center gap-2 bg-amber/10 text-amber text-sm font-semibold px-5 py-2 rounded-lg border border-amber/30 hover:bg-amber hover:text-pg-text transition-all duration-200 cursor-pointer font-sora"
         >
           WECONNECT PLATFORM →
         </WeConnectTrigger>

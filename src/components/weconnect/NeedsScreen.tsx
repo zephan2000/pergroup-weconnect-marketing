@@ -1,19 +1,16 @@
 'use client'
 
 /**
- * NeedsScreen — "Post a Need" + "Share an Offering" cards,
- * plus the embedded Spaces browser below.
- * Uses warm light aesthetic matching the reference.
+ * NeedsScreen — "Post a Need" + "Share an Offering" cards
+ * with preview content below.
+ *
+ * NOTE: SpacesContent (search engine) is kept as a component but not rendered
+ * on this page for v1. To re-enable, uncomment the SpacesContent block below.
  */
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Zap, Package, TrendingUp } from 'lucide-react'
-import { fetchSpacesListings } from '@/app/actions/weconnect'
-import type { Space } from '@/lib/supabase/schema'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
-import { useSpacesSearch, type SpaceWithSimilarity } from '@/hooks/useSpacesSearch'
-import SpacesContent from '@/components/weconnect/SpacesContent'
-import SpaceDetailModal from '@/components/weconnect/SpaceDetailModal'
 import PostRequirementModal from '@/components/weconnect/PostRequirementModal'
 import DotMotif from '@/components/DotMotif'
 
@@ -39,31 +36,9 @@ interface NeedsScreenProps {
   isActive: boolean
 }
 
-export default function NeedsScreen({ settings, isActive }: NeedsScreenProps) {
-  const [spaces, setSpaces] = useState<Space[]>([])
-  const [spacesLoading, setSpacesLoading] = useState(false)
-  const [spacesError, setSpacesError] = useState(false)
-  const [spacesFetched, setSpacesFetched] = useState(false)
-
-  const search = useSpacesSearch(spaces)
-
-  const [selectedSpace, setSelectedSpace] = useState<SpaceWithSimilarity | null>(null)
+export default function NeedsScreen({ settings }: NeedsScreenProps) {
   const [showRequirementModal, setShowRequirementModal] = useState(false)
   const [showOfferingModal, setShowOfferingModal] = useState(false)
-
-  useEffect(() => {
-    if (isActive && !spacesFetched) {
-      setSpacesLoading(true)
-      setSpacesError(false)
-      fetchSpacesListings()
-        .then((data) => {
-          setSpaces(data)
-          setSpacesFetched(true)
-        })
-        .catch(() => setSpacesError(true))
-        .finally(() => setSpacesLoading(false))
-    }
-  }, [isActive, spacesFetched])
 
   return (
     <div className="space-y-4 pb-4">
@@ -171,42 +146,15 @@ export default function NeedsScreen({ settings, isActive }: NeedsScreenProps) {
         </div>
       </div>
 
-      {/* Spaces browser */}
-      <SpacesContent
-        listings={search.filteredSpaces}
-        totalCount={spaces.length}
-        loading={spacesLoading}
-        error={spacesError}
-        settings={settings}
-        onSelectSpace={setSelectedSpace}
-        searchMode={search.searchMode}
-        searchQuery={search.searchQuery}
-        setSearchQuery={search.setSearchQuery}
-        activeTypes={search.activeTypes}
-        activeDistricts={search.activeDistricts}
-        activePriceRanges={search.activePriceRanges}
-        toggleType={search.toggleType}
-        toggleDistrict={search.toggleDistrict}
-        togglePriceRange={search.togglePriceRange}
-        facets={search.facets}
-        toggleMode={search.toggleMode}
-        handleAiSearch={search.handleAiSearch}
-        aiLoading={search.aiLoading}
-        showAiSuggestion={search.showAiSuggestion}
-        dismissAiSuggestion={search.dismissAiSuggestion}
-        acceptAiSuggestion={search.acceptAiSuggestion}
-      />
+      {/*
+       * Spaces browser — DISABLED for v1. Component is preserved at
+       * src/components/weconnect/SpacesContent.tsx. To re-enable:
+       * 1. Import SpacesContent, SpaceDetailModal, useSpacesSearch, fetchSpacesListings
+       * 2. Add spaces state + search hook
+       * 3. Uncomment the <SpacesContent ... /> JSX below
+       */}
 
       {/* Modals */}
-      {selectedSpace && (
-        <SpaceDetailModal
-          space={selectedSpace}
-          similarity={selectedSpace.similarity}
-          isOpen={!!selectedSpace}
-          onClose={() => setSelectedSpace(null)}
-          settings={settings}
-        />
-      )}
       <PostRequirementModal
         isOpen={showRequirementModal || showOfferingModal}
         onClose={() => { setShowRequirementModal(false); setShowOfferingModal(false) }}
