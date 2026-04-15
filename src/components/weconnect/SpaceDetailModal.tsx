@@ -5,7 +5,6 @@ import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import type { SpaceWithSimilarity } from '@/hooks/useSpacesSearch'
 import ModalBackdrop from './ModalBackdrop'
 
-// ── Type color map (mirrors SpaceCard in WeConnectOverlay) ────────────────
 const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
   office:     { color: '#F5A623', bg: 'rgba(245,166,35,.12)' },
   lab:        { color: '#22C55E', bg: 'rgba(34,197,94,.12)' },
@@ -16,14 +15,13 @@ const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
   studio:     { color: '#34D399', bg: 'rgba(52,211,153,.12)' },
 }
 
-// ── Shared input style ────────────────────────────────────────────────────
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: 'rgba(0,0,0,.3)',
-  border: '1px solid rgba(255,255,255,.08)',
-  borderRadius: 8,
-  padding: '10px 14px',
-  color: '#E8EAF0',
+  background: 'hsl(33 100% 95%)',
+  border: '1px solid hsla(20, 10%, 10%, 0.08)',
+  borderRadius: 10,
+  padding: '11px 14px',
+  color: 'hsl(20 10% 10%)',
   fontFamily: 'inherit',
   fontSize: 13,
   outline: 'none',
@@ -54,7 +52,6 @@ export default function SpaceDetailModal({
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormState('idle')
@@ -73,30 +70,16 @@ export default function SpaceDetailModal({
   const matchColor =
     matchPct != null && matchPct >= 80 ? '#22C55E' : matchPct != null && matchPct >= 60 ? '#F5A623' : '#9CA3AF'
 
-  // Location string
   const location = [space.district, space.address].filter(Boolean).join(' · ')
 
-  // Format size
   const sizeMin = space.area_sqft_min != null ? Number(space.area_sqft_min).toLocaleString() : null
   const sizeMax = space.area_sqft_max != null ? Number(space.area_sqft_max).toLocaleString() : null
-  const sizeStr =
-    sizeMin && sizeMax && sizeMin !== sizeMax
-      ? `${sizeMin}–${sizeMax} sqft`
-      : sizeMin
-        ? `${sizeMin} sqft`
-        : null
+  const sizeStr = sizeMin && sizeMax && sizeMin !== sizeMax ? `${sizeMin}–${sizeMax} sqft` : sizeMin ? `${sizeMin} sqft` : null
 
-  // Format price
   const priceMin = space.price_sgd_min != null ? `SGD ${Number(space.price_sgd_min).toLocaleString()}` : null
   const priceMax = space.price_sgd_max != null ? `SGD ${Number(space.price_sgd_max).toLocaleString()}` : null
-  const priceStr =
-    priceMin && priceMax && priceMin !== priceMax
-      ? `${priceMin} – ${priceMax} /month`
-      : priceMin
-        ? `${priceMin} /month`
-        : null
+  const priceStr = priceMin && priceMax && priceMin !== priceMax ? `${priceMin} – ${priceMax} /month` : priceMin ? `${priceMin} /month` : null
 
-  // Detail rows
   const detailRows: { label: string; value: string | null }[] = [
     { label: settings.detailLabelSize, value: sizeStr },
     { label: settings.detailLabelZone, value: space.district },
@@ -156,7 +139,7 @@ export default function SpaceDetailModal({
           letterSpacing: 1,
           textTransform: 'uppercase',
           padding: '3px 8px',
-          borderRadius: 3,
+          borderRadius: 5,
           background: typeBg,
           color: typeColor,
         }}
@@ -164,29 +147,21 @@ export default function SpaceDetailModal({
         {space.type}
       </span>
 
-      {/* Title + location */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#E8EAF0', marginTop: 12, lineHeight: 1.3 }}>
+      <h2 className="font-sora" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 12, lineHeight: 1.3 }}>
         {space.name}
       </h2>
       {location && (
-        <div style={{ fontSize: 12, color: 'rgba(232,234,240,0.45)', marginTop: 4 }}>📍 {location}</div>
+        <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>📍 {location}</div>
       )}
 
       {/* AI Match Score bar */}
       {matchPct != null && (
         <div style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-            <span style={{ color: 'rgba(232,234,240,0.45)' }}>AI Match Score · 匹配度</span>
+            <span style={{ color: 'var(--muted)' }}>AI Match Score · 匹配度</span>
             <span style={{ color: matchColor, fontWeight: 600 }}>{matchPct}%</span>
           </div>
-          <div
-            style={{
-              height: 4,
-              borderRadius: 2,
-              background: 'rgba(255,255,255,0.06)',
-              overflow: 'hidden',
-            }}
-          >
+          <div style={{ height: 4, borderRadius: 2, background: 'var(--faint)', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',
@@ -211,12 +186,12 @@ export default function SpaceDetailModal({
                 display: 'flex',
                 justifyContent: 'space-between',
                 padding: '10px 0',
-                borderBottom: '1px solid rgba(255,255,255,0.04)',
+                borderBottom: '1px solid var(--line)',
                 fontSize: 13,
               }}
             >
-              <span style={{ color: 'rgba(232,234,240,0.45)' }}>{r.label}</span>
-              <span style={{ color: '#E8EAF0', fontWeight: 500, textAlign: 'right', maxWidth: '65%' }}>
+              <span style={{ color: 'var(--muted)' }}>{r.label}</span>
+              <span style={{ color: 'var(--text)', fontWeight: 500, textAlign: 'right', maxWidth: '65%' }}>
                 {r.value}
               </span>
             </div>
@@ -232,9 +207,9 @@ export default function SpaceDetailModal({
               style={{
                 fontSize: 10,
                 padding: '3px 8px',
-                borderRadius: 4,
-                background: 'rgba(255,255,255,.06)',
-                color: 'rgba(232,234,240,0.45)',
+                borderRadius: 5,
+                background: 'var(--faint)',
+                color: 'var(--muted)',
               }}
             >
               {tag}
@@ -243,73 +218,48 @@ export default function SpaceDetailModal({
         </div>
       )}
 
-      {/* ── Contact form / Success state ──────────────────────────────── */}
+      {/* Contact form / Success */}
       {formState === 'success' ? (
         <div style={{ textAlign: 'center', padding: '32px 0 8px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#E8EAF0', marginBottom: 8 }}>
+          <h3 className="font-sora" style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
             {settings.contactModalSuccessTitle}
           </h3>
-          <p style={{ fontSize: 13, color: 'rgba(232,234,240,0.45)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
             {settings.contactModalSuccessMessage}
           </p>
         </div>
       ) : (
         <div style={{ marginTop: 24 }}>
-          <h4 style={{ fontSize: 14, fontWeight: 600, color: '#E8EAF0', marginBottom: 14 }}>
+          <h4 className="font-sora" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 14 }}>
             {settings.contactModalHeading}
           </h4>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <input
-              type="text"
-              placeholder="Your name · 姓名"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <input
-              type="text"
-              placeholder="Company · 公司"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <input
-              type="email"
-              placeholder="Email · 邮箱"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <textarea
-              placeholder="Message (optional)"
-              rows={2}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              disabled={formState === 'loading'}
-              style={{ ...inputStyle, resize: 'none' }}
-            />
+            <input type="text" placeholder="Your name · 姓名" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <input type="text" placeholder="Company · 公司" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <input type="email" placeholder="Email · 邮箱" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <textarea placeholder="Message (optional)" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div style={{ fontSize: 12, color: '#EF4444', marginTop: 8 }}>{errorMsg}</div>
+            <div style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
+            className="font-sora"
             style={{
               width: '100%',
               marginTop: 14,
               padding: '11px 0',
-              borderRadius: 8,
+              borderRadius: 10,
               border: 'none',
-              background: formState === 'loading' ? 'rgba(245,166,35,.5)' : '#F5A623',
-              color: 'white',
+              background: formState === 'loading'
+                ? 'hsla(36, 90%, 47%, 0.5)'
+                : 'linear-gradient(135deg, hsl(36 90% 47%), hsl(20 75% 48%))',
+              color: 'hsl(20 10% 10%)',
               fontSize: 13,
               fontWeight: 600,
               cursor: formState === 'loading' ? 'wait' : 'pointer',
@@ -335,7 +285,6 @@ export default function SpaceDetailModal({
   )
 }
 
-/** Three pulsing dots for the loading state. */
 function LoadingDots() {
   return (
     <span style={{ display: 'inline-flex', gap: 3 }}>
@@ -346,7 +295,7 @@ function LoadingDots() {
             width: 5,
             height: 5,
             borderRadius: '50%',
-            background: 'white',
+            background: 'hsl(20 10% 10%)',
             animation: `wcPulse 1s ease-in-out ${i * 0.15}s infinite`,
           }}
         />

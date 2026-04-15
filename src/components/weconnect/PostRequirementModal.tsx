@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import ModalBackdrop from './ModalBackdrop'
 
-// ── Shared input style ────────────────────────────────────────────────────
+// ── Warm light input styles ──
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: 'rgba(0,0,0,.3)',
-  border: '1px solid rgba(255,255,255,.08)',
-  borderRadius: 8,
-  padding: '10px 14px',
-  color: '#E8EAF0',
+  background: 'hsl(33 100% 95%)',
+  border: '1px solid hsla(20, 10%, 10%, 0.08)',
+  borderRadius: 10,
+  padding: '11px 14px',
+  color: 'hsl(20 10% 10%)',
   fontFamily: 'inherit',
   fontSize: 13,
   outline: 'none',
@@ -25,6 +25,8 @@ const selectStyle: React.CSSProperties = {
   backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'right 14px center',
+  backgroundSize: '10px 6px',
+  backgroundColor: 'hsl(33 100% 95%)',
   paddingRight: 36,
 }
 
@@ -54,7 +56,6 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
   const [description, setDescription] = useState('')
   const [contactEmail, setContactEmail] = useState('')
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormState('idle')
@@ -124,19 +125,19 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
       {formState === 'success' ? (
         <div style={{ textAlign: 'center', padding: '32px 0 8px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#E8EAF0', marginBottom: 8 }}>
+          <h3 className="font-sora" style={{ fontSize: 16, fontWeight: 600, color: 'hsl(20 10% 10%)', marginBottom: 8 }}>
             {settings.requirementModalSuccessTitle}
           </h3>
-          <p style={{ fontSize: 13, color: 'rgba(232,234,240,0.45)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'hsl(25 10% 49%)', lineHeight: 1.6 }}>
             {settings.requirementModalSuccessMessage}
           </p>
         </div>
       ) : (
         <>
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#E8EAF0', marginBottom: 4 }}>
+          <h2 className="font-sora" style={{ fontSize: 18, fontWeight: 700, color: 'hsl(20 10% 10%)', marginBottom: 4 }}>
             {settings.requirementModalHeading}
           </h2>
-          <p style={{ fontSize: 12, color: 'rgba(232,234,240,0.45)', marginBottom: 20, marginTop: 0 }}>
+          <p style={{ fontSize: 12, color: 'hsl(25 10% 49%)', marginBottom: 20, marginTop: 0 }}>
             {settings.requirementModalDescription}
           </p>
 
@@ -154,63 +155,31 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               ))}
             </select>
 
-            <input
-              type="text"
-              placeholder="Company name · 公司名称"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <input
-              type="text"
-              placeholder="Target location · 目标地区 (e.g. Singapore, Vietnam)"
-              value={targetLocation}
-              onChange={(e) => setTargetLocation(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <input
-              type="text"
-              placeholder="Budget · 预算 (e.g. SGD 5,000–15,000/mo)"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
-            <textarea
-              placeholder="Describe requirements · 详细描述需求..."
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={formState === 'loading'}
-              style={{ ...inputStyle, resize: 'none' }}
-            />
-            <input
-              type="email"
-              placeholder="Contact email · 联系邮箱"
-              value={contactEmail}
-              onChange={(e) => setContactEmail(e.target.value)}
-              disabled={formState === 'loading'}
-              style={inputStyle}
-            />
+            <input type="text" placeholder="Company name · 公司名称" value={companyName} onChange={(e) => setCompanyName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <input type="text" placeholder="Target location · 目标地区 (e.g. Singapore, Vietnam)" value={targetLocation} onChange={(e) => setTargetLocation(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <input type="text" placeholder="Budget · 预算 (e.g. SGD 5,000–15,000/mo)" value={budget} onChange={(e) => setBudget(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <textarea placeholder="Describe requirements · 详细描述需求..." rows={3} value={description} onChange={(e) => setDescription(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
+            <input type="email" placeholder="Contact email · 联系邮箱" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div style={{ fontSize: 12, color: '#EF4444', marginTop: 8 }}>{errorMsg}</div>
+            <div style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
+            className="font-sora"
             style={{
               width: '100%',
               marginTop: 14,
               padding: '12px 0',
-              borderRadius: 8,
+              borderRadius: 10,
               border: 'none',
-              background: formState === 'loading' ? 'rgba(245,166,35,.5)' : '#F5A623',
-              color: 'white',
+              background: formState === 'loading'
+                ? 'hsla(36, 90%, 47%, 0.5)'
+                : 'linear-gradient(135deg, hsl(36 90% 47%), hsl(20 75% 48%))',
+              color: 'hsl(20 10% 10%)',
               fontSize: 13,
               fontWeight: 600,
               cursor: formState === 'loading' ? 'wait' : 'pointer',
@@ -230,6 +199,10 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               'Submit Requirement · 提交需求'
             )}
           </button>
+
+          <p style={{ fontSize: 10, color: 'hsl(25 10% 49%)', textAlign: 'center', marginTop: 8 }}>
+            PER GROUP will respond within 1 business day · PER GROUP将在1个工作日内回复
+          </p>
         </>
       )}
     </ModalBackdrop>
@@ -246,7 +219,7 @@ function LoadingDots() {
             width: 5,
             height: 5,
             borderRadius: '50%',
-            background: 'white',
+            background: 'hsl(20 10% 10%)',
             animation: `wcPulse 1s ease-in-out ${i * 0.15}s infinite`,
           }}
         />

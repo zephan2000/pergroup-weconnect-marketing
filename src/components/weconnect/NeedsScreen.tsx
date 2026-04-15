@@ -67,34 +67,50 @@ export default function NeedsScreen({ settings, isActive }: NeedsScreenProps) {
 
   return (
     <div className="space-y-4 pb-4">
-      {/* Dual CTAs — keep original design, adapted to warm colours */}
+      {/* Dual CTAs — premium gradient cards with DotMotif */}
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => setShowRequirementModal(true)}
-          className="w-full glass-card rounded-xl p-4 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer"
+          className="relative w-full rounded-xl p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border border-amber/20 cursor-pointer overflow-hidden group"
+          style={{ background: 'linear-gradient(135deg, hsl(33 100% 95%), hsl(36 80% 92%), hsl(40 33% 97%))' }}
         >
-          <div className="w-10 h-10 rounded-xl bg-amber/15 flex items-center justify-center mb-3">
-            <Zap className="w-5 h-5 text-amber" />
+          <div className="absolute -top-2 -right-2 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity">
+            <DotMotif className="w-28 h-28" opacity={1} />
           </div>
-          <div className="font-sora font-extrabold text-sm text-pg-text">
-            Post a <span className="text-amber">Need</span>
+          <div className="relative z-10">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
+              style={{ background: 'linear-gradient(135deg, hsla(36,90%,47%,0.2), hsla(20,75%,48%,0.1))' }}
+            >
+              <Zap className="w-5 h-5 text-amber" />
+            </div>
+            <div className="font-sora font-extrabold text-sm text-pg-text">
+              Post a <span className="text-amber">Need</span>
+            </div>
+            <div className="font-noto-sans-sc text-xs text-amber mt-0.5">发布需求</div>
+            <div className="text-[11px] text-muted mt-1.5 leading-relaxed">Tell us what you&apos;re looking for.</div>
           </div>
-          <div className="font-noto-sans-sc text-xs text-amber mt-0.5">发布需求</div>
-          <div className="text-[11px] text-muted mt-1">Tell us what you&apos;re looking for.</div>
         </button>
 
         <button
           onClick={() => setShowOfferingModal(true)}
-          className="w-full glass-card rounded-xl p-4 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer"
+          className="relative w-full rounded-xl p-5 text-left shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border border-deep-orange/15 cursor-pointer overflow-hidden group"
+          style={{ background: 'linear-gradient(135deg, hsl(33 100% 95%), hsl(20 60% 93%), hsl(40 33% 97%))' }}
         >
-          <div className="w-10 h-10 rounded-xl bg-deep-orange/20 flex items-center justify-center mb-3">
-            <Package className="w-5 h-5 text-deep-orange" />
+          <div className="absolute -top-2 -right-2 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity">
+            <DotMotif className="w-28 h-28" opacity={1} />
           </div>
-          <div className="font-sora font-extrabold text-sm text-pg-text">
-            Share What You <span className="text-amber">Offer</span>
+          <div className="relative z-10">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
+              style={{ background: 'linear-gradient(135deg, hsla(20,75%,48%,0.2), hsla(140,35%,44%,0.1))' }}
+            >
+              <Package className="w-5 h-5 text-deep-orange" />
+            </div>
+            <div className="font-sora font-extrabold text-sm text-pg-text">
+              Share What You <span className="text-amber">Offer</span>
+            </div>
+            <div className="font-noto-sans-sc text-xs text-amber mt-0.5">分享您的能力</div>
+            <div className="text-[11px] text-muted mt-1.5 leading-relaxed">Let us know your capabilities.</div>
           </div>
-          <div className="font-noto-sans-sc text-xs text-amber mt-0.5">分享您的能力</div>
-          <div className="text-[11px] text-muted mt-1">Let us know your capabilities.</div>
         </button>
       </div>
 

@@ -9,14 +9,12 @@ interface ModalBackdropProps {
 }
 
 /**
- * Shared modal backdrop with glassmorphism, click-outside-to-close,
- * and Escape key handling. Stops propagation so the overlay behind
- * doesn't also close.
+ * Shared modal backdrop — warm light aesthetic.
+ * Glassmorphism overlay, click-outside-to-close, Escape key handling.
  */
 export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdropProps) {
   const [visible, setVisible] = useState(false)
 
-  // Fade-in: defer by one frame so the browser paints opacity:0 first.
   useEffect(() => {
     if (isOpen) {
       const frame = requestAnimationFrame(() => setVisible(true))
@@ -26,7 +24,6 @@ export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdr
     }
   }, [isOpen])
 
-  // Escape key closes the modal (not the overlay behind it).
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -39,7 +36,7 @@ export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdr
 
   useEffect(() => {
     if (!isOpen) return
-    document.addEventListener('keydown', handleKeyDown, true) // capture phase
+    document.addEventListener('keydown', handleKeyDown, true)
     return () => document.removeEventListener('keydown', handleKeyDown, true)
   }, [isOpen, handleKeyDown])
 
@@ -52,7 +49,7 @@ export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdr
         position: 'fixed',
         inset: 0,
         zIndex: 2100,
-        background: 'rgba(5, 6, 10, 0.7)',
+        background: 'hsla(20, 10%, 10%, 0.4)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         display: 'flex',
@@ -70,13 +67,14 @@ export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdr
           maxWidth: 560,
           maxHeight: 'calc(100vh - 48px)',
           overflowY: 'auto',
-          background: 'rgba(26, 29, 39, 0.95)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 14,
+          background: 'hsl(40 33% 97%)',
+          border: '1px solid hsla(20, 10%, 10%, 0.08)',
+          borderRadius: 16,
           padding: 28,
           position: 'relative',
           transform: visible ? 'translateY(0)' : 'translateY(12px)',
           transition: 'transform 0.25s ease',
+          boxShadow: '0 25px 50px -12px hsla(20, 10%, 10%, 0.15)',
         }}
       >
         {/* Close button */}
@@ -86,15 +84,15 @@ export default function ModalBackdrop({ isOpen, onClose, children }: ModalBackdr
             position: 'absolute',
             top: 14,
             right: 14,
-            background: 'rgba(255,255,255,0.06)',
-            border: 'none',
-            borderRadius: 6,
+            background: 'hsla(20, 10%, 10%, 0.05)',
+            border: '1px solid hsla(20, 10%, 10%, 0.08)',
+            borderRadius: 8,
             width: 30,
             height: 30,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'rgba(232,234,240,0.45)',
+            color: 'hsl(25 10% 49%)',
             fontSize: 16,
             cursor: 'pointer',
             fontFamily: 'inherit',
