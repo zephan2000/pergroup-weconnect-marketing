@@ -127,6 +127,39 @@ html {
    Loaded ONLY via (marketing)/layout.tsx — never applied to /admin routes.
 ─────────────────────────────────────────────────────────────────────── */
 
+/* ─── Scroll reveal system ──────────────────────────────────────────────
+   Elements with class="reveal" start hidden and animate in when they
+   enter the viewport (via ScrollReveal.tsx IntersectionObserver).
+   Stagger with d1/d2/d3 classes for cascading reveals.
+──────────────────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.d1 { transition-delay: 0.1s; }
+.d2 { transition-delay: 0.2s; }
+.d3 { transition-delay: 0.3s; }
+.d4 { transition-delay: 0.4s; }
+
+/* Hero entrance — staggered fade-up (plays immediately, no observer needed) */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-fade-1 { animation: fadeUp 0.8s 0.2s both ease; }
+.hero-fade-2 { animation: fadeUp 0.8s 0.4s both ease; }
+.hero-fade-3 { animation: fadeUp 0.8s 0.6s both ease; }
+.hero-fade-4 { animation: fadeUp 0.8s 0.8s both ease; }
+.hero-fade-5 { animation: fadeUp 0.8s 0.5s both ease; }
+
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 hsla(36, 90%, 47%, 0.4); }
   50%       { opacity: .7; box-shadow: 0 0 0 6px hsla(36, 90%, 47%, 0); }

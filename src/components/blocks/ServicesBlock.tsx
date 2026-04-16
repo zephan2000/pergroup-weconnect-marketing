@@ -41,7 +41,7 @@ export default function ServicesBlock({
   return (
     <section id="services" className="bg-bg py-20 md:py-28">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        <div className="text-center mb-14">
+        <div className="text-center mb-14 reveal">
           <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
             {sectionLabel}
           </p>
@@ -58,7 +58,7 @@ export default function ServicesBlock({
               : DEFAULT_ICONS[i % DEFAULT_ICONS.length]
 
             return (
-              <div key={svc.number} className="glass-card rounded-xl p-6 hover:shadow-md transition-all group">
+              <div key={svc.number} className="glass-card rounded-xl p-6 hover:shadow-md transition-all group reveal">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-amber/15 flex items-center justify-center flex-shrink-0 group-hover:bg-amber/25 transition-colors">
                     <IconComponent className="w-5 h-5 text-amber" />

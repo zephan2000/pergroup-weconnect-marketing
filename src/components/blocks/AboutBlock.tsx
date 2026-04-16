@@ -40,7 +40,7 @@ export default function AboutBlock({
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Left — Story */}
-          <div>
+          <div className="reveal">
             <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
               {sectionLabel}
             </p>
@@ -74,7 +74,7 @@ export default function AboutBlock({
           </div>
 
           {/* Right — Timeline */}
-          <div className="relative">
+          <div className="relative reveal d2">
             <DotMotif className="absolute -top-8 -right-4 w-24 h-24" opacity={0.05} />
             <div className="space-y-0">
               {milestones.map((m, i) => (

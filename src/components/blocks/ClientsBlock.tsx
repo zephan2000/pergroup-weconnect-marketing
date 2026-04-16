@@ -61,7 +61,7 @@ export default function ClientsBlock({
       <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg-2/20 to-bg" />
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
-        <div className="text-center mb-14">
+        <div className="text-center mb-14 reveal">
           <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
             {sectionLabel}
           </p>
@@ -72,7 +72,7 @@ export default function ClientsBlock({
         </div>
 
         {/* Partner types */}
-        <div className="grid md:grid-cols-2 gap-5 mb-16">
+        <div className="grid md:grid-cols-2 gap-5 mb-16 reveal">
           {partnerTypes.map((p) => (
             <div key={p.titleEn} className="glass-card rounded-xl p-6 hover:shadow-md transition-shadow">
               <div className="flex gap-4">
@@ -94,7 +94,7 @@ export default function ClientsBlock({
           <h3 className="font-sora font-bold text-lg text-pg-text">Regional Presence</h3>
           <p className="font-noto-sans-sc text-muted text-sm">区域覆盖</p>
         </div>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 reveal d2">
           {regions.map((r) => (
             <div key={r.name} className="glass-card rounded-xl p-4 text-center hover:shadow-md transition-shadow">
               <div className="font-sora font-extrabold text-amber text-xl">{r.count}</div>

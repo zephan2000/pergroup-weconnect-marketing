@@ -14,6 +14,7 @@ import '../globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import CursorEffect from '@/components/CursorEffect'
+import ScrollReveal from '@/components/ScrollReveal'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
 import { WeConnectProvider } from '@/lib/weconnect/context'
 import WeConnectOverlay from '@/components/WeConnectOverlay'
@@ -100,6 +101,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
         <AnalyticsProvider>
           <WeConnectProvider>
             <CursorEffect />
+            <ScrollReveal />
             <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
               <Nav />
               {children}

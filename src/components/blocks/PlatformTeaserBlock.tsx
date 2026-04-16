@@ -36,7 +36,7 @@ export default function PlatformTeaserBlock({
         <DotMotif className="w-40 h-40" opacity={0.05} />
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8 text-center relative z-10">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 text-center relative z-10 reveal">
         <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
           {sectionLabel}
         </p>

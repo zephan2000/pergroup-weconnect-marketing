@@ -48,7 +48,7 @@ export default function HeroBlock({
         {/* Left — text content */}
         <div className="flex-1 md:w-[60%] space-y-6">
           {eyebrow && (
-            <div className="flex items-center gap-2 text-sm text-muted">
+            <div className="flex items-center gap-2 text-sm text-muted hero-fade-1">
               <span className="inline-block w-2 h-2 rounded-full bg-amber animate-dot-pulse" />
               <span>
                 {eyebrow}
@@ -56,7 +56,7 @@ export default function HeroBlock({
             </div>
           )}
 
-          <h1 className="font-sora font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight">
+          <h1 className="font-sora font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight hero-fade-2">
             {headline && <span className="block text-pg-text">{headline}</span>}
             {headlineAccent && (
               <span className="block text-amber">{headlineAccent}</span>
@@ -67,17 +67,17 @@ export default function HeroBlock({
           </h1>
 
           {chineseSubtitle && (
-            <p className="font-noto-sans-sc text-muted text-lg tracking-widest">
+            <p className="font-noto-sans-sc text-muted text-lg tracking-widest hero-fade-3">
               {chineseSubtitle}
             </p>
           )}
 
-          {ctaButtons.length > 0 && <HeroCTAButtons buttons={ctaButtons} />}
+          {ctaButtons.length > 0 && <div className="hero-fade-4"><HeroCTAButtons buttons={ctaButtons} /></div>}
         </div>
 
         {/* Right — stat cards */}
         {stats.length > 0 && (
-          <div className="w-full md:w-[40%] grid grid-cols-2 gap-4">
+          <div className="w-full md:w-[40%] grid grid-cols-2 gap-4 hero-fade-5">
             {stats.map((stat) => (
               <div key={stat.label} className="glass-card rounded-xl p-5">
                 <div className="font-sora font-extrabold text-3xl text-amber">
