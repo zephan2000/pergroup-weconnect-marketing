@@ -61,7 +61,7 @@ export default function Nav() {
           ))}
           <WeConnectTrigger
             tab="needs"
-            className="text-amber text-sm font-semibold hover:text-amber/80 transition-colors bg-transparent border-none cursor-pointer font-sora"
+            className="text-amber text-sm font-semibold px-3 py-1.5 rounded-lg border border-amber/25 bg-amber/5 hover:bg-amber/15 transition-all duration-200 cursor-pointer font-sora"
           >
             WeConnect ✦
           </WeConnectTrigger>

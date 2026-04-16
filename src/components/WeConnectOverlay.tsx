@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
+import Image from 'next/image'
 import { Zap, AlertTriangle, User, X, Bell, ChevronDown } from 'lucide-react'
 import NeedsScreen from '@/components/weconnect/NeedsScreen'
 import AlertsScreen from '@/components/weconnect/AlertsScreen'
@@ -55,13 +56,14 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
       {/* ── Top Bar ── */}
       <div className="glass-light flex items-center justify-between px-4 h-14 flex-shrink-0">
         <div className="flex items-center gap-3">
-          {/* Brand mark */}
-          <div
-            className="w-6 h-6 bg-amber flex items-center justify-center font-bold text-[10px] text-pg-text rounded flex-shrink-0"
-            style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
-          >
-            P
-          </div>
+          {/* Brand mark — E-Harbor logo, consistent with navbar */}
+          <Image
+            src="/e-harbour-logo.png"
+            alt="PER GROUP by E-Harbor"
+            width={28}
+            height={28}
+            className="object-contain flex-shrink-0"
+          />
           <div className="hidden md:flex flex-col mr-4">
             <span className="font-sora font-extrabold text-pg-text text-sm">WeConnect</span>
             <span className="text-muted text-[9px]">by E-Harbor</span>
