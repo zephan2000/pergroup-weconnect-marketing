@@ -70,7 +70,7 @@ export default function Nav() {
         {/* Desktop CTA */}
         <WeConnectTrigger
           tab="needs"
-          className="hidden md:inline-flex items-center gap-2 bg-amber/10 text-amber text-sm font-semibold px-5 py-2 rounded-lg border border-amber/30 hover:bg-amber hover:text-pg-text transition-all duration-200 cursor-pointer font-sora"
+          className="hidden md:inline-flex items-center gap-2 bg-amber text-pg-text text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/85 transition-all duration-200 border-none cursor-pointer font-sora"
         >
           WECONNECT PLATFORM →
         </WeConnectTrigger>
