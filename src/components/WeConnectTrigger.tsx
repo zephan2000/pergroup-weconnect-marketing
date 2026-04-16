@@ -24,7 +24,7 @@ export default function WeConnectTrigger({
   return (
     <button
       onClick={() => open(tab)}
-      style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...style }}
+      style={style}
       className={className}
     >
       {children}
