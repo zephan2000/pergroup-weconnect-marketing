@@ -4,9 +4,8 @@ import { sendContactEmail, type ContactPayload } from '@/lib/weconnect/email'
 /**
  * POST /api/contact
  *
- * Sends an introduction request email to PER GROUP on behalf of a
- * user who wants to connect with a specific space listing.
- *
+ * Sends an introduction request email to PER GROUP.
+ * Now includes optional title, phone, inquiry type, budget, timeline.
  * Public endpoint — no auth required (v1 scope).
  */
 export async function POST(request: NextRequest) {
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  // Validate required fields
   if (!body.spaceId || typeof body.spaceId !== 'string') {
     return NextResponse.json({ error: 'spaceId is required' }, { status: 400 })
   }
@@ -40,12 +38,15 @@ export async function POST(request: NextRequest) {
       spaceId: body.spaceId,
       spaceName: body.spaceName,
       name: body.name,
+      title: body.title ?? undefined,
       company: body.company,
       email: body.email,
+      phone: body.phone ?? undefined,
+      inquiryType: body.inquiryType ?? undefined,
       message: body.message ?? undefined,
+      budget: body.budget ?? undefined,
+      timeline: body.timeline ?? undefined,
     })
-
-    // TODO: Append row to Google Sheets (contact submissions)
 
     return NextResponse.json({ success: true })
   } catch (err) {

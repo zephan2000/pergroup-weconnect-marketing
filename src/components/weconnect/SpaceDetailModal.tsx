@@ -48,8 +48,10 @@ export default function SpaceDetailModal({
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [name, setName] = useState('')
+  const [title, setTitle] = useState('')
   const [company, setCompany] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -57,8 +59,10 @@ export default function SpaceDetailModal({
       setFormState('idle')
       setErrorMsg('')
       setName('')
+      setTitle('')
       setCompany('')
       setEmail('')
+      setPhone('')
       setMessage('')
     }
   }, [isOpen])
@@ -111,8 +115,10 @@ export default function SpaceDetailModal({
           spaceId: space.id,
           spaceName: space.name,
           name: name.trim(),
+          title: title.trim() || undefined,
           company: company.trim(),
           email: email.trim(),
+          phone: phone.trim() || undefined,
           message: message.trim() || undefined,
         }),
       })
@@ -236,10 +242,16 @@ export default function SpaceDetailModal({
           </h4>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <input type="text" placeholder="Your name · 姓名" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
-            <input type="text" placeholder="Company · 公司" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
-            <input type="email" placeholder="Email · 邮箱" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
-            <textarea placeholder="Message (optional)" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <input type="text" placeholder="Your name · 姓名 *" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <input type="text" placeholder="Job title · 职位" value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            </div>
+            <input type="text" placeholder="Company · 公司 *" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <input type="email" placeholder="Email · 邮箱 *" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <input type="tel" placeholder="Phone · 电话" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            </div>
+            <textarea placeholder="Message (optional) · 留言" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
           </div>
 
           {formState === 'error' && errorMsg && (

@@ -181,3 +181,38 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-04-14] MODIFY [src/app/CLAUDE.md] — Updated route docs, WeConnect overlay tab names, new API routes
 [2026-04-14] MODIFY [src/payload/CLAUDE.md] — Updated PlatformSettings docs
 [2026-04-14] MODIFY [src/lib/CLAUDE.md] — Updated context.tsx tab types, email.ts docs
+[2026-04-26] FIX [src/components/blocks/ClientsBlock.tsx] — ESLint: prefix unused headline prop with _
+[2026-04-26] FIX [src/components/blocks/ValuesBlock.tsx] — ESLint: prefix unused headline prop with _
+[2026-04-26] FIX [src/components/weconnect/ProfileScreen.tsx] — ESLint: remove unused User import
+[2026-04-26] FIX [src/components/Nav.tsx] — CTA button text-white→text-pg-text for light-mode contrast
+[2026-04-26] FIX [src/components/HeroCTAButtons.tsx] — Same text-white→text-pg-text fix
+[2026-04-26] FIX [src/components/blocks/PlatformTeaserBlock.tsx] — Same text-white→text-pg-text fix
+[2026-04-26] ADD [src/components/blocks/ValuesBlockClassic.tsx] — Original dark concentric-ring/spinning-petal design preserved for A/B testing
+[2026-04-26] MODIFY [src/components/WeConnectOverlay.tsx] — Restyled from dark --wc-* palette to warm light aesthetic (bg-bg, glass-card, glass-light)
+[2026-04-26] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Premium gradient CTA cards with DotMotif watermark, warm light palette
+[2026-04-26] MODIFY [src/components/weconnect/AlertsScreen.tsx] — Warm light aesthetic (glass-card, text-pg-text, amber accents)
+[2026-04-26] MODIFY [src/components/weconnect/ProfileScreen.tsx] — Warm light aesthetic with DotMotif
+[2026-04-26] MODIFY [src/components/weconnect/SpacesContent.tsx] — Swapped --wc-* dark vars to --text/--muted/--line/--faint
+[2026-04-26] MODIFY [src/components/weconnect/ModalBackdrop.tsx] — Warm white modal bg, subtle shadow, light border
+[2026-04-26] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Cream inputs, gradient submit button, light text
+[2026-04-26] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Warm light treatment, gradient CTA, --text/--muted vars
+[2026-04-26] ADD [public/e-harbour-logo.png] — E-Harbor logo for navbar and WeConnect topbar
+[2026-04-26] MODIFY [src/components/Nav.tsx] — Replaced polygon "P" with E-Harbor logo via next/image; added button bg to WeConnect nav link; solid amber CTA
+[2026-04-26] MODIFY [src/components/WeConnectOverlay.tsx] — E-Harbor logo in topbar; added next/image import
+[2026-04-26] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Removed SpacesContent rendering (component preserved for future use)
+[2026-04-26] MODIFY [src/components/blocks/ValuesBlock.tsx] — Restored concentric-ring + spinning-petal visualizations adapted to warm light palette
+[2026-04-26] ADD [src/components/ScrollReveal.tsx] — IntersectionObserver-based scroll reveal for .reveal elements
+[2026-04-26] MODIFY [src/app/globals.css] — Added .reveal/.visible CSS, stagger delays (d1-d4), hero fadeUp keyframes
+[2026-04-26] MODIFY [src/app/(marketing)/layout.tsx] — Added ScrollReveal component
+[2026-04-26] MODIFY [src/components/blocks/HeroBlock.tsx] — Hero staggered fadeUp entrance animations
+[2026-04-26] MODIFY [src/components/blocks/AboutBlock.tsx] — Added reveal classes (left/right staggered)
+[2026-04-26] MODIFY [src/components/blocks/ServicesBlock.tsx] — Added reveal classes (heading + cards)
+[2026-04-26] MODIFY [src/components/blocks/ClientsBlock.tsx] — Added reveal classes (heading, partner grid, regions)
+[2026-04-26] MODIFY [src/components/blocks/StatsBlock.tsx] — Added reveal class
+[2026-04-26] MODIFY [src/components/blocks/PlatformTeaserBlock.tsx] — Added reveal class
+[2026-04-26] FIX [src/components/WeConnectTrigger.tsx] — Removed inline style overrides (background:'none') that clobbered Tailwind bg-amber class
+[2026-04-26] MODIFY [src/lib/weconnect/email.ts] — RequirementPayload expanded: added subject, goalAlignment, timeline, contactName, contactTitle, contactPhone. ContactPayload expanded: added title, phone, inquiryType, budget, timeline. Email templates restyled to warm light palette with section headers.
+[2026-04-26] MODIFY [src/app/api/requirement/route.ts] — Updated validation for new fields (contactName required, subject/goalAlignment/timeline/contactTitle/contactPhone optional)
+[2026-04-26] MODIFY [src/app/api/contact/route.ts] — Added optional title, phone, inquiryType, budget, timeline fields
+[2026-04-26] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Restructured into 4 sections: Basic Info (subject, inquiry type), Requirement Details (description, goal, location), Commercial Parameters (budget, timeline), Contact Card (name, title, company, email, phone)
+[2026-04-26] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Added job title and phone fields to contact form
