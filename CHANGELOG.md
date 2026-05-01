@@ -216,3 +216,15 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-04-26] MODIFY [src/app/api/contact/route.ts] — Added optional title, phone, inquiryType, budget, timeline fields
 [2026-04-26] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Restructured into 4 sections: Basic Info (subject, inquiry type), Requirement Details (description, goal, location), Commercial Parameters (budget, timeline), Contact Card (name, title, company, email, phone)
 [2026-04-26] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Added job title and phone fields to contact form
+
+[2026-04-29] ADD [docs/improvements/] — Persistent agent-friendly plan for 5 improvements (cursor, validation UX, Sheets, user ack, i18n toggle). Master README + 5 phase files + TEAM_REVIEW + 3 infrastructure design docs.
+[2026-04-29] ADD [src/lib/i18n/context.tsx] — I18nProvider, useLocale, useStrings hooks. localStorage-persisted EN/CN locale state with navigator.language detection on first visit.
+[2026-04-29] ADD [src/lib/i18n/strings.ts] — UI string dictionary for EN and ZH (nav, forms, weconnect, footer keys).
+[2026-04-29] ADD [src/components/LanguageToggle.tsx] — EN | 中文 toggle button component. Active lang in amber.
+[2026-04-29] ADD [scripts/validate.sh] — Validation harness running TypeScript + ESLint + Next.js build. Phase-end gate.
+[2026-04-29] ADD [scripts/setup-sheets.ts] — Idempotent Google Sheets setup script. Creates 4 tabs (Contact, Requirement, Need, Offering) with header rows.
+[2026-04-29] ADD [scripts/README.md] — Documentation for the scripts folder.
+[2026-04-29] CONFIG [package.json] — Added googleapis dependency, dotenv devDep, npm scripts: sheets:setup, validate.
+[2026-04-29] MODIFY [.env.local.example] — Documented RESEND_FROM_EMAIL_INTERNAL, RESEND_FROM_EMAIL_USER, GOOGLE_SHEETS_SPREADSHEET_ID, GOOGLE_SERVICE_ACCOUNT_KEY.
+[2026-04-29] MODIFY [SECURITY.md] — Logged new env vars; added Vercel production env vars checklist for the improvements plan.
+[2026-04-29] CONFIG [tsconfig.json] — Excluded per-group-connect-main (reference Vite app) and scripts/ from type-check scope.

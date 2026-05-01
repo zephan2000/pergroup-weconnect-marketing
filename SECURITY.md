@@ -169,3 +169,36 @@ Severities: INFO | WARN | DEFERRED
 [2026-04-14] INFO [src/app/api/offering/route.ts] — Public POST endpoint for supplier offering submissions.
   No auth required (v1 scope). Validates required fields, sends email via Resend.
   No Supabase access — email-only. Same pattern as /api/requirement.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Improvements Plan — infrastructure additions (docs/improvements/)
+# ─────────────────────────────────────────────────────────────────────────────
+
+[2026-04-29] INFO [.env.local.example] — Documented new env vars for Phases 3 and 4:
+  RESEND_FROM_EMAIL_INTERNAL — internal email sender (WeConnect <weconnect@pergroup.sg>)
+  RESEND_FROM_EMAIL_USER — user acknowledgement sender (PER GROUP <noreply@pergroup.sg>)
+  GOOGLE_SHEETS_SPREADSHEET_ID — server-only, identifies the submissions log spreadsheet
+  GOOGLE_SERVICE_ACCOUNT_KEY — server-only, JSON or base64. Grants write access to one
+  specific Google Sheet via service account; should NEVER be exposed to client.
+
+[2026-04-29] INFO [scripts/setup-sheets.ts] — One-shot Google Sheets setup script.
+  Reads GOOGLE_SERVICE_ACCOUNT_KEY (server-only env). Creates 4 tabs and headers.
+  Requires service account to have Editor permission on the target spreadsheet.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Vercel production env vars checklist
+# ─────────────────────────────────────────────────────────────────────────────
+# Set these in Vercel dashboard → Project Settings → Environment Variables BEFORE
+# Phases 3 and 4 ship to production. Mark checkbox once set.
+#
+# [ ] RESEND_API_KEY              (existing, confirm set)
+# [ ] RESEND_FROM_EMAIL_INTERNAL  (new — WeConnect <weconnect@pergroup.sg>)
+# [ ] RESEND_FROM_EMAIL_USER      (new — PER GROUP <noreply@pergroup.sg>)
+# [ ] GOOGLE_SHEETS_SPREADSHEET_ID (new — Phase 3)
+# [ ] GOOGLE_SERVICE_ACCOUNT_KEY  (new — Phase 3, base64-encoded JSON recommended)
+#
+# Pre-flight checks before each phase ships:
+# Phase 4: Resend domain pergroup.sg must be verified (DKIM, SPF, DMARC). Test that
+#   noreply@pergroup.sg sends successfully and does not land in Gmail spam.
+# Phase 3: Service account email must have Editor access to the Sheet. Run
+#   `npm run sheets:setup` once after env vars are set in production.
