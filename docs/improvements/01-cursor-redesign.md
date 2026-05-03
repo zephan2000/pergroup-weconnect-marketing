@@ -1,6 +1,6 @@
 # Phase 1 — Cursor Redesign for Light Mode
 
-**Status:** ⏳ Pending
+**Status:** ✅ Done (2026-05-03)
 **Estimated effort:** 30 minutes
 **Files touched:** `src/components/CursorEffect.tsx` (1 file)
 

@@ -16,10 +16,11 @@ echo ""
 
 # ── 1. TypeScript ────────────────────────────────────────────
 echo "▸ [1/3] TypeScript: npx tsc --noEmit"
-TS_OUTPUT=$(npx tsc --noEmit 2>&1 | grep -v "per-group-connect-main" || true)
-if [ -n "$TS_OUTPUT" ]; then
+TS_OUTPUT=$(npx tsc --noEmit 2>&1 || true)
+TS_ERRORS=$(echo "$TS_OUTPUT" | grep -E "error TS[0-9]+:" | grep -v "per-group-connect-main" || true)
+if [ -n "$TS_ERRORS" ]; then
   echo "  ✗ TypeScript errors found:"
-  echo "$TS_OUTPUT" | head -30
+  echo "$TS_ERRORS" | head -30
   exit 1
 fi
 echo "  ✓ TypeScript clean"

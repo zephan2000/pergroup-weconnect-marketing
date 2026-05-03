@@ -228,3 +228,6 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-04-29] MODIFY [.env.local.example] — Documented RESEND_FROM_EMAIL_INTERNAL, RESEND_FROM_EMAIL_USER, GOOGLE_SHEETS_SPREADSHEET_ID, GOOGLE_SERVICE_ACCOUNT_KEY.
 [2026-04-29] MODIFY [SECURITY.md] — Logged new env vars; added Vercel production env vars checklist for the improvements plan.
 [2026-04-29] CONFIG [tsconfig.json] — Excluded per-group-connect-main (reference Vite app) and scripts/ from type-check scope.
+
+[2026-05-03] MODIFY [src/components/CursorEffect.tsx] — Phase 1: Light-mode redesign. Removed mix-blend-mode, added border + shadow to dot, deep-orange canvas particles, dim warm grid lines.
+[2026-05-03] FIX [scripts/validate.sh] — TypeScript error grep now matches `error TSnnnn:` pattern only, ignoring npm notices.

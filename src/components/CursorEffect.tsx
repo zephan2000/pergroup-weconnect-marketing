@@ -2,12 +2,17 @@
 
 /**
  * CursorEffect — custom amber dot cursor + trailing ring + canvas particle background.
- * Matches the cursor and canvas effects from /reference/pergroup-website.html.
+ * Adapted from /reference/pergroup-website.html and rebuilt for the warm light theme.
+ *
+ * Light-mode tweaks vs original:
+ *  - No mix-blend-mode (was 'screen', invisible on warm white)
+ *  - Solid amber dot with subtle dark border + soft shadow for contrast on cream
+ *  - Ring opacity raised (0.7 → 0.85) and color slightly darker for visibility
+ *  - Canvas particles use deep-orange instead of amber for higher contrast on light bg
+ *  - Grid lines switched from amber to dark warm at lower opacity
  *
  * - Dot follows mouse instantly; ring trails with 12% easing per frame.
  * - Interactive elements (a, button) scale the cursor on hover via event delegation.
- * - Canvas draws a subtle grid, 90 floating particles, mouse proximity glow, and
- *   connection lines between nearby particles.
  * - Disabled on touch devices (no pointer).
  * - Sets body cursor:none while mounted; restores on unmount.
  */
@@ -41,7 +46,6 @@ export default function CursorEffect() {
   }, [])
 
   useEffect(() => {
-    // Skip on touch-only devices
     if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) return
 
     const cursor = cursorRef.current
@@ -52,10 +56,8 @@ export default function CursorEffect() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Set body cursor:none
     document.body.style.cursor = 'none'
 
-    // --- Resize ---
     function resize() {
       sizeRef.current.w = canvas!.width = window.innerWidth
       sizeRef.current.h = canvas!.height = window.innerHeight
@@ -67,7 +69,6 @@ export default function CursorEffect() {
       initParticles()
     })
 
-    // --- Mouse tracking ---
     function onMouseMove(e: MouseEvent) {
       mouseRef.current.x = e.clientX
       mouseRef.current.y = e.clientY
@@ -76,7 +77,6 @@ export default function CursorEffect() {
     }
     document.addEventListener('mousemove', onMouseMove)
 
-    // --- Ring easing loop ---
     function animateRing() {
       const rp = ringPosRef.current
       const m = mouseRef.current
@@ -88,14 +88,13 @@ export default function CursorEffect() {
     }
     rafRef.current = requestAnimationFrame(animateRing)
 
-    // --- Interactive element hover (event delegation) ---
-    const INTERACTIVE = 'a, button, .svc, .stat-card, .h-item, .fi, .adv'
+    const INTERACTIVE = 'a, button, input, select, textarea, [role="button"]'
     function onMouseEnter(e: Event) {
       const el = e.target
       if (el instanceof Element && el.matches(INTERACTIVE)) {
         cursor!.style.width = '20px'
         cursor!.style.height = '20px'
-        cursor!.style.opacity = '0.5'
+        cursor!.style.opacity = '0.55'
       }
     }
     function onMouseLeave(e: Event) {
@@ -109,7 +108,7 @@ export default function CursorEffect() {
     document.addEventListener('mouseenter', onMouseEnter, true)
     document.addEventListener('mouseleave', onMouseLeave, true)
 
-    // --- Canvas draw loop ---
+    // ── Canvas draw loop — light mode palette ──
     function draw() {
       const { w, h } = sizeRef.current
       const m = mouseRef.current
@@ -117,8 +116,8 @@ export default function CursorEffect() {
 
       ctx!.clearRect(0, 0, w, h)
 
-      // Grid
-      ctx!.strokeStyle = 'rgba(245,168,42,.022)'
+      // Dim warm grid (replaces amber-on-dark)
+      ctx!.strokeStyle = 'hsla(20, 10%, 10%, 0.025)'
       ctx!.lineWidth = 1
       const gs = 72
       for (let x = 0; x <= w; x += gs) {
@@ -134,7 +133,7 @@ export default function CursorEffect() {
         ctx!.stroke()
       }
 
-      // Particles
+      // Particles — deep-orange base; amber glow near mouse
       for (const p of particles) {
         p.x += p.vx
         p.y += p.vy
@@ -152,17 +151,17 @@ export default function CursorEffect() {
         ctx!.arc(p.x, p.y, p.r + inf * 3, 0, Math.PI * 2)
         ctx!.fillStyle =
           inf > 0.2
-            ? `rgba(245,168,42,${0.12 + inf * 0.35})`
-            : `rgba(57,224,122,${0.06 + inf * 0.2})`
+            ? `hsla(36, 90%, 47%, ${0.18 + inf * 0.4})`
+            : `hsla(20, 75%, 48%, ${0.08 + inf * 0.18})`
         if (inf > 0.1) {
-          ctx!.shadowColor = 'rgba(245,168,42,.4)'
-          ctx!.shadowBlur = 10
+          ctx!.shadowColor = 'hsla(36, 90%, 47%, 0.35)'
+          ctx!.shadowBlur = 8
         }
         ctx!.fill()
         ctx!.shadowBlur = 0
       }
 
-      // Connection lines
+      // Connection lines — deep-orange for visibility on cream
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x
@@ -172,7 +171,7 @@ export default function CursorEffect() {
             ctx!.beginPath()
             ctx!.moveTo(particles[i].x, particles[i].y)
             ctx!.lineTo(particles[j].x, particles[j].y)
-            ctx!.strokeStyle = `rgba(245,168,42,${0.05 * (1 - d / 90)})`
+            ctx!.strokeStyle = `hsla(20, 75%, 48%, ${0.1 * (1 - d / 90)})`
             ctx!.lineWidth = 0.5
             ctx!.stroke()
           }
@@ -183,7 +182,6 @@ export default function CursorEffect() {
     }
     canvasRafRef.current = requestAnimationFrame(draw)
 
-    // --- Cleanup ---
     return () => {
       document.body.style.cursor = ''
       document.removeEventListener('mousemove', onMouseMove)
@@ -197,7 +195,6 @@ export default function CursorEffect() {
 
   return (
     <>
-      {/* Particle canvas background */}
       <canvas
         ref={canvasRef}
         style={{
@@ -207,35 +204,34 @@ export default function CursorEffect() {
           pointerEvents: 'none',
         }}
       />
-      {/* Cursor dot */}
       <div
         ref={cursorRef}
         style={{
           position: 'fixed',
           width: 8,
           height: 8,
-          background: 'var(--amber, #F5A82A)',
+          background: 'hsl(36, 90%, 47%)',
+          border: '1px solid hsla(20, 10%, 10%, 0.18)',
           borderRadius: '50%',
           pointerEvents: 'none',
           zIndex: 9999,
           transform: 'translate(-50%, -50%)',
-          transition: 'width .2s, height .2s',
-          mixBlendMode: 'screen',
+          transition: 'width .2s, height .2s, opacity .2s',
+          boxShadow: '0 1px 4px hsla(20, 10%, 10%, 0.2)',
         }}
       />
-      {/* Cursor ring */}
       <div
         ref={ringRef}
         style={{
           position: 'fixed',
           width: 36,
           height: 36,
-          border: '1px solid rgba(245,168,42,.45)',
+          border: '1px solid hsla(36, 90%, 40%, 0.6)',
           borderRadius: '50%',
           pointerEvents: 'none',
           zIndex: 9998,
           transform: 'translate(-50%, -50%)',
-          opacity: 0.7,
+          opacity: 0.85,
         }}
       />
     </>
