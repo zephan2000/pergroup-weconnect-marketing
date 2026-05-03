@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendOfferingEmail, type OfferingPayload } from '@/lib/weconnect/email'
-import { appendSubmission } from '@/lib/weconnect/sheets'
+import { sendOfferingEmail, sendOfferingAck, detectLocale, type OfferingPayload } from '@/lib/weconnect/email'
+import { appendSubmission, type EmailStatus } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/offering
@@ -31,23 +31,43 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid contactEmail is required' }, { status: 400 })
   }
 
-  let emailStatus: 'sent' | 'failed' = 'sent'
+  const locale = detectLocale(
+    request.headers.get('accept-language'),
+    (body as { lang?: string }).lang,
+  )
+
+  const cleanPayload = {
+    category: body.category,
+    capability: body.capability,
+    idealClient: body.idealClient ?? undefined,
+    availability: body.availability,
+    trackRecord: body.trackRecord ?? undefined,
+    contactName: body.contactName ?? undefined,
+    contactTitle: body.contactTitle ?? undefined,
+    contactEmail: body.contactEmail,
+    contactPhone: body.contactPhone ?? undefined,
+    companyName: body.companyName ?? undefined,
+  }
+
+  let emailStatus: EmailStatus = 'sent'
   let emailError: string | undefined
 
   try {
-    await sendOfferingEmail({
-      category: body.category,
-      capability: body.capability,
-      idealClient: body.idealClient ?? undefined,
-      availability: body.availability,
-      trackRecord: body.trackRecord ?? undefined,
-      contactEmail: body.contactEmail,
-      companyName: body.companyName ?? undefined,
-    })
+    await sendOfferingEmail(cleanPayload)
   } catch (err) {
     emailStatus = 'failed'
     emailError = err instanceof Error ? err.message : String(err)
-    console.error('Offering email error:', err)
+    console.error('[api/offering] Internal email failed:', err)
+  }
+
+  if (emailStatus === 'sent') {
+    try {
+      await sendOfferingAck(cleanPayload, locale)
+    } catch (err) {
+      emailStatus = 'partial'
+      emailError = `User ack failed: ${err instanceof Error ? err.message : String(err)}`
+      console.error('[api/offering] User ack email failed:', err)
+    }
   }
 
   await appendSubmission({

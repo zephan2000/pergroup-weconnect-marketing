@@ -245,3 +245,8 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-03] MODIFY [src/app/api/offering/route.ts] — Phase 3: Wired appendSubmission after email send.
 [2026-05-03] MODIFY [.env.local.example] — Phase 3: New OAuth env vars (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN), removed obsolete SERVICE_ACCOUNT_KEY.
 [2026-05-03] MODIFY [SECURITY.md] — Phase 3: Logged OAuth pivot, public OAuth endpoints risk note (deferred), updated Vercel env checklist.
+[2026-05-03] MODIFY [src/lib/weconnect/email.ts] — Phase 4: Added detectLocale(), FROM_EMAIL_INTERNAL/USER constants, sendContactAck/sendRequirementAck/sendNeedAck/sendOfferingAck. Bilingual ack templates with thank-you + echo of submitted fields. Falls back to legacy RESEND_FROM_EMAIL.
+[2026-05-03] MODIFY [src/app/api/contact/route.ts] — Phase 4: Wired user ack send after internal email. Tracks email_status='partial' if internal succeeds but ack fails.
+[2026-05-03] MODIFY [src/app/api/requirement/route.ts] — Phase 4: Same ack wiring.
+[2026-05-03] MODIFY [src/app/api/need/route.ts] — Phase 4: Same ack wiring.
+[2026-05-03] MODIFY [src/app/api/offering/route.ts] — Phase 4: Same ack wiring.

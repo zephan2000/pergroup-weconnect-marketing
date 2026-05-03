@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendNeedEmail, type NeedPayload } from '@/lib/weconnect/email'
-import { appendSubmission } from '@/lib/weconnect/sheets'
+import { sendNeedEmail, sendNeedAck, detectLocale, type NeedPayload } from '@/lib/weconnect/email'
+import { appendSubmission, type EmailStatus } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/need
@@ -31,22 +31,44 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid contactEmail is required' }, { status: 400 })
   }
 
-  let emailStatus: 'sent' | 'failed' = 'sent'
+  const locale = detectLocale(
+    request.headers.get('accept-language'),
+    (body as { lang?: string }).lang,
+  )
+
+  const cleanPayload = {
+    category: body.category,
+    description: body.description,
+    urgency: body.urgency,
+    budget: body.budget ?? undefined,
+    timeline: body.timeline ?? undefined,
+    goalAlignment: body.goalAlignment ?? undefined,
+    contactName: body.contactName ?? undefined,
+    contactTitle: body.contactTitle ?? undefined,
+    contactEmail: body.contactEmail,
+    contactPhone: body.contactPhone ?? undefined,
+    companyName: body.companyName ?? undefined,
+  }
+
+  let emailStatus: EmailStatus = 'sent'
   let emailError: string | undefined
 
   try {
-    await sendNeedEmail({
-      category: body.category,
-      description: body.description,
-      urgency: body.urgency,
-      budget: body.budget ?? undefined,
-      contactEmail: body.contactEmail,
-      companyName: body.companyName ?? undefined,
-    })
+    await sendNeedEmail(cleanPayload)
   } catch (err) {
     emailStatus = 'failed'
     emailError = err instanceof Error ? err.message : String(err)
-    console.error('Need email error:', err)
+    console.error('[api/need] Internal email failed:', err)
+  }
+
+  if (emailStatus === 'sent') {
+    try {
+      await sendNeedAck(cleanPayload, locale)
+    } catch (err) {
+      emailStatus = 'partial'
+      emailError = `User ack failed: ${err instanceof Error ? err.message : String(err)}`
+      console.error('[api/need] User ack email failed:', err)
+    }
   }
 
   await appendSubmission({

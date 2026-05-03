@@ -1,6 +1,6 @@
 # Phase 4 — User Acknowledgement Email
 
-**Status:** ⏳ Pending
+**Status:** ✅ Done (2026-05-03) — pending Resend domain verification before going live
 **Estimated effort:** 1.5 hours
 **Files touched:** 5 (1 new + 4 modified)
 

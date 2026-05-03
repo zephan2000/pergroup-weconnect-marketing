@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendContactEmail, type ContactPayload } from '@/lib/weconnect/email'
-import { appendSubmission } from '@/lib/weconnect/sheets'
+import { sendContactEmail, sendContactAck, detectLocale, type ContactPayload } from '@/lib/weconnect/email'
+import { appendSubmission, type EmailStatus } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/contact
@@ -34,27 +34,45 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
   }
 
-  let emailStatus: 'sent' | 'failed' = 'sent'
+  const locale = detectLocale(
+    request.headers.get('accept-language'),
+    (body as { lang?: string }).lang,
+  )
+
+  const cleanPayload = {
+    spaceId: body.spaceId,
+    spaceName: body.spaceName,
+    name: body.name,
+    title: body.title ?? undefined,
+    company: body.company,
+    email: body.email,
+    phone: body.phone ?? undefined,
+    inquiryType: body.inquiryType ?? undefined,
+    message: body.message ?? undefined,
+    budget: body.budget ?? undefined,
+    timeline: body.timeline ?? undefined,
+  }
+
+  let emailStatus: EmailStatus = 'sent'
   let emailError: string | undefined
 
   try {
-    await sendContactEmail({
-      spaceId: body.spaceId,
-      spaceName: body.spaceName,
-      name: body.name,
-      title: body.title ?? undefined,
-      company: body.company,
-      email: body.email,
-      phone: body.phone ?? undefined,
-      inquiryType: body.inquiryType ?? undefined,
-      message: body.message ?? undefined,
-      budget: body.budget ?? undefined,
-      timeline: body.timeline ?? undefined,
-    })
+    await sendContactEmail(cleanPayload)
   } catch (err) {
     emailStatus = 'failed'
     emailError = err instanceof Error ? err.message : String(err)
-    console.error('Contact email error:', err)
+    console.error('[api/contact] Internal email failed:', err)
+  }
+
+  // User acknowledgement — best-effort. If internal email failed, skip ack.
+  if (emailStatus === 'sent') {
+    try {
+      await sendContactAck(cleanPayload, locale)
+    } catch (err) {
+      emailStatus = 'partial'
+      emailError = `User ack failed: ${err instanceof Error ? err.message : String(err)}`
+      console.error('[api/contact] User ack email failed:', err)
+    }
   }
 
   // Always log to sheets, regardless of email success

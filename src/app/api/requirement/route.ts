@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendRequirementEmail, type RequirementPayload } from '@/lib/weconnect/email'
-import { appendSubmission } from '@/lib/weconnect/sheets'
+import { sendRequirementEmail, sendRequirementAck, detectLocale, type RequirementPayload } from '@/lib/weconnect/email'
+import { appendSubmission, type EmailStatus } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/requirement
@@ -41,28 +41,45 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid contactEmail is required' }, { status: 400 })
   }
 
-  let emailStatus: 'sent' | 'failed' = 'sent'
+  const locale = detectLocale(
+    request.headers.get('accept-language'),
+    (body as { lang?: string }).lang,
+  )
+
+  const cleanPayload = {
+    subject: body.subject ?? undefined,
+    type: body.type,
+    description: body.description,
+    goalAlignment: body.goalAlignment ?? undefined,
+    targetLocation: body.targetLocation,
+    budget: body.budget ?? undefined,
+    timeline: body.timeline ?? undefined,
+    contactName: body.contactName,
+    contactTitle: body.contactTitle ?? undefined,
+    companyName: body.companyName,
+    contactEmail: body.contactEmail,
+    contactPhone: body.contactPhone ?? undefined,
+  }
+
+  let emailStatus: EmailStatus = 'sent'
   let emailError: string | undefined
 
   try {
-    await sendRequirementEmail({
-      subject: body.subject ?? undefined,
-      type: body.type,
-      description: body.description,
-      goalAlignment: body.goalAlignment ?? undefined,
-      targetLocation: body.targetLocation,
-      budget: body.budget ?? undefined,
-      timeline: body.timeline ?? undefined,
-      contactName: body.contactName,
-      contactTitle: body.contactTitle ?? undefined,
-      companyName: body.companyName,
-      contactEmail: body.contactEmail,
-      contactPhone: body.contactPhone ?? undefined,
-    })
+    await sendRequirementEmail(cleanPayload)
   } catch (err) {
     emailStatus = 'failed'
     emailError = err instanceof Error ? err.message : String(err)
-    console.error('Requirement email error:', err)
+    console.error('[api/requirement] Internal email failed:', err)
+  }
+
+  if (emailStatus === 'sent') {
+    try {
+      await sendRequirementAck(cleanPayload, locale)
+    } catch (err) {
+      emailStatus = 'partial'
+      emailError = `User ack failed: ${err instanceof Error ? err.message : String(err)}`
+      console.error('[api/requirement] User ack email failed:', err)
+    }
   }
 
   await appendSubmission({
