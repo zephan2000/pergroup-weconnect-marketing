@@ -6,16 +6,18 @@
  * 2. Requirement Confirmation (description, goal alignment)
  * 3. Commercial Parameters (budget, timeline)
  * 4. Contact & Card Info (name, title, company, phone, email)
+ *
+ * Per-field validation: errors appear after first submit attempt; then
+ * live-validates on every keystroke until the form is closed/reset.
  */
 
 import { useEffect, useState } from 'react'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import ModalBackdrop from './ModalBackdrop'
+import FormField from './FormField'
 
 const inputClass =
-  'w-full bg-bg-2 border border-line rounded-[10px] px-3.5 py-2.5 text-pg-text font-inter text-sm outline-none placeholder:text-muted'
-
-const labelClass = 'block text-xs text-muted mb-1.5 font-inter'
+  'w-full bg-bg-2 border border-line rounded-[10px] px-3.5 py-2.5 text-pg-text font-inter text-sm outline-none placeholder:text-muted focus:border-amber/50 transition-colors'
 
 const REQUIREMENT_TYPES = [
   { value: 'office', label: '🏢 Office Space · 办公室' },
@@ -34,6 +36,16 @@ const TIMELINE_OPTIONS = [
   { value: 'exploring', label: '🔍 Just Exploring · 初步了解' },
 ]
 
+const selectInline: React.CSSProperties = {
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 14px center',
+  backgroundSize: '10px 6px',
+  paddingRight: 36,
+}
+
 type FormState = 'idle' | 'loading' | 'success' | 'error'
 
 interface PostRequirementModalProps {
@@ -42,9 +54,18 @@ interface PostRequirementModalProps {
   settings: PlatformSettingsData
 }
 
+interface FieldErrors {
+  description?: string
+  contactName?: string
+  companyName?: string
+  contactEmail?: string
+}
+
 export default function PostRequirementModal({ isOpen, onClose, settings }: PostRequirementModalProps) {
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
   // Section 1: Basic Information
   const [subject, setSubject] = useState('')
@@ -66,10 +87,13 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
   const [contactPhone, setContactPhone] = useState('')
   const [contactEmail, setContactEmail] = useState('')
 
+  // Reset everything when the modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormState('idle')
       setErrorMsg('')
+      setSubmitted(false)
+      setFieldErrors({})
       setSubject('')
       setType(REQUIREMENT_TYPES[0].value)
       setDescription('')
@@ -85,24 +109,29 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
     }
   }, [isOpen])
 
+  function validate(): FieldErrors {
+    const errs: FieldErrors = {}
+    if (!description.trim()) errs.description = 'Required'
+    if (!contactName.trim()) errs.contactName = 'Required'
+    if (!companyName.trim()) errs.companyName = 'Required'
+    if (!contactEmail.trim()) errs.contactEmail = 'Required'
+    else if (!contactEmail.includes('@')) errs.contactEmail = 'Invalid email'
+    return errs
+  }
+
+  // Live-validate after first submit attempt
+  useEffect(() => {
+    if (!submitted) return
+    setFieldErrors(validate())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [description, contactName, companyName, contactEmail, submitted])
+
   const handleSubmit = async () => {
-    if (!description.trim()) {
-      setErrorMsg('Please describe your requirement.')
-      setFormState('error')
-      return
-    }
-    if (!contactName.trim()) {
-      setErrorMsg('Contact name is required.')
-      setFormState('error')
-      return
-    }
-    if (!companyName.trim()) {
-      setErrorMsg('Company name is required.')
-      setFormState('error')
-      return
-    }
-    if (!contactEmail.trim() || !contactEmail.includes('@')) {
-      setErrorMsg('Please enter a valid email address.')
+    const errs = validate()
+    setFieldErrors(errs)
+    setSubmitted(true)
+    if (Object.keys(errs).length > 0) {
+      setErrorMsg('Please fill in the required fields.')
       setFormState('error')
       return
     }
@@ -159,8 +188,12 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
           <h2 className="font-sora text-lg font-bold text-pg-text mb-1">
             {settings.requirementModalHeading}
           </h2>
-          <p className="text-xs text-muted mb-5">
+          <p className="text-xs text-muted mb-2">
             {settings.requirementModalDescription}
+          </p>
+          <p className="text-xs text-muted mb-5">
+            Required fields are marked with <span className="text-alert-red">*</span>
+            <span className="font-noto-sans-sc"> · 必填项标记为 <span className="text-alert-red">*</span></span>
           </p>
 
           <div className="space-y-5">
@@ -171,9 +204,9 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                 Basic Information · 基本信息
               </div>
               <div className="space-y-2.5">
-                <div>
-                  <label className={labelClass}>Subject · 主题</label>
+                <FormField label="Subject" labelZh="主题" htmlFor="req-subject">
                   <input
+                    id="req-subject"
                     type="text"
                     placeholder="Brief title for your inquiry · 简要描述您的需求"
                     value={subject}
@@ -181,21 +214,21 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
-                </div>
-                <div>
-                  <label className={labelClass}>Inquiry Type · 需求类型 *</label>
+                </FormField>
+                <FormField label="Inquiry Type" labelZh="需求类型" required htmlFor="req-type">
                   <select
+                    id="req-type"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     disabled={formState === 'loading'}
                     className={inputClass}
-                    style={{ appearance: 'none', WebkitAppearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', backgroundSize: '10px 6px', paddingRight: 36 }}
+                    style={selectInline}
                   >
                     {REQUIREMENT_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
-                </div>
+                </FormField>
               </div>
             </div>
 
@@ -206,9 +239,9 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                 Requirement Details · 需求详情
               </div>
               <div className="space-y-2.5">
-                <div>
-                  <label className={labelClass}>Description · 需求描述 *</label>
+                <FormField label="Description" labelZh="需求描述" required error={fieldErrors.description} htmlFor="req-description">
                   <textarea
+                    id="req-description"
                     placeholder="Describe what you're looking for · 详细描述您的需求..."
                     rows={3}
                     value={description}
@@ -217,10 +250,10 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     className={inputClass}
                     style={{ resize: 'none' }}
                   />
-                </div>
-                <div>
-                  <label className={labelClass}>Goal / Objective · 目标</label>
+                </FormField>
+                <FormField label="Goal / Objective" labelZh="目标" htmlFor="req-goal">
                   <input
+                    id="req-goal"
                     type="text"
                     placeholder="What does success look like? · 您希望达成什么目标?"
                     value={goalAlignment}
@@ -228,10 +261,10 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
-                </div>
-                <div>
-                  <label className={labelClass}>Target Location · 目标地区</label>
+                </FormField>
+                <FormField label="Target Location" labelZh="目标地区" htmlFor="req-location">
                   <input
+                    id="req-location"
                     type="text"
                     placeholder="e.g. Singapore, Vietnam, EU · 目标地区"
                     value={targetLocation}
@@ -239,7 +272,7 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
-                </div>
+                </FormField>
               </div>
             </div>
 
@@ -250,9 +283,9 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                 Commercial Parameters · 商业参数
               </div>
               <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className={labelClass}>Budget · 预算</label>
+                <FormField label="Budget" labelZh="预算" htmlFor="req-budget">
                   <input
+                    id="req-budget"
                     type="text"
                     placeholder="e.g. SGD 5k–15k/mo"
                     value={budget}
@@ -260,21 +293,21 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
-                </div>
-                <div>
-                  <label className={labelClass}>Timeline · 时间</label>
+                </FormField>
+                <FormField label="Timeline" labelZh="时间" htmlFor="req-timeline">
                   <select
+                    id="req-timeline"
                     value={timeline}
                     onChange={(e) => setTimeline(e.target.value)}
                     disabled={formState === 'loading'}
                     className={inputClass}
-                    style={{ appearance: 'none', WebkitAppearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', backgroundSize: '10px 6px', paddingRight: 36 }}
+                    style={selectInline}
                   >
                     {TIMELINE_OPTIONS.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
-                </div>
+                </FormField>
               </div>
             </div>
 
@@ -286,9 +319,9 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               </div>
               <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div>
-                    <label className={labelClass}>Full Name · 姓名 *</label>
+                  <FormField label="Full Name" labelZh="姓名" required error={fieldErrors.contactName} htmlFor="req-name">
                     <input
+                      id="req-name"
                       type="text"
                       placeholder="Your name · 您的姓名"
                       value={contactName}
@@ -296,10 +329,10 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Job Title · 职位</label>
+                  </FormField>
+                  <FormField label="Job Title" labelZh="职位" htmlFor="req-title">
                     <input
+                      id="req-title"
                       type="text"
                       placeholder="e.g. Director · 职位"
                       value={contactTitle}
@@ -307,11 +340,11 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
-                  </div>
+                  </FormField>
                 </div>
-                <div>
-                  <label className={labelClass}>Company · 公司 *</label>
+                <FormField label="Company" labelZh="公司" required error={fieldErrors.companyName} htmlFor="req-company">
                   <input
+                    id="req-company"
                     type="text"
                     placeholder="Company name · 公司名称"
                     value={companyName}
@@ -319,11 +352,11 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
-                </div>
+                </FormField>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div>
-                    <label className={labelClass}>Email · 邮箱 *</label>
+                  <FormField label="Email" labelZh="邮箱" required error={fieldErrors.contactEmail} htmlFor="req-email">
                     <input
+                      id="req-email"
                       type="email"
                       placeholder="your@email.com"
                       value={contactEmail}
@@ -331,10 +364,10 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Phone · 电话</label>
+                  </FormField>
+                  <FormField label="Phone" labelZh="电话" htmlFor="req-phone">
                     <input
+                      id="req-phone"
                       type="tel"
                       placeholder="+65 xxxx xxxx"
                       value={contactPhone}
@@ -342,7 +375,7 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </div>

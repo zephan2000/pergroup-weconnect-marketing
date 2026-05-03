@@ -231,3 +231,6 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 
 [2026-05-03] MODIFY [src/components/CursorEffect.tsx] — Phase 1: Light-mode redesign. Removed mix-blend-mode, added border + shadow to dot, deep-orange canvas particles, dim warm grid lines.
 [2026-05-03] FIX [scripts/validate.sh] — TypeScript error grep now matches `error TSnnnn:` pattern only, ignoring npm notices.
+[2026-05-03] ADD [src/components/weconnect/FormField.tsx] — Phase 2: Shared label + input wrapper. Renders bilingual label, red asterisk for required, inline error below.
+[2026-05-03] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Phase 2: Per-field validation (errors on submit then live-validate), required hint at top, all inputs wrapped in FormField.
+[2026-05-03] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 2: Same per-field validation pattern for the contact form.

@@ -17,7 +17,7 @@ This folder contains the **persistent, agent-friendly implementation plan** for 
 | # | Phase | File | Status | Estimated files touched |
 |---|---|---|---|---|
 | 1 | Cursor redesign for light mode | [`01-cursor-redesign.md`](./01-cursor-redesign.md) | ✅ Done | 1 |
-| 2 | Form field validation UX | [`02-field-validation-ux.md`](./02-field-validation-ux.md) | ⏳ Pending | 3–4 |
+| 2 | Form field validation UX | [`02-field-validation-ux.md`](./02-field-validation-ux.md) | ✅ Done | 3 |
 | 3 | Google Sheets integration | [`03-google-sheets.md`](./03-google-sheets.md) | ⏳ Pending | 6 |
 | 4 | User acknowledgement email | [`04-user-acknowledgement.md`](./04-user-acknowledgement.md) | ⏳ Pending | 5 |
 | 5 | EN/CN site-wide toggle | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ⏳ Pending | ~15 |

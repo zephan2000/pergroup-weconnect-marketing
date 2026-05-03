@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import type { SpaceWithSimilarity } from '@/hooks/useSpacesSearch'
 import ModalBackdrop from './ModalBackdrop'
+import FormField from './FormField'
+
+interface ContactFieldErrors {
+  name?: string
+  company?: string
+  email?: string
+}
 
 const TYPE_COLORS: Record<string, { color: string; bg: string }> = {
   office:     { color: '#F5A623', bg: 'rgba(245,166,35,.12)' },
@@ -47,6 +54,8 @@ export default function SpaceDetailModal({
 }: SpaceDetailModalProps) {
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<ContactFieldErrors>({})
   const [name, setName] = useState('')
   const [title, setTitle] = useState('')
   const [company, setCompany] = useState('')
@@ -58,6 +67,8 @@ export default function SpaceDetailModal({
     if (!isOpen) {
       setFormState('idle')
       setErrorMsg('')
+      setSubmitted(false)
+      setFieldErrors({})
       setName('')
       setTitle('')
       setCompany('')
@@ -66,6 +77,22 @@ export default function SpaceDetailModal({
       setMessage('')
     }
   }, [isOpen])
+
+  function validate(): ContactFieldErrors {
+    const errs: ContactFieldErrors = {}
+    if (!name.trim()) errs.name = 'Required'
+    if (!company.trim()) errs.company = 'Required'
+    if (!email.trim()) errs.email = 'Required'
+    else if (!email.includes('@')) errs.email = 'Invalid email'
+    return errs
+  }
+
+  // Live-validate after first submit attempt
+  useEffect(() => {
+    if (!submitted) return
+    setFieldErrors(validate())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, company, email, submitted])
 
   if (!space) return null
 
@@ -93,13 +120,11 @@ export default function SpaceDetailModal({
   ]
 
   const handleSubmit = async () => {
-    if (!name.trim() || !email.trim()) {
-      setErrorMsg('Please fill in your name and email.')
-      setFormState('error')
-      return
-    }
-    if (!email.includes('@')) {
-      setErrorMsg('Please enter a valid email address.')
+    const errs = validate()
+    setFieldErrors(errs)
+    setSubmitted(true)
+    if (Object.keys(errs).length > 0) {
+      setErrorMsg('Please fill in the required fields.')
       setFormState('error')
       return
     }
@@ -237,21 +262,37 @@ export default function SpaceDetailModal({
         </div>
       ) : (
         <div style={{ marginTop: 24 }}>
-          <h4 className="font-sora" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 14 }}>
+          <h4 className="font-sora" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
             {settings.contactModalHeading}
           </h4>
+          <p className="text-xs text-muted mb-3">
+            Required fields are marked with <span className="text-alert-red">*</span>
+            <span className="font-noto-sans-sc"> · 必填项标记为 <span className="text-alert-red">*</span></span>
+          </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <input type="text" placeholder="Your name · 姓名 *" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
-              <input type="text" placeholder="Job title · 职位" value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label="Your Name" labelZh="姓名" required error={fieldErrors.name} htmlFor="contact-name">
+                <input id="contact-name" type="text" placeholder="Your name · 姓名" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              </FormField>
+              <FormField label="Job Title" labelZh="职位" htmlFor="contact-title">
+                <input id="contact-title" type="text" placeholder="e.g. Director · 职位" value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              </FormField>
             </div>
-            <input type="text" placeholder="Company · 公司 *" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <FormField label="Company" labelZh="公司" required error={fieldErrors.company} htmlFor="contact-company">
+              <input id="contact-company" type="text" placeholder="Company name · 公司名称" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            </FormField>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <input type="email" placeholder="Email · 邮箱 *" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
-              <input type="tel" placeholder="Phone · 电话" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label="Email" labelZh="邮箱" required error={fieldErrors.email} htmlFor="contact-email">
+                <input id="contact-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              </FormField>
+              <FormField label="Phone" labelZh="电话" htmlFor="contact-phone">
+                <input id="contact-phone" type="tel" placeholder="+65 xxxx xxxx" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              </FormField>
             </div>
-            <textarea placeholder="Message (optional) · 留言" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
+            <FormField label="Message" labelZh="留言" htmlFor="contact-message">
+              <textarea id="contact-message" placeholder="Tell us a bit about what you're looking for · 简述需求" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
+            </FormField>
           </div>
 
           {formState === 'error' && errorMsg && (
