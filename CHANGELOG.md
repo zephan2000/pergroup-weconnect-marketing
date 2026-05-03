@@ -234,3 +234,14 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-03] ADD [src/components/weconnect/FormField.tsx] — Phase 2: Shared label + input wrapper. Renders bilingual label, red asterisk for required, inline error below.
 [2026-05-03] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Phase 2: Per-field validation (errors on submit then live-validate), required hint at top, all inputs wrapped in FormField.
 [2026-05-03] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 2: Same per-field validation pattern for the contact form.
+[2026-05-03] PIVOT [docs/improvements/03-google-sheets.md] — Switched from Service Account to OAuth refresh-token auth. Owner's Google Workspace org policy blocks service accounts.
+[2026-05-03] ADD [src/lib/weconnect/sheets.ts] — Phase 3: OAuth-based Google Sheets client with appendSubmission(). Graceful degradation if env vars missing.
+[2026-05-03] ADD [src/app/api/admin/sheets-oauth/init/route.ts] — Phase 3: OAuth consent redirect endpoint.
+[2026-05-03] ADD [src/app/api/admin/sheets-oauth/callback/route.ts] — Phase 3: OAuth callback that displays refresh token for manual env paste.
+[2026-05-03] MODIFY [scripts/setup-sheets.ts] — Phase 3: Use OAuth client + refresh token instead of service account.
+[2026-05-03] MODIFY [src/app/api/contact/route.ts] — Phase 3: Wired appendSubmission after email send.
+[2026-05-03] MODIFY [src/app/api/requirement/route.ts] — Phase 3: Wired appendSubmission after email send.
+[2026-05-03] MODIFY [src/app/api/need/route.ts] — Phase 3: Wired appendSubmission after email send.
+[2026-05-03] MODIFY [src/app/api/offering/route.ts] — Phase 3: Wired appendSubmission after email send.
+[2026-05-03] MODIFY [.env.local.example] — Phase 3: New OAuth env vars (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN), removed obsolete SERVICE_ACCOUNT_KEY.
+[2026-05-03] MODIFY [SECURITY.md] — Phase 3: Logged OAuth pivot, public OAuth endpoints risk note (deferred), updated Vercel env checklist.

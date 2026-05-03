@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContactEmail, type ContactPayload } from '@/lib/weconnect/email'
+import { appendSubmission } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/contact
  *
- * Sends an introduction request email to PER GROUP.
- * Now includes optional title, phone, inquiry type, budget, timeline.
+ * Sends an introduction request email to PER GROUP, then logs to Google Sheets.
+ * Sheet write is best-effort — never fails the API response.
  * Public endpoint — no auth required (v1 scope).
  */
 export async function POST(request: NextRequest) {
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
   }
 
+  let emailStatus: 'sent' | 'failed' = 'sent'
+  let emailError: string | undefined
+
   try {
     await sendContactEmail({
       spaceId: body.spaceId,
@@ -47,11 +51,24 @@ export async function POST(request: NextRequest) {
       budget: body.budget ?? undefined,
       timeline: body.timeline ?? undefined,
     })
-
-    return NextResponse.json({ success: true })
   } catch (err) {
+    emailStatus = 'failed'
+    emailError = err instanceof Error ? err.message : String(err)
     console.error('Contact email error:', err)
-    const msg = err instanceof Error ? err.message : 'Failed to send email'
-    return NextResponse.json({ error: msg }, { status: 500 })
   }
+
+  // Always log to sheets, regardless of email success
+  await appendSubmission({
+    formType: 'contact',
+    emailStatus,
+    emailError,
+    payload: body as unknown as Record<string, unknown>,
+    sourcePage: request.headers.get('referer') ?? undefined,
+  })
+
+  if (emailStatus === 'failed') {
+    return NextResponse.json({ error: emailError }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
 }

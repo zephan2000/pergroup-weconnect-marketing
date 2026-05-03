@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendOfferingEmail, type OfferingPayload } from '@/lib/weconnect/email'
+import { appendSubmission } from '@/lib/weconnect/sheets'
 
 /**
  * POST /api/offering
  *
- * Sends a supplier offering submission email to PER GROUP.
+ * Sends a supplier offering submission email to PER GROUP, then logs to Sheets.
+ * Sheet write is best-effort — never fails the API response.
  * Public endpoint — no auth required (v1 scope).
  */
 export async function POST(request: NextRequest) {
@@ -29,6 +31,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A valid contactEmail is required' }, { status: 400 })
   }
 
+  let emailStatus: 'sent' | 'failed' = 'sent'
+  let emailError: string | undefined
+
   try {
     await sendOfferingEmail({
       category: body.category,
@@ -39,11 +44,23 @@ export async function POST(request: NextRequest) {
       contactEmail: body.contactEmail,
       companyName: body.companyName ?? undefined,
     })
-
-    return NextResponse.json({ success: true })
   } catch (err) {
+    emailStatus = 'failed'
+    emailError = err instanceof Error ? err.message : String(err)
     console.error('Offering email error:', err)
-    const msg = err instanceof Error ? err.message : 'Failed to send email'
-    return NextResponse.json({ error: msg }, { status: 500 })
   }
+
+  await appendSubmission({
+    formType: 'offering',
+    emailStatus,
+    emailError,
+    payload: body as unknown as Record<string, unknown>,
+    sourcePage: request.headers.get('referer') ?? undefined,
+  })
+
+  if (emailStatus === 'failed') {
+    return NextResponse.json({ error: emailError }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
 }

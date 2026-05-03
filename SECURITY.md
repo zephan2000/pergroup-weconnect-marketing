@@ -178,12 +178,25 @@ Severities: INFO | WARN | DEFERRED
   RESEND_FROM_EMAIL_INTERNAL — internal email sender (WeConnect <weconnect@pergroup.sg>)
   RESEND_FROM_EMAIL_USER — user acknowledgement sender (PER GROUP <noreply@pergroup.sg>)
   GOOGLE_SHEETS_SPREADSHEET_ID — server-only, identifies the submissions log spreadsheet
-  GOOGLE_SERVICE_ACCOUNT_KEY — server-only, JSON or base64. Grants write access to one
-  specific Google Sheet via service account; should NEVER be exposed to client.
+  (Originally planned: GOOGLE_SERVICE_ACCOUNT_KEY — superseded by OAuth, see 2026-05-03)
 
-[2026-04-29] INFO [scripts/setup-sheets.ts] — One-shot Google Sheets setup script.
-  Reads GOOGLE_SERVICE_ACCOUNT_KEY (server-only env). Creates 4 tabs and headers.
-  Requires service account to have Editor permission on the target spreadsheet.
+[2026-05-03] INFO [docs/improvements/03-google-sheets.md] — Pivoted from Service Account to
+  OAuth refresh-token auth. Owner's Google Workspace org policy blocked service account
+  access to Drive/Sheets. New env vars:
+    GOOGLE_OAUTH_CLIENT_ID — public-safe (OAuth client ID), server-only convention
+    GOOGLE_OAUTH_CLIENT_SECRET — server-only, sensitive
+    GOOGLE_OAUTH_REFRESH_TOKEN — server-only, sensitive (full Sheets access for granted account)
+  Authorized redirect URIs registered in Google Cloud:
+    http://localhost:3000/api/admin/sheets-oauth/callback
+    https://www.pergroup.sg/api/admin/sheets-oauth/callback
+
+[2026-05-03] WARN [src/app/api/admin/sheets-oauth/*] — Public endpoints for one-time OAuth
+  consent flow. Risk surface: low (a stranger could only authorize their own Google account,
+  not gain access to PER GROUP's data). Production should gate via OAUTH_SETUP_TOKEN env var
+  (DEFERRED — see TEAM_REVIEW.md "OAuth setup endpoints — production access control").
+
+[2026-05-03] INFO [scripts/setup-sheets.ts] — Updated for OAuth. Reads OAuth client/refresh
+  token env vars. Creates 4 tabs and headers. Idempotent.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Vercel production env vars checklist
@@ -195,7 +208,9 @@ Severities: INFO | WARN | DEFERRED
 # [ ] RESEND_FROM_EMAIL_INTERNAL  (new — WeConnect <weconnect@pergroup.sg>)
 # [ ] RESEND_FROM_EMAIL_USER      (new — PER GROUP <noreply@pergroup.sg>)
 # [ ] GOOGLE_SHEETS_SPREADSHEET_ID (new — Phase 3)
-# [ ] GOOGLE_SERVICE_ACCOUNT_KEY  (new — Phase 3, base64-encoded JSON recommended)
+# [ ] GOOGLE_OAUTH_CLIENT_ID      (new — Phase 3 OAuth)
+# [ ] GOOGLE_OAUTH_CLIENT_SECRET  (new — Phase 3 OAuth, sensitive)
+# [ ] GOOGLE_OAUTH_REFRESH_TOKEN  (new — Phase 3 OAuth, sensitive — captured via /api/admin/sheets-oauth/init)
 #
 # Pre-flight checks before each phase ships:
 # Phase 4: Resend domain pergroup.sg must be verified (DKIM, SPF, DMARC). Test that

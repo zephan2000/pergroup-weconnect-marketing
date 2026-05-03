@@ -1,220 +1,97 @@
-# Phase 3 — Google Sheets Integration
+# Phase 3 — Google Sheets Integration (OAuth)
 
-**Status:** ⏳ Pending
-**Estimated effort:** 2 hours (excluding human Google Cloud setup time)
-**Files touched:** 6 (2 new + 4 modified) + 1 setup script (already in scripts/)
+**Status:** ✅ Code complete (2026-05-03) — pending owner Google Cloud setup + smoke test
+**Estimated effort:** 3 hours (OAuth adds infra over service account)
+**Files touched:** ~10 (sheets.ts, OAuth routes, 4 API routes, setup script, env, docs)
 
-## Problem
+## Architecture decision: OAuth, not Service Account
 
-API routes have `TODO: Append row to Google Sheets` comments but no implementation. The team has no automated record of submissions outside the email inbox.
+**Why OAuth instead of Service Account:**
+- The owner's Google Workspace organization policy blocks service account access to Drive/Sheets
+- OAuth with a stored refresh token is the supported alternative for server-to-server access under workspace policies
+- One-time human consent → long-lived refresh token → server can call API indefinitely
 
-## Goal
+**What this looks like in practice:**
+1. Owner does a **one-time** OAuth authorization in their browser (clicks consent on Google's page)
+2. Our app captures the refresh token
+3. Owner pastes refresh token into `.env.local`
+4. Server uses the refresh token forever to mint short-lived access tokens
 
-- One Google Sheets spreadsheet, **4 separate tabs** (Contact / Requirement / Need / Offering)
-- Each form submission appends one row to its corresponding tab
-- Append happens **after** email send. If email fails, the row is still written but `email_status='failed'` + error logged.
-- Idempotent setup script (`npm run sheets:setup`) creates tabs + headers
-- Service account auth — no OAuth flow
+The user never sees this flow — only the owner during initial setup.
 
 ## Prerequisite: Google Cloud setup (human task)
 
-The owner must complete these steps **before** this phase can be tested. Walk through them once:
-
-1. **Create a Google Cloud project** at https://console.cloud.google.com/
-2. **Enable the Google Sheets API:** APIs & Services → Library → search "Google Sheets API" → Enable
-3. **Create a service account:**
-   - APIs & Services → Credentials → Create Credentials → Service Account
-   - Name: `pergroup-sheets-writer`
-   - Role: none required (we'll grant access via sheet sharing)
-   - Click "Done"
-4. **Download the JSON key:**
-   - Click the new service account → Keys → Add Key → Create New Key → JSON
-   - Save the downloaded file
-5. **Create a Google Sheets spreadsheet** in Google Drive
-   - Title: `WeConnect Submissions`
+1. Open https://console.cloud.google.com/
+2. **Enable Google Sheets API:** APIs & Services → Library → "Google Sheets API" → Enable
+3. **Create OAuth credentials:**
+   - APIs & Services → Credentials → **+ CREATE CREDENTIALS → OAuth client ID**
+   - If prompted to configure consent screen first:
+     - User Type: **External** (or Internal if pergroup.sg is a Google Workspace)
+     - App name: `PER GROUP WeConnect`
+     - User support email: `pergroup.sg@gmail.com`
+     - Developer contact: same
+     - Scopes: `https://www.googleapis.com/auth/spreadsheets`
+     - Test users: add the Google account that owns the target spreadsheet
+     - Save
+   - Back to OAuth client ID:
+     - Application type: **Web application**
+     - Name: `WeConnect Sheets Writer`
+     - **Authorized redirect URIs:**
+       - `http://localhost:3000/api/admin/sheets-oauth/callback`
+       - `https://www.pergroup.sg/api/admin/sheets-oauth/callback`
+     - Create
+   - Copy the Client ID and Client Secret
+4. **Create the spreadsheet:**
+   - In Google Drive, create a new Google Sheets file titled `WeConnect Submissions`
    - Note the spreadsheet ID from the URL: `https://docs.google.com/spreadsheets/d/{ID}/edit`
-6. **Share the spreadsheet** with the service account email (found in the JSON file under `client_email`) — give it **Editor** access
-7. **Add to `.env.local`:**
+   - The spreadsheet must be owned by (or shared editor with) the same Google account that completes the OAuth consent
+5. **Set env vars in `.env.local`:**
    ```bash
-   GOOGLE_SHEETS_SPREADSHEET_ID=<the ID from step 5>
-   GOOGLE_SERVICE_ACCOUNT_KEY=<entire JSON file contents on a single line, OR base64-encoded>
+   GOOGLE_OAUTH_CLIENT_ID=<from step 3>
+   GOOGLE_OAUTH_CLIENT_SECRET=<from step 3>
+   GOOGLE_OAUTH_REFRESH_TOKEN=    # leave blank — filled in step 6
+   GOOGLE_SHEETS_SPREADSHEET_ID=<from step 4>
    ```
-   Recommended: base64-encode it to avoid newline issues:
-   ```bash
-   base64 -i path/to/key.json | pbcopy
-   ```
-   Then paste the base64 string. Code will detect and decode if it starts with non-`{`.
+6. **Run the OAuth consent flow once:**
+   - Start dev server: `npm run dev`
+   - Visit `http://localhost:3000/api/admin/sheets-oauth/init` in your browser
+   - Google asks you to sign in and grant Sheets access
+   - After consent, you're redirected to `/api/admin/sheets-oauth/callback`
+   - The page displays your **refresh token**
+   - Copy it → paste into `.env.local` as `GOOGLE_OAUTH_REFRESH_TOKEN`
+   - Restart dev server
+7. **Initialize the spreadsheet tabs:**
+   - Run `npm run sheets:setup`
+   - Verifies OAuth, creates 4 tabs (Contact, Requirement, Need, Offering) with headers
 
 ## Schema
 
-See [`infrastructure/sheets-schema.md`](./infrastructure/sheets-schema.md) for the exact column list per tab.
+Unchanged — see [`infrastructure/sheets-schema.md`](./infrastructure/sheets-schema.md).
 
 ## Implementation
 
 ### New file: `src/lib/weconnect/sheets.ts`
 
-```ts
-/**
- * Google Sheets integration for logging WeConnect submissions.
- * Server-only — uses service account credentials.
- */
+Uses `google.auth.OAuth2` with stored refresh token. Same `appendSubmission()` interface as before. Graceful degradation: if any required env var is missing, logs a warning and silently skips.
 
-import { google } from 'googleapis'
-import type { sheets_v4 } from 'googleapis'
+### New files: OAuth flow endpoints
 
-let _sheets: sheets_v4.Sheets | null = null
+- `src/app/api/admin/sheets-oauth/init/route.ts` — generates Google consent URL with `access_type=offline` and `prompt=consent` (forces refresh token), redirects user
+- `src/app/api/admin/sheets-oauth/callback/route.ts` — receives `code` query param, exchanges for tokens, displays refresh token in plain HTML for the owner to copy
 
-function getSheetsClient(): sheets_v4.Sheets {
-  if (_sheets) return _sheets
+**Security note:** these endpoints are public (no auth gate). The risk surface is low because:
+- The OAuth flow only authorizes the user who clicks through (their own Google account)
+- The refresh token displayed is for THAT user's account, not PER GROUP's
+- Without the spreadsheet ID and the matching account, no data is accessed
+- Production: consider adding an `OAUTH_SETUP_TOKEN` env var requirement to gate these routes (TEAM_REVIEW item)
 
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
-  if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY not set')
+### Modified: 4 API routes (`contact`, `requirement`, `need`, `offering`)
 
-  // Accept raw JSON or base64-encoded JSON
-  const json = raw.trim().startsWith('{')
-    ? raw
-    : Buffer.from(raw, 'base64').toString('utf-8')
+Each route, after the email send, calls `appendSubmission()` with `formType` and the body. If email fails, sheet still records with `email_status='failed'`.
 
-  const credentials = JSON.parse(json)
+### Modified: `scripts/setup-sheets.ts`
 
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  })
-
-  _sheets = google.sheets({ version: 'v4', auth })
-  return _sheets
-}
-
-export type FormType = 'contact' | 'requirement' | 'need' | 'offering'
-
-const TAB_NAMES: Record<FormType, string> = {
-  contact: 'Contact',
-  requirement: 'Requirement',
-  need: 'Need',
-  offering: 'Offering',
-}
-
-export interface SubmissionLog {
-  formType: FormType
-  emailStatus: 'sent' | 'failed' | 'partial'
-  emailError?: string
-  payload: Record<string, unknown>
-  sourcePage?: string
-}
-
-/**
- * Appends one row to the form-type-specific tab.
- * Never throws — logs errors to console. Email-then-sheet flow must not fail
- * the API response if Sheets write fails.
- */
-export async function appendSubmission(log: SubmissionLog): Promise<void> {
-  const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID
-  if (!spreadsheetId) {
-    console.warn('[sheets] GOOGLE_SHEETS_SPREADSHEET_ID not set, skipping append')
-    return
-  }
-
-  try {
-    const sheets = getSheetsClient()
-    const tab = TAB_NAMES[log.formType]
-    const row = buildRow(log)
-
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: `${tab}!A:Z`,
-      valueInputOption: 'RAW',
-      requestBody: { values: [row] },
-    })
-  } catch (err) {
-    console.error('[sheets] Append failed:', err)
-    // Swallow — do not fail the API response
-  }
-}
-
-function buildRow(log: SubmissionLog): unknown[] {
-  // See infrastructure/sheets-schema.md for the column order.
-  // Each form type has its own column ordering.
-  const ts = new Date().toISOString()
-  const p = log.payload
-
-  switch (log.formType) {
-    case 'contact':
-      return [
-        ts, log.emailStatus, log.emailError ?? '', log.sourcePage ?? '',
-        p.spaceId, p.spaceName, p.inquiryType ?? '',
-        p.name, p.title ?? '', p.company, p.email, p.phone ?? '',
-        p.budget ?? '', p.timeline ?? '', p.message ?? '',
-      ]
-    case 'requirement':
-      return [
-        ts, log.emailStatus, log.emailError ?? '', log.sourcePage ?? '',
-        p.subject ?? '', p.type, p.targetLocation,
-        p.description, p.goalAlignment ?? '',
-        p.budget ?? '', p.timeline ?? '',
-        p.contactName, p.contactTitle ?? '', p.companyName, p.contactEmail, p.contactPhone ?? '',
-      ]
-    case 'need':
-      return [
-        ts, log.emailStatus, log.emailError ?? '', log.sourcePage ?? '',
-        p.category, p.description, p.urgency,
-        p.budget ?? '', p.timeline ?? '', p.goalAlignment ?? '',
-        p.contactName ?? '', p.contactTitle ?? '', p.companyName ?? '', p.contactEmail, p.contactPhone ?? '',
-      ]
-    case 'offering':
-      return [
-        ts, log.emailStatus, log.emailError ?? '', log.sourcePage ?? '',
-        p.category, p.capability, p.idealClient ?? '', p.availability, p.trackRecord ?? '',
-        p.contactName ?? '', p.contactTitle ?? '', p.companyName ?? '', p.contactEmail, p.contactPhone ?? '',
-      ]
-  }
-}
-```
-
-### Modified: `src/app/api/contact/route.ts`, `requirement/route.ts`, `need/route.ts`, `offering/route.ts`
-
-After the `await sendXxxEmail(...)` call, wrap with try/catch and call `appendSubmission`:
-
-```ts
-let emailStatus: 'sent' | 'failed' = 'sent'
-let emailError: string | undefined
-
-try {
-  await sendContactEmail({ /* ... */ })
-} catch (err) {
-  emailStatus = 'failed'
-  emailError = err instanceof Error ? err.message : String(err)
-}
-
-// Always log to sheets, regardless of email success
-await appendSubmission({
-  formType: 'contact',
-  emailStatus,
-  emailError,
-  payload: body,
-  sourcePage: request.headers.get('referer') ?? undefined,
-})
-
-if (emailStatus === 'failed') {
-  return NextResponse.json({ error: emailError }, { status: 500 })
-}
-
-return NextResponse.json({ success: true })
-```
-
-### Setup script (already in `scripts/setup-sheets.ts`)
-
-This is created during infrastructure setup. To run:
-```bash
-npm run sheets:setup
-```
-
-It:
-1. Connects via service account
-2. Reads existing tabs
-3. Creates any missing tabs (Contact, Requirement, Need, Offering)
-4. Writes header row to each tab if it's empty
-5. Idempotent — safe to re-run
+Replace service account auth with OAuth2 client using the same env vars as the runtime.
 
 ## Validation
 
@@ -224,27 +101,32 @@ bash scripts/validate.sh
 ```
 
 ### Manual checklist
-- [ ] Run `npm run sheets:setup` — succeeds, creates 4 tabs with headers
-- [ ] Open the Google Sheet — verify all 4 tabs exist with headers
-- [ ] Submit a test PostRequirement form via the UI
-- [ ] Check the Requirement tab — new row appears with correct data
-- [ ] Check that timestamp is in ISO format
-- [ ] Check that `email_status` column reads "sent"
-- [ ] (Optional, harder) Stub `sendRequirementEmail` to throw, submit again — row should appear with `email_status='failed'`
+- [ ] Step 1–5 of prerequisites complete
+- [ ] Visit `/api/admin/sheets-oauth/init` → Google consent page loads
+- [ ] Approve consent → callback page shows refresh token
+- [ ] Refresh token pasted into `.env.local`, dev server restarted
+- [ ] `npm run sheets:setup` succeeds — 4 tabs created with headers
+- [ ] Submit a Post Requirement form via the UI → row appears in Requirement tab with `email_status=sent`
+- [ ] Set `RESEND_API_KEY=invalid` temporarily, submit again → row appears with `email_status=failed` and error in `email_error` column
+- [ ] Restore `RESEND_API_KEY`
 
 ## Risks & rollback
 
-- **Risk:** Service account JSON exposed accidentally → rotate the key in Google Cloud Console
-- **Risk:** Sheets API quota — free tier is 60 read/100 write per minute per user. Far above our submission volume.
-- **Risk:** `googleapis` is a heavy dependency (~5MB). Acceptable for server-side only — we never bundle it for the client.
-- **Rollback:** Comment out the `appendSubmission` calls in API routes; sheets continues to work but no new rows.
+- **Risk:** Refresh token is sensitive (full Sheets API access for the granted account). Treat like a secret.
+- **Risk:** OAuth consent screen "unverified app" warning — acceptable for v1 since the only user is the owner. To remove the warning, app verification by Google is needed (~weeks).
+- **Risk:** Refresh token revoked if user revokes access in Google Account settings — rare; just re-run the OAuth flow.
+- **Risk:** Without `GOOGLE_OAUTH_REFRESH_TOKEN` set, `appendSubmission()` logs a warning and skips. Submissions still email PER GROUP — no data lost from email pipeline.
+- **Rollback:** Comment out `appendSubmission` calls in API routes; sheet writes stop, emails continue.
 
 ## Done when
 
-- [ ] All 4 tabs exist in the spreadsheet with correct headers
-- [ ] One test submission per form type appears in the correct tab
+- [ ] OAuth credentials created in Google Cloud
+- [ ] Refresh token captured and stored in `.env.local`
+- [ ] `npm run sheets:setup` creates 4 tabs successfully
+- [ ] Test submission of each form type appears in the correct tab
 - [ ] Validation harness green
-- [ ] CHANGELOG entries for sheets.ts, 4 API routes, package.json, .env.local.example, SECURITY.md
+- [ ] CHANGELOG entries
+- [ ] SECURITY.md entry for new env vars and OAuth endpoints
 - [ ] This file's Status flipped to ✅ Done
-- [ ] README status table updated
+- [ ] README.md status table updated
 - [ ] Committed and pushed

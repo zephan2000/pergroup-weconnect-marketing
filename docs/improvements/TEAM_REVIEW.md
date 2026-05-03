@@ -87,6 +87,20 @@ Format per item: **Topic** → status → context → decision needed.
 
 ---
 
+## OAuth setup endpoints — production access control
+
+**Status:** Open before public production deploy
+**Context:** Phase 3 introduces `/api/admin/sheets-oauth/init` and `/api/admin/sheets-oauth/callback` routes. They're public because the OAuth consent flow happens once during setup. The risk is low (anyone hitting init only authorizes their own account, not PER GROUP's), but in production we should:
+- Either gate them behind a server-side check (e.g., `OAUTH_SETUP_TOKEN` query param)
+- Or remove the routes entirely after the refresh token is captured
+**Recommendation:** Add a `OAUTH_SETUP_TOKEN` env var; routes return 404 if the token doesn't match.
+
+## Service Account → OAuth pivot
+
+**Status:** Resolved 2026-05-03
+**Context:** Original plan used a Google service account JSON key. The owner's Google Workspace organization policy blocked service account access, so we switched to OAuth refresh-token flow (one-time human consent, long-lived refresh token stored as env var).
+**Outcome:** Phase 3 plan rewritten to OAuth. Same end behavior; setup is more involved (must run consent flow once); no functional drawback.
+
 ## Plan corrections needed
 
 (Empty — agents add entries here when implementation reveals plan errors.)

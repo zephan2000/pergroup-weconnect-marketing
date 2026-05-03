@@ -6,10 +6,12 @@
  *
  * Run: npm run sheets:setup
  *
- * Prerequisites:
- *   - GOOGLE_SHEETS_SPREADSHEET_ID set in .env.local
- *   - GOOGLE_SERVICE_ACCOUNT_KEY set in .env.local (raw JSON or base64)
- *   - Service account has Editor access to the spreadsheet
+ * Prerequisites (see docs/improvements/03-google-sheets.md):
+ *   1. GOOGLE_OAUTH_CLIENT_ID + GOOGLE_OAUTH_CLIENT_SECRET set in .env.local
+ *   2. Visit /api/admin/sheets-oauth/init to obtain refresh token
+ *   3. GOOGLE_OAUTH_REFRESH_TOKEN set in .env.local
+ *   4. GOOGLE_SHEETS_SPREADSHEET_ID set in .env.local
+ *   5. The Google account that completed OAuth owns/has Editor on the spreadsheet
  */
 
 import { config } from 'dotenv'
@@ -19,7 +21,7 @@ import { google } from 'googleapis'
 // Load .env.local
 config({ path: resolve(process.cwd(), '.env.local') })
 
-// ── Schema definitions (must match src/lib/weconnect/sheets.ts) ──
+// ── Schema definitions (must match src/lib/weconnect/sheets.ts buildRow order) ──
 
 const COMMON_HEADERS = ['timestamp', 'email_status', 'email_error', 'source_page']
 
@@ -84,49 +86,48 @@ const TABS = {
 
 type TabName = keyof typeof TABS
 
-// ── Setup ──
-
 async function main() {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID
-  if (!spreadsheetId) {
-    console.error('✗ GOOGLE_SHEETS_SPREADSHEET_ID is not set in .env.local')
-    process.exit(1)
+  if (!spreadsheetId) die('GOOGLE_SHEETS_SPREADSHEET_ID is not set in .env.local')
+
+  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET
+  const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+  if (!clientId) die('GOOGLE_OAUTH_CLIENT_ID is not set in .env.local')
+  if (!clientSecret) die('GOOGLE_OAUTH_CLIENT_SECRET is not set in .env.local')
+  if (!refreshToken) {
+    die(
+      'GOOGLE_OAUTH_REFRESH_TOKEN is not set in .env.local\n' +
+      '  Visit http://localhost:3000/api/admin/sheets-oauth/init in your browser to obtain one.\n' +
+      '  (Run `npm run dev` in another terminal first.)',
+    )
   }
 
-  const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
-  if (!rawKey) {
-    console.error('✗ GOOGLE_SERVICE_ACCOUNT_KEY is not set in .env.local')
-    process.exit(1)
-  }
+  const oauth2 = new google.auth.OAuth2(clientId, clientSecret)
+  oauth2.setCredentials({ refresh_token: refreshToken })
 
-  // Accept raw JSON or base64
-  let credentials
+  console.log(`\nSpreadsheet ID: ${spreadsheetId}`)
+  console.log(`OAuth client ID: ${clientId}\n`)
+
+  const sheets = google.sheets({ version: 'v4', auth: oauth2 })
+
+  // Verify access & get current structure
+  let meta
   try {
-    const json = rawKey.trim().startsWith('{')
-      ? rawKey
-      : Buffer.from(rawKey, 'base64').toString('utf-8')
-    credentials = JSON.parse(json)
+    meta = await sheets.spreadsheets.get({ spreadsheetId })
   } catch (err) {
-    console.error('✗ Failed to parse GOOGLE_SERVICE_ACCOUNT_KEY:', err)
+    console.error('\n✗ Failed to read spreadsheet. Check that:')
+    console.error('  • The spreadsheet ID is correct')
+    console.error('  • The OAuth-granted Google account has access to the spreadsheet')
+    console.error('  • The refresh token is still valid (re-run OAuth flow if revoked)')
+    console.error('\nError:', err instanceof Error ? err.message : err)
     process.exit(1)
   }
 
-  console.log(`\nUsing service account: ${credentials.client_email}`)
-  console.log(`Spreadsheet ID: ${spreadsheetId}\n`)
-
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  })
-
-  const sheets = google.sheets({ version: 'v4', auth })
-
-  // Get current spreadsheet structure
-  const meta = await sheets.spreadsheets.get({ spreadsheetId })
   const existingTabs = new Set(
     (meta.data.sheets ?? [])
       .map((s) => s.properties?.title)
-      .filter((t): t is string => typeof t === 'string')
+      .filter((t): t is string => typeof t === 'string'),
   )
 
   console.log(`Existing tabs: ${[...existingTabs].join(', ') || '(none)'}\n`)
@@ -139,9 +140,7 @@ async function main() {
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
       requestBody: {
-        requests: tabsToCreate.map((title) => ({
-          addSheet: { properties: { title } },
-        })),
+        requests: tabsToCreate.map((title) => ({ addSheet: { properties: { title } } })),
       },
     })
     console.log('  ✓ Tabs created\n')
@@ -174,8 +173,12 @@ async function main() {
   console.log('\n✓ Setup complete')
 }
 
+function die(msg: string): never {
+  console.error(`✗ ${msg}`)
+  process.exit(1)
+}
+
 function columnLetter(n: number): string {
-  // 1 → A, 26 → Z, 27 → AA, etc.
   let s = ''
   while (n > 0) {
     const rem = (n - 1) % 26
