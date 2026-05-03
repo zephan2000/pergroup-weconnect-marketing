@@ -20,7 +20,7 @@ This folder contains the **persistent, agent-friendly implementation plan** for 
 | 2 | Form field validation UX | [`02-field-validation-ux.md`](./02-field-validation-ux.md) | ✅ Done | 3 |
 | 3 | Google Sheets integration | [`03-google-sheets.md`](./03-google-sheets.md) | ✅ Code done (awaits owner OAuth setup) | 9 |
 | 4 | User acknowledgement email | [`04-user-acknowledgement.md`](./04-user-acknowledgement.md) | ✅ Done (awaits Resend domain verify) | 5 |
-| 5 | EN/CN site-wide toggle | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ⏳ Pending | ~15 |
+| 5 | EN/CN site-wide toggle | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ✅ Done (some block defaults English-only, CMS-driven works) | ~16 |
 
 ## Locked design decisions
 

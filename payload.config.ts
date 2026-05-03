@@ -16,6 +16,17 @@ export default buildConfig({
     fallbackLanguage: 'en',
   },
 
+  // Frontend content localization. Each field marked `localized: true` stores
+  // a value per locale; queries with `{ locale }` pick the right one.
+  // Fallback: if zh value is empty, return en. See:
+  //   docs/improvements/infrastructure/i18n-architecture.md
+  //   docs/improvements/infrastructure/cms-i18n-migration.md
+  localization: {
+    locales: ['en', 'zh'],
+    defaultLocale: 'en',
+    fallback: true,
+  },
+
   admin: {
     // Payload built-in auth — CMS editors only. See CLAUDE.md Authentication section.
     user: Users.slug,

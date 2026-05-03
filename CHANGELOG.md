@@ -250,3 +250,25 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-03] MODIFY [src/app/api/requirement/route.ts] — Phase 4: Same ack wiring.
 [2026-05-03] MODIFY [src/app/api/need/route.ts] — Phase 4: Same ack wiring.
 [2026-05-03] MODIFY [src/app/api/offering/route.ts] — Phase 4: Same ack wiring.
+
+[2026-05-04] MODIFY [src/lib/i18n/context.tsx] — Phase 5: Cookie-aware I18nProvider. Reads cookie/localStorage/navigator.language; setLocale() writes to BOTH cookie AND localStorage. Accepts initialLocale prop from server.
+[2026-05-04] ADD [src/lib/i18n/server.ts] — Phase 5: getServerLocale() reads pergroup-lang cookie via next/headers. Used by marketing layout + page to pass locale into Payload queries.
+[2026-05-04] MODIFY [src/lib/i18n/strings.ts] — Phase 5: Expanded dictionary covering forms, weconnect, footer, hero. AI-LOW-CONF translations marked for native speaker review.
+[2026-05-04] MODIFY [payload.config.ts] — Phase 5: Added localization config (locales: en/zh, defaultLocale: en, fallback: true).
+[2026-05-04] MODIFY [src/payload/blocks/HeroBlock.ts] — Phase 5: Marked text fields as localized:true; added new "subtitle" localized field; kept legacy chineseSubtitle/chineseLabel as fallback.
+[2026-05-04] MODIFY [src/payload/blocks/StatsBlock.ts] — Phase 5: Marked label localized:true; legacy chineseLabel preserved.
+[2026-05-04] MODIFY [src/payload/blocks/ValuesBlock.ts] — Phase 5: Marked headline + sectionLabel + item english + motto english/label as localized:true; legacy chinese fields preserved.
+[2026-05-04] MODIFY [src/payload/blocks/AboutBlock.ts] — Phase 5: Marked all text + body richText + advantage fields as localized:true.
+[2026-05-04] MODIFY [src/payload/blocks/ServicesBlock.ts] — Phase 5: Marked title/description/sectionLabel as localized:true; legacy chineseTitle preserved.
+[2026-05-04] MODIFY [src/payload/blocks/PlatformTeaserBlock.ts] — Phase 5: Marked all text + body richText + features fields as localized:true.
+[2026-05-04] MODIFY [src/app/(marketing)/layout.tsx] — Phase 5: Reads server locale from cookie; passes to Payload findGlobal calls; sets <html lang>; wraps children in I18nProvider with initialLocale.
+[2026-05-04] MODIFY [src/app/(marketing)/page.tsx] — Phase 5: Reads server locale; passes to payload.find() for locale-aware blocks.
+[2026-05-04] MODIFY [src/components/Nav.tsx] — Phase 5: Added <LanguageToggle> (desktop + mobile menu); nav links use t.nav from dictionary.
+[2026-05-04] MODIFY [src/components/Footer.tsx] — Phase 5: Localized footer copy via dictionary; brand pillar Chinese line preserved in both locales.
+[2026-05-04] MODIFY [src/components/blocks/HeroBlock.tsx] — Phase 5: Locale-aware subtitle resolution (new localized "subtitle" field → legacy chineseSubtitle fallback in zh mode).
+[2026-05-04] MODIFY [src/components/WeConnectOverlay.tsx] — Phase 5: Localized topbar + sidebar tabs via t.weconnect.
+[2026-05-04] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Phase 5: Localized CTA cards, preview alert, recent needs via per-locale data + t.weconnect strings.
+[2026-05-04] MODIFY [src/components/weconnect/AlertsScreen.tsx] — Phase 5: Localized sample alerts via per-locale arrays + t.weconnect strings.
+[2026-05-04] MODIFY [src/components/weconnect/ProfileScreen.tsx] — Phase 5: Localized labels + per-locale my-posts / company fields data.
+[2026-05-04] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Phase 5: Localized validation error messages; sends body.lang for ack email locale override.
+[2026-05-04] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 5: Same.
