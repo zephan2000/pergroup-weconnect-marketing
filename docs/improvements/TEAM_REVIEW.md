@@ -95,6 +95,25 @@ Format per item: **Topic** → status → context → decision needed.
 - Or remove the routes entirely after the refresh token is captured
 **Recommendation:** Add a `OAUTH_SETUP_TOKEN` env var; routes return 404 if the token doesn't match.
 
+## Sheets OAuth refresh token — recurring maintenance
+
+**Status:** Operational reminder (not blocking, but needs awareness)
+**Context:** Phase 3 uses Google OAuth in Testing mode (we deliberately skipped Google's lengthy app verification). Per Google's policy, refresh tokens for Testing-mode apps **may expire after ~7 days**. In practice this is loosely enforced — tokens often last weeks/months — but CAN stop working without warning.
+
+**Symptom:** Sheet writes silently stop (PER GROUP emails still go through; the gap is invisible to users). Server logs show `[sheets] Append failed: invalid_grant`.
+
+**Fix (3 minutes):**
+1. Run `npm run dev` locally
+2. Visit `http://localhost:3000/api/admin/sheets-oauth/init`
+3. Sign in with `pergroup.sg@gmail.com` and approve the consent
+4. Copy the new refresh token from the callback page
+5. Update `GOOGLE_OAUTH_REFRESH_TOKEN` in `.env.local` (dev) or Vercel env vars (prod)
+6. Redeploy if production
+
+**Recommendation:** Set a calendar reminder every ~5 weeks to verify Sheet rows are still appearing for new submissions. If they aren't, run the refresh flow above. Full procedure documented in `docs/improvements/03-google-sheets.md` under "Operational note: refresh token expiry".
+
+The same reminder is shown inline on the OAuth callback page each time a new token is captured.
+
 ## Service Account → OAuth pivot
 
 **Status:** Resolved 2026-05-03

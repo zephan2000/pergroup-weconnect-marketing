@@ -110,11 +110,46 @@ bash scripts/validate.sh
 - [ ] Set `RESEND_API_KEY=invalid` temporarily, submit again → row appears with `email_status=failed` and error in `email_error` column
 - [ ] Restore `RESEND_API_KEY`
 
+## Operational note: refresh token expiry (Testing-mode apps)
+
+**Important for whoever maintains this app long-term.**
+
+Because the OAuth app stays in "Testing" mode (we deliberately did NOT publish it for verification), Google's policy says the refresh token **may expire after ~7 days**.
+
+In practice this is rarely enforced for single-user first-party apps, and a token captured today often lasts months. But it CAN expire without warning, in which case:
+
+- `appendSubmission()` calls start failing silently (logged to console, no user impact)
+- The most recent rows in the Sheet will have `email_status='partial'` if you wired the catch correctly, or simply stop appearing
+- The PER GROUP email pipeline keeps working — only the Sheet logging stops
+
+**How to refresh the token (3 minutes, no code change):**
+
+1. (Local dev) Run `npm run dev`
+2. Visit `http://localhost:3000/api/admin/sheets-oauth/init`
+3. Sign in with the same Google account that owns the spreadsheet (`pergroup.sg@gmail.com`)
+4. Click through the "unverified app" warning (Advanced → Continue)
+5. Copy the new refresh token shown on the callback page
+6. Update `GOOGLE_OAUTH_REFRESH_TOKEN`:
+   - Local: paste into `.env.local`, restart `npm run dev`
+   - Production: paste into Vercel → Project Settings → Environment Variables, then redeploy
+
+**Permanent fix (not recommended unless needed):**
+
+Publish the OAuth app and complete Google's app verification process. This removes the "unverified app" warning AND extends refresh token life to indefinite. Cost: 4–6 weeks of review, security assessment paperwork, and ongoing compliance. Only worth doing if you ever expose this OAuth flow to non-owners. Otherwise, the 30-second refresh-token regeneration is much cheaper.
+
+**Detection signal — watch for these in production logs:**
+- `[sheets] Append failed: invalid_grant` — refresh token revoked or expired, regenerate
+- `[sheets] Append failed: invalid_client` — client ID/secret env mismatch
+- No log entries but no rows appearing — env vars cleared (check Vercel)
+
+This reminder is also surfaced on the OAuth callback page itself when a token is captured, so the next person to run the flow sees it inline.
+
 ## Risks & rollback
 
 - **Risk:** Refresh token is sensitive (full Sheets API access for the granted account). Treat like a secret.
 - **Risk:** OAuth consent screen "unverified app" warning — acceptable for v1 since the only user is the owner. To remove the warning, app verification by Google is needed (~weeks).
 - **Risk:** Refresh token revoked if user revokes access in Google Account settings — rare; just re-run the OAuth flow.
+- **Risk:** Refresh token may expire ~7 days when OAuth app is in Testing mode. See "Operational note" above.
 - **Risk:** Without `GOOGLE_OAUTH_REFRESH_TOKEN` set, `appendSubmission()` logs a warning and skips. Submissions still email PER GROUP — no data lost from email pipeline.
 - **Rollback:** Comment out `appendSubmission` calls in API routes; sheet writes stop, emails continue.
 

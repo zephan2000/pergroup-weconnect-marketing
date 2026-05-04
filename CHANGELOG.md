@@ -251,6 +251,10 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-03] MODIFY [src/app/api/need/route.ts] — Phase 4: Same ack wiring.
 [2026-05-03] MODIFY [src/app/api/offering/route.ts] — Phase 4: Same ack wiring.
 
+[2026-05-04] MODIFY [src/app/api/admin/sheets-oauth/callback/route.ts] — Added inline reminder banner on token capture page warning about ~7-day refresh token expiry in OAuth Testing mode.
+[2026-05-04] MODIFY [docs/improvements/03-google-sheets.md] — New "Operational note: refresh token expiry" section with detection signals, regeneration steps, and verification publishing trade-off.
+[2026-05-04] MODIFY [docs/improvements/TEAM_REVIEW.md] — Added recurring maintenance entry for Sheets OAuth refresh token.
+
 [2026-05-04] MODIFY [src/lib/i18n/context.tsx] — Phase 5: Cookie-aware I18nProvider. Reads cookie/localStorage/navigator.language; setLocale() writes to BOTH cookie AND localStorage. Accepts initialLocale prop from server.
 [2026-05-04] ADD [src/lib/i18n/server.ts] — Phase 5: getServerLocale() reads pergroup-lang cookie via next/headers. Used by marketing layout + page to pass locale into Payload queries.
 [2026-05-04] MODIFY [src/lib/i18n/strings.ts] — Phase 5: Expanded dictionary covering forms, weconnect, footer, hero. AI-LOW-CONF translations marked for native speaker review.

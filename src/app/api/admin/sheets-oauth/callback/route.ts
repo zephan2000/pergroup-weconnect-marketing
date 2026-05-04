@@ -71,7 +71,23 @@ export async function GET(request: NextRequest) {
         <li>Run <code>npm run sheets:setup</code> to create the tabs</li>
       </ol>
 
-      <p style="margin-top:32px;color:#888;font-size:12px;">
+      <div style="margin-top:24px;padding:14px 16px;background:#fff8e6;border-left:3px solid #c17f1a;border-radius:6px;">
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#1a1714;">⚠ Token refresh reminder</p>
+        <p style="margin:0;font-size:12px;line-height:1.6;color:#5c534a;">
+          This refresh token <strong>may expire after ~7 days</strong> while the OAuth app is
+          in <em>Testing</em> mode (Google's policy for unverified apps). If Sheets writes
+          start failing silently in production, just visit
+          <code>/api/admin/sheets-oauth/init</code> again to mint a fresh token, paste into
+          <code>.env.local</code> (or Vercel env vars), and redeploy. Takes ~30 seconds.
+        </p>
+        <p style="margin:8px 0 0;font-size:12px;line-height:1.6;color:#5c534a;">
+          To eliminate this entirely, publish the OAuth app for verification (4–6 weeks).
+          Not recommended unless you outgrow single-owner usage. See
+          <code>docs/improvements/03-google-sheets.md</code>.
+        </p>
+      </div>
+
+      <p style="margin-top:24px;color:#888;font-size:12px;">
         This refresh token grants access to the granted Google account's Sheets data.
         Treat it like a password. Do not commit it.
       </p>
