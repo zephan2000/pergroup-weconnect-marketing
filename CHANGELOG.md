@@ -289,3 +289,5 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-04] BACKUP [Supabase cms schema → cms_backup_20260504] — Pre-Phase-5 backup. 46 tables, 1,254 rows verified ✓ via in-DB clone. Drop after Phase 5 stable in prod 48h+.
 [2026-05-04] MODIFY [docs/improvements/README.md] — Linked the cms-backup-runbook from the operational runbooks section + folder map.
 [2026-05-04] MODIFY [docs/improvements/TEAM_REVIEW.md] — Added "CMS backup runbook" reference for migration workflows.
+
+[2026-05-04] MODIFY [payload.config.ts] — Phase 5 retry: Set `push: false` on postgres adapter. All schema changes now flow through explicit Payload migrations. Prevents the recurrence of the Drizzle auto-push crash that revert 465450f addressed.

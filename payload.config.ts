@@ -54,8 +54,14 @@ export default buildConfig({
     // DECISION: schemaName places all Payload-generated tables in the `cms`
     // Postgres schema, keeping them separate from weconnect.* tables.
     // Requires `CREATE SCHEMA IF NOT EXISTS cms;` in Supabase before first run.
-    // Verify: check @payloadcms/db-postgres docs for your exact version.
     schemaName: 'cms',
+    // Disable Drizzle Kit auto-push at boot. All schema changes flow through
+    // explicit migrations (`npx payload migrate:create` + hand-edit if needed,
+    // then `npx payload migrate`). See:
+    //   docs/improvements/infrastructure/cms-backup-runbook.md
+    // Reason: auto-push with `localized: true` previously tried to drop columns
+    // with live CMS data and crashed Vercel (no TTY for the y/N prompt).
+    push: false,
   }),
 
   // Lexical is the default and recommended rich text editor for Payload v3.
