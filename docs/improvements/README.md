@@ -46,6 +46,12 @@ These were settled with the project owner before this plan was written. **Do not
 
 See [`TEAM_REVIEW.md`](./TEAM_REVIEW.md). These don't block implementation but should be discussed before launch.
 
+## Operational runbooks
+
+These are reference docs you read **before** doing risky operations, not phase plans:
+
+- [`infrastructure/cms-backup-runbook.md`](./infrastructure/cms-backup-runbook.md) — **read this before any Payload migration on production.** Backup procedure, verification, restore commands, cleanup cadence.
+
 ## Folder map
 
 ```
@@ -59,6 +65,7 @@ docs/improvements/
 ├── 05-i18n-toggle.md
 ├── TEAM_REVIEW.md                  ← open questions
 └── infrastructure/
+    ├── cms-backup-runbook.md       ← backup/restore SOP for any CMS migration
     ├── i18n-architecture.md        ← how toggle + dictionary + CMS interact
     ├── cms-i18n-migration.md       ← which CMS fields need a Chinese pair added
     └── sheets-schema.md            ← exact column definitions per tab

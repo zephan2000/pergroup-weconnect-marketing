@@ -95,6 +95,17 @@ Format per item: **Topic** → status → context → decision needed.
 - Or remove the routes entirely after the refresh token is captured
 **Recommendation:** Add a `OAUTH_SETUP_TOKEN` env var; routes return 404 if the token doesn't match.
 
+## CMS backup runbook — read before any migration
+
+**Status:** Operational reference (always relevant)
+**Context:** Any time we modify Payload schemas (add `localized: true`, drop columns, rename fields), we MUST take a backup first. The procedure is documented in [`infrastructure/cms-backup-runbook.md`](./infrastructure/cms-backup-runbook.md). It includes:
+- Two backup options (in-DB schema clone, or off-site `pg_dump`)
+- Verification SQL (every table row count must show ✓)
+- Restore commands (Option A schema rename, Option B file restore, Option C dashboard restore)
+- Cleanup cadence (drop backup after 48 hours stable in production)
+
+**For agents:** if a user asks for a migration plan that touches existing CMS data, the FIRST step in the plan must reference this runbook. Never run `npx payload migrate` against production without a verified backup.
+
 ## Sheets OAuth refresh token — recurring maintenance
 
 **Status:** Operational reminder (not blocking, but needs awareness)

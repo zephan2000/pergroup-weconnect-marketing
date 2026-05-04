@@ -284,3 +284,8 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-04] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 5 (REVERTED): Same.
 
 [2026-05-04] REVERT [Phase 5 commit 8c553b8] — Reverted Phase 5 in full. Cause: enabling Payload localization triggered Drizzle schema push that wanted to drop ~30 existing columns (with CMS data) on production. Vercel cannot answer the interactive y/N prompt → all page renders 500'd. Production DB was NOT modified (push aborted before any DDL ran). Repository now back to Phase 4 state. Proper Phase 5 retry requires writing a data-preserving Payload migration; tracked in TEAM_REVIEW.md.
+
+[2026-05-04] ADD [docs/improvements/infrastructure/cms-backup-runbook.md] — SOP for CMS backups before Payload migrations. In-DB schema clone (Option A), pg_dump (Option B), Supabase dashboard (Option C). Verification SQL. Restore commands. Cleanup cadence.
+[2026-05-04] BACKUP [Supabase cms schema → cms_backup_20260504] — Pre-Phase-5 backup. 46 tables, 1,254 rows verified ✓ via in-DB clone. Drop after Phase 5 stable in prod 48h+.
+[2026-05-04] MODIFY [docs/improvements/README.md] — Linked the cms-backup-runbook from the operational runbooks section + folder map.
+[2026-05-04] MODIFY [docs/improvements/TEAM_REVIEW.md] — Added "CMS backup runbook" reference for migration workflows.
