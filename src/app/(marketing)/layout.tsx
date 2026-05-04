@@ -7,19 +7,14 @@
  * WeConnectProvider wraps everything so Nav triggers, Hero CTA buttons,
  * and the WeConnectOverlay all share the same open/close state.
  *
- * I18nProvider initializes from the server-resolved locale (cookie) so the
- * client doesn't flash a different language on hydration.
- *
- * PlatformSettings is fetched from Payload at render time (locale-aware) so
- * CMS editors can update overlay copy without a code deployment.
+ * PlatformSettings is fetched from Payload at render time so CMS editors
+ * can update overlay copy without a code deployment.
  */
 import '../globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import CursorEffect from '@/components/CursorEffect'
 import ScrollReveal from '@/components/ScrollReveal'
-import { I18nProvider } from '@/lib/i18n/context'
-import { getServerLocale } from '@/lib/i18n/server'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
 import { WeConnectProvider } from '@/lib/weconnect/context'
 import WeConnectOverlay from '@/components/WeConnectOverlay'
@@ -28,7 +23,6 @@ import {
   DEFAULT_PLATFORM_SETTINGS,
   type PlatformSettingsData,
 } from '@/lib/weconnect/platform-settings'
-import type { Locale } from '@/lib/i18n/strings'
 
 /** Color variable names that map from SiteSettings fields to CSS custom properties. */
 const COLOR_VAR_MAP: Record<string, string> = {
@@ -41,17 +35,15 @@ const COLOR_VAR_MAP: Record<string, string> = {
   line: '--line',
 }
 
-async function fetchPayloadData(locale: Locale) {
+async function fetchPayloadData() {
   try {
     const { getPayload } = await import('payload')
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
 
     const [platformDoc, siteDoc] = await Promise.all([
-      // Locale-aware fetch — Payload returns localized fields in the requested locale.
-      // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
-      payload.findGlobal({ slug: 'platform-settings', locale }),
-      payload.findGlobal({ slug: 'site-settings', locale }),
+      payload.findGlobal({ slug: 'platform-settings' }),
+      payload.findGlobal({ slug: 'site-settings' }),
     ])
 
     const d = DEFAULT_PLATFORM_SETTINGS
@@ -96,29 +88,27 @@ async function fetchPayloadData(locale: Locale) {
 }
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getServerLocale()
-  const { platformSettings, colorOverrides } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides } = await fetchPayloadData()
 
+  // If any CMS color overrides are set, inject them as inline CSS custom properties.
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
     : undefined
 
   return (
-    <html lang={locale} className={fontVariables}>
+    <html lang="en" className={fontVariables}>
       <body>
         <AnalyticsProvider>
-          <I18nProvider initialLocale={locale}>
-            <WeConnectProvider>
-              <CursorEffect />
-              <ScrollReveal />
-              <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
-                <Nav />
-                {children}
-                <Footer />
-              </div>
-              <WeConnectOverlay settings={platformSettings} />
-            </WeConnectProvider>
-          </I18nProvider>
+          <WeConnectProvider>
+            <CursorEffect />
+            <ScrollReveal />
+            <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
+              <Nav />
+              {children}
+              <Footer />
+            </div>
+            <WeConnectOverlay settings={platformSettings} />
+          </WeConnectProvider>
         </AnalyticsProvider>
       </body>
     </html>

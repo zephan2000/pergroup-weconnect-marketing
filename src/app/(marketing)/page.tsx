@@ -11,7 +11,6 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import BlockRenderer from '@/components/BlockRenderer'
 import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
-import { getServerLocale } from '@/lib/i18n/server'
 
 // Dynamic rendering — page fetches from DB at request time, not at build time.
 // Required because Payload CMS data is not available during static generation.
@@ -19,7 +18,6 @@ export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const { isEnabled: isDraft } = await draftMode()
-  const locale = await getServerLocale()
   const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
@@ -30,8 +28,7 @@ export default async function HomePage() {
       },
     },
     limit: 1,
-    locale,            // localized fields returned in this locale (fallback to en if empty)
-    draft: isDraft,    // fetches latest draft in preview, published otherwise
+    draft: isDraft, // fetches latest draft in preview, published otherwise
   })
 
   const page = result.docs[0]

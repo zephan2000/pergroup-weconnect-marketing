@@ -255,24 +255,32 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-04] MODIFY [docs/improvements/03-google-sheets.md] — New "Operational note: refresh token expiry" section with detection signals, regeneration steps, and verification publishing trade-off.
 [2026-05-04] MODIFY [docs/improvements/TEAM_REVIEW.md] — Added recurring maintenance entry for Sheets OAuth refresh token.
 
-[2026-05-04] MODIFY [src/lib/i18n/context.tsx] — Phase 5: Cookie-aware I18nProvider. Reads cookie/localStorage/navigator.language; setLocale() writes to BOTH cookie AND localStorage. Accepts initialLocale prop from server.
-[2026-05-04] ADD [src/lib/i18n/server.ts] — Phase 5: getServerLocale() reads pergroup-lang cookie via next/headers. Used by marketing layout + page to pass locale into Payload queries.
-[2026-05-04] MODIFY [src/lib/i18n/strings.ts] — Phase 5: Expanded dictionary covering forms, weconnect, footer, hero. AI-LOW-CONF translations marked for native speaker review.
-[2026-05-04] MODIFY [payload.config.ts] — Phase 5: Added localization config (locales: en/zh, defaultLocale: en, fallback: true).
-[2026-05-04] MODIFY [src/payload/blocks/HeroBlock.ts] — Phase 5: Marked text fields as localized:true; added new "subtitle" localized field; kept legacy chineseSubtitle/chineseLabel as fallback.
-[2026-05-04] MODIFY [src/payload/blocks/StatsBlock.ts] — Phase 5: Marked label localized:true; legacy chineseLabel preserved.
-[2026-05-04] MODIFY [src/payload/blocks/ValuesBlock.ts] — Phase 5: Marked headline + sectionLabel + item english + motto english/label as localized:true; legacy chinese fields preserved.
-[2026-05-04] MODIFY [src/payload/blocks/AboutBlock.ts] — Phase 5: Marked all text + body richText + advantage fields as localized:true.
-[2026-05-04] MODIFY [src/payload/blocks/ServicesBlock.ts] — Phase 5: Marked title/description/sectionLabel as localized:true; legacy chineseTitle preserved.
-[2026-05-04] MODIFY [src/payload/blocks/PlatformTeaserBlock.ts] — Phase 5: Marked all text + body richText + features fields as localized:true.
-[2026-05-04] MODIFY [src/app/(marketing)/layout.tsx] — Phase 5: Reads server locale from cookie; passes to Payload findGlobal calls; sets <html lang>; wraps children in I18nProvider with initialLocale.
-[2026-05-04] MODIFY [src/app/(marketing)/page.tsx] — Phase 5: Reads server locale; passes to payload.find() for locale-aware blocks.
-[2026-05-04] MODIFY [src/components/Nav.tsx] — Phase 5: Added <LanguageToggle> (desktop + mobile menu); nav links use t.nav from dictionary.
-[2026-05-04] MODIFY [src/components/Footer.tsx] — Phase 5: Localized footer copy via dictionary; brand pillar Chinese line preserved in both locales.
-[2026-05-04] MODIFY [src/components/blocks/HeroBlock.tsx] — Phase 5: Locale-aware subtitle resolution (new localized "subtitle" field → legacy chineseSubtitle fallback in zh mode).
-[2026-05-04] MODIFY [src/components/WeConnectOverlay.tsx] — Phase 5: Localized topbar + sidebar tabs via t.weconnect.
-[2026-05-04] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Phase 5: Localized CTA cards, preview alert, recent needs via per-locale data + t.weconnect strings.
-[2026-05-04] MODIFY [src/components/weconnect/AlertsScreen.tsx] — Phase 5: Localized sample alerts via per-locale arrays + t.weconnect strings.
-[2026-05-04] MODIFY [src/components/weconnect/ProfileScreen.tsx] — Phase 5: Localized labels + per-locale my-posts / company fields data.
-[2026-05-04] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Phase 5: Localized validation error messages; sends body.lang for ack email locale override.
-[2026-05-04] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 5: Same.
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 5 (commit 8c553b8) was REVERTED on 2026-05-04 due to a Drizzle schema
+# push conflict in production. The historical entries below describe what was
+# attempted; they are preserved here for traceability. See revert commit and
+# docs/improvements/TEAM_REVIEW.md for the proper-migration plan.
+# ─────────────────────────────────────────────────────────────────────────────
+[2026-05-04] MODIFY [src/lib/i18n/context.tsx] — Phase 5 (REVERTED): Cookie-aware I18nProvider.
+[2026-05-04] ADD [src/lib/i18n/server.ts] — Phase 5 (REVERTED): getServerLocale().
+[2026-05-04] MODIFY [src/lib/i18n/strings.ts] — Phase 5 (REVERTED): Expanded dictionary.
+[2026-05-04] MODIFY [payload.config.ts] — Phase 5 (REVERTED): Added localization config — destructive against existing CMS columns.
+[2026-05-04] MODIFY [src/payload/blocks/HeroBlock.ts] — Phase 5 (REVERTED): localized:true on text fields.
+[2026-05-04] MODIFY [src/payload/blocks/StatsBlock.ts] — Phase 5 (REVERTED): localized:true on label.
+[2026-05-04] MODIFY [src/payload/blocks/ValuesBlock.ts] — Phase 5 (REVERTED): localized:true on text fields.
+[2026-05-04] MODIFY [src/payload/blocks/AboutBlock.ts] — Phase 5 (REVERTED): localized:true on text + body richText.
+[2026-05-04] MODIFY [src/payload/blocks/ServicesBlock.ts] — Phase 5 (REVERTED): localized:true on title/description/sectionLabel.
+[2026-05-04] MODIFY [src/payload/blocks/PlatformTeaserBlock.ts] — Phase 5 (REVERTED): localized:true on text + body.
+[2026-05-04] MODIFY [src/app/(marketing)/layout.tsx] — Phase 5 (REVERTED): Server cookie read, locale into Payload queries.
+[2026-05-04] MODIFY [src/app/(marketing)/page.tsx] — Phase 5 (REVERTED): locale to payload.find().
+[2026-05-04] MODIFY [src/components/Nav.tsx] — Phase 5 (REVERTED): LanguageToggle, dictionary nav links.
+[2026-05-04] MODIFY [src/components/Footer.tsx] — Phase 5 (REVERTED): Dictionary footer copy.
+[2026-05-04] MODIFY [src/components/blocks/HeroBlock.tsx] — Phase 5 (REVERTED): Locale-aware subtitle resolution.
+[2026-05-04] MODIFY [src/components/WeConnectOverlay.tsx] — Phase 5 (REVERTED): Localized topbar/sidebar.
+[2026-05-04] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Phase 5 (REVERTED): Localized.
+[2026-05-04] MODIFY [src/components/weconnect/AlertsScreen.tsx] — Phase 5 (REVERTED): Localized.
+[2026-05-04] MODIFY [src/components/weconnect/ProfileScreen.tsx] — Phase 5 (REVERTED): Localized.
+[2026-05-04] MODIFY [src/components/weconnect/PostRequirementModal.tsx] — Phase 5 (REVERTED): Localized errors, body.lang.
+[2026-05-04] MODIFY [src/components/weconnect/SpaceDetailModal.tsx] — Phase 5 (REVERTED): Same.
+
+[2026-05-04] REVERT [Phase 5 commit 8c553b8] — Reverted Phase 5 in full. Cause: enabling Payload localization triggered Drizzle schema push that wanted to drop ~30 existing columns (with CMS data) on production. Vercel cannot answer the interactive y/N prompt → all page renders 500'd. Production DB was NOT modified (push aborted before any DDL ran). Repository now back to Phase 4 state. Proper Phase 5 retry requires writing a data-preserving Payload migration; tracked in TEAM_REVIEW.md.

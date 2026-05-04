@@ -5,7 +5,6 @@ import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import type { SpaceWithSimilarity } from '@/hooks/useSpacesSearch'
 import ModalBackdrop from './ModalBackdrop'
 import FormField from './FormField'
-import { useLocale, useStrings } from '@/lib/i18n/context'
 
 interface ContactFieldErrors {
   name?: string
@@ -53,8 +52,6 @@ export default function SpaceDetailModal({
   onClose,
   settings,
 }: SpaceDetailModalProps) {
-  const { locale } = useLocale()
-  const t = useStrings()
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -83,10 +80,10 @@ export default function SpaceDetailModal({
 
   function validate(): ContactFieldErrors {
     const errs: ContactFieldErrors = {}
-    if (!name.trim()) errs.name = t.forms.errorRequired
-    if (!company.trim()) errs.company = t.forms.errorRequired
-    if (!email.trim()) errs.email = t.forms.errorRequired
-    else if (!email.includes('@')) errs.email = t.forms.errorInvalidEmail
+    if (!name.trim()) errs.name = 'Required'
+    if (!company.trim()) errs.company = 'Required'
+    if (!email.trim()) errs.email = 'Required'
+    else if (!email.includes('@')) errs.email = 'Invalid email'
     return errs
   }
 
@@ -127,7 +124,7 @@ export default function SpaceDetailModal({
     setFieldErrors(errs)
     setSubmitted(true)
     if (Object.keys(errs).length > 0) {
-      setErrorMsg(t.forms.errorGeneric)
+      setErrorMsg('Please fill in the required fields.')
       setFormState('error')
       return
     }
@@ -148,7 +145,6 @@ export default function SpaceDetailModal({
           email: email.trim(),
           phone: phone.trim() || undefined,
           message: message.trim() || undefined,
-          lang: locale,  // server uses this to override Accept-Language for ack email
         }),
       })
 

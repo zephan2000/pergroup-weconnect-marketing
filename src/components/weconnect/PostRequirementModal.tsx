@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import ModalBackdrop from './ModalBackdrop'
 import FormField from './FormField'
-import { useLocale, useStrings } from '@/lib/i18n/context'
 
 const inputClass =
   'w-full bg-bg-2 border border-line rounded-[10px] px-3.5 py-2.5 text-pg-text font-inter text-sm outline-none placeholder:text-muted focus:border-amber/50 transition-colors'
@@ -63,8 +62,6 @@ interface FieldErrors {
 }
 
 export default function PostRequirementModal({ isOpen, onClose, settings }: PostRequirementModalProps) {
-  const { locale } = useLocale()
-  const t = useStrings()
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -114,11 +111,11 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
 
   function validate(): FieldErrors {
     const errs: FieldErrors = {}
-    if (!description.trim()) errs.description = t.forms.errorRequired
-    if (!contactName.trim()) errs.contactName = t.forms.errorRequired
-    if (!companyName.trim()) errs.companyName = t.forms.errorRequired
-    if (!contactEmail.trim()) errs.contactEmail = t.forms.errorRequired
-    else if (!contactEmail.includes('@')) errs.contactEmail = t.forms.errorInvalidEmail
+    if (!description.trim()) errs.description = 'Required'
+    if (!contactName.trim()) errs.contactName = 'Required'
+    if (!companyName.trim()) errs.companyName = 'Required'
+    if (!contactEmail.trim()) errs.contactEmail = 'Required'
+    else if (!contactEmail.includes('@')) errs.contactEmail = 'Invalid email'
     return errs
   }
 
@@ -134,7 +131,7 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
     setFieldErrors(errs)
     setSubmitted(true)
     if (Object.keys(errs).length > 0) {
-      setErrorMsg(t.forms.errorGeneric)
+      setErrorMsg('Please fill in the required fields.')
       setFormState('error')
       return
     }
@@ -148,18 +145,17 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           subject: subject.trim() || undefined,
-          type: REQUIREMENT_TYPES.find((opt) => opt.value === type)?.label ?? type,
+          type: REQUIREMENT_TYPES.find((t) => t.value === type)?.label ?? type,
           description: description.trim(),
           goalAlignment: goalAlignment.trim() || undefined,
           targetLocation: targetLocation.trim() || 'Not specified',
           budget: budget.trim() || undefined,
-          timeline: (TIMELINE_OPTIONS.find((opt) => opt.value === timeline)?.label ?? timeline) || undefined,
+          timeline: (TIMELINE_OPTIONS.find((t) => t.value === timeline)?.label ?? timeline) || undefined,
           contactName: contactName.trim(),
           contactTitle: contactTitle.trim() || undefined,
           companyName: companyName.trim(),
           contactEmail: contactEmail.trim(),
           contactPhone: contactPhone.trim() || undefined,
-          lang: locale,  // server uses this to override Accept-Language for ack email
         }),
       })
 

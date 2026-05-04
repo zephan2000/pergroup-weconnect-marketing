@@ -2,27 +2,24 @@
 
 /**
  * Nav — sticky glass navbar for all PER GROUP marketing routes.
- * Client component — needs scroll detection, mobile menu state, and locale.
+ * Client component — needs scroll detection and mobile menu state.
  */
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import WeConnectTrigger from '@/components/WeConnectTrigger'
-import LanguageToggle from '@/components/LanguageToggle'
-import { useStrings } from '@/lib/i18n/context'
+
+const navLinks = [
+  { label: 'Philosophy', href: '/#values' },
+  { label: 'About', href: '/#about' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Partners', href: '/#clients' },
+]
 
 export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const t = useStrings()
-
-  const navLinks = [
-    { label: t.nav.philosophy, href: '/#values' },
-    { label: t.nav.about, href: '/#about' },
-    { label: t.nav.services, href: '/#services' },
-    { label: t.nav.partners, href: '/#clients' },
-  ]
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -52,7 +49,7 @@ export default function Nav() {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map(({ label, href }) => (
             <Link
               key={label}
@@ -66,9 +63,8 @@ export default function Nav() {
             tab="needs"
             className="text-amber text-sm font-semibold px-3 py-1.5 rounded-lg border border-amber/25 bg-amber/5 hover:bg-amber/15 transition-all duration-200 cursor-pointer font-sora"
           >
-            {t.nav.weconnect}
+            WeConnect ✦
           </WeConnectTrigger>
-          <LanguageToggle />
         </div>
 
         {/* Desktop CTA */}
@@ -76,14 +72,13 @@ export default function Nav() {
           tab="needs"
           className="hidden md:inline-flex items-center gap-2 bg-amber text-pg-text text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/85 transition-all duration-200 border-none cursor-pointer font-sora"
         >
-          {t.nav.weconnectCta}
+          WECONNECT PLATFORM →
         </WeConnectTrigger>
 
         {/* Mobile hamburger */}
         <button
           className="md:hidden text-pg-text bg-transparent border-none cursor-pointer"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -93,10 +88,6 @@ export default function Nav() {
       {mobileOpen && (
         <div className="md:hidden absolute inset-x-0 top-16 bg-bg border-b border-line shadow-lg z-50 animate-fade-in">
           <div className="flex flex-col py-2">
-            {/* Language toggle at top of mobile menu */}
-            <div className="px-6 py-3 border-b border-line/50">
-              <LanguageToggle />
-            </div>
             {navLinks.map(({ label, href }) => (
               <Link
                 key={label}
@@ -112,7 +103,7 @@ export default function Nav() {
                 tab="needs"
                 className="w-full bg-amber text-pg-text text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
               >
-                {t.nav.weconnectCta}
+                WECONNECT PLATFORM →
               </WeConnectTrigger>
             </div>
           </div>

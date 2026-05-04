@@ -1,128 +1,91 @@
-# CMS i18n Migration Plan
+# CMS i18n Migration
 
-## Strategy: Transitional, non-destructive
+Inventory of every Payload CMS field used in the marketing site, and which currently lack a Chinese companion field needed for full ZH-mode rendering.
 
-Rather than a one-shot schema rewrite that risks data loss or breaks the CMS for editors, we adopt a **transitional approach**:
+## Already bilingual (no migration needed)
 
-1. **Now (Phase 5):** Mark base fields as `localized: true`. Keep legacy `chinese*` companion fields. Components use a fallback chain: localized field → legacy companion → English fallback.
-2. **Later (deferred phase):** After admin team has populated `zh` locale values via the admin UI, run a data migration to backfill any remaining ZH values from companion fields. Then drop the companion fields.
+These blocks already have separate English and Chinese fields. The toggle simply picks the right one:
 
-Benefit: zero data loss, gradual editor onboarding, fully reversible if issues found.
-
-## Field inventory
-
-For each Payload block, here are the fields that get `localized: true` in Phase 5, and which legacy companion fields exist:
-
-### HeroBlock (`src/payload/blocks/HeroBlock.ts`)
-
-| Field | localized? | Legacy companion |
+| Block | English field | Chinese field |
 |---|---|---|
-| `eyebrow` | ✅ added | (none — needs translation in ZH locale) |
-| `headline` | ✅ added | (none) |
-| `headlineAccent` | ✅ added | (none) |
-| `headlineFaint` | ✅ added | (none) |
-| `chineseSubtitle` | KEEP (legacy) | — |
-| `subtitle` | ✅ NEW localized field | falls back to `chineseSubtitle` for ZH |
-| `ctaButtons[].label` | ✅ added | (none) |
-| `stats[].label` | ✅ added | `chineseLabel` |
+| HeroBlock | `eyebrow`, `headline`, `headlineAccent`, `headlineFaint` | `chineseSubtitle` |
+| StatsBlock (each stat) | `label` | `chineseLabel` |
+| ValuesBlock | `headline`, item `english` | `chineseHeadline`, item `chinese` |
+| ServicesBlock (each service) | `title` | `chineseTitle` |
+| PlatformTeaserBlock | `headline`, `headlineAccent` | (none — see below) |
 
-### StatsBlock
+## Gap list — Chinese fields needed
 
-| Field | localized? | Legacy companion |
-|---|---|---|
-| `stats[].number` | NO (digits, no translation) | — |
-| `stats[].label` | ✅ added | `chineseLabel` |
+These English-only fields render as English even in ZH mode (via fallback). To achieve full Chinese site, the Payload schema should add a Chinese companion field:
 
-### ValuesBlock
-
-| Field | localized? | Legacy companion |
-|---|---|---|
-| `sectionLabel` | ✅ added | (mixed string was 'Our Philosophy · 我们的哲学' — split into EN/ZH locale values) |
-| `headline` | ✅ added | `chineseHeadline` |
-| `chineseHeadline` | KEEP (legacy) | — |
-| `fourHarmoniesItems[].english` | ✅ added | `fourHarmoniesItems[].chinese` |
-| `fourHarmoniesItems[].chinese` | KEEP (legacy) | — |
-| `fiveUnitiesItems[].english` | ✅ added | `fiveUnitiesItems[].chinese` |
-| `fiveUnitiesItems[].chinese` | KEEP (legacy) | — |
-| `mottos[].english` | ✅ added | `mottos[].chinese` |
-| `mottos[].chinese` | KEEP (legacy) | — |
-| `mottos[].label` | ✅ added | (none — typically EN like "VALUES", "VISION") |
+### HeroBlock
+- `eyebrow` ← needs `eyebrowChinese`? Or include in `chineseSubtitle`?
+  - Recommendation: extend `chineseSubtitle` to cover both; or add `chineseEyebrow`
+- `headline`, `headlineAccent`, `headlineFaint` — currently the Chinese is on a single `chineseSubtitle` line. Acceptable for v1 (the headline is typographically prominent in EN; a brief Chinese subtitle suffices in EN-mode).
+  - Under ZH-mode: hide the EN headline lines and show only the Chinese? Or render `chineseSubtitle` AS the headline?
+  - **TEAM_REVIEW item:** how should the hero behave under ZH locale?
 
 ### AboutBlock
+- `body` (rich text) — English only
+- Each `advantage`'s `title` and `description` — English only
+- `globeStat.label` — English only
 
-| Field | localized? | Legacy companion |
-|---|---|---|
-| `headline` | ✅ added | (none — needs ZH) |
-| `headlineAccent` | ✅ added | (none) |
-| `body` (rich text) | ✅ added | (none — needs ZH) |
-| `advantages[].title` | ✅ added | (none) |
-| `advantages[].description` | ✅ added | (none) |
+**Migration:** add `body_zh`, `advantage.title_zh`, `advantage.description_zh`, `globeStat.label_zh` to `src/payload/blocks/AboutBlock.ts`.
 
 ### ServicesBlock
+- Each service's `description` — English only
 
-| Field | localized? | Legacy companion |
-|---|---|---|
-| `services[].title` | ✅ added | `chineseTitle` |
-| `services[].chineseTitle` | KEEP (legacy) | — |
-| `services[].description` | ✅ added | (none — needs ZH) |
-
-### ClientsBlock
-
-| Field | localized? | Note |
-|---|---|---|
-| `clients[].name` | NO | Brand names — never translated |
+**Migration:** add `description_zh` to service items.
 
 ### PlatformTeaserBlock
+- `body` (rich text) — English only
+- Each feature's `title` and `description` — English only
 
-| Field | localized? | Legacy companion |
-|---|---|---|
-| `headline` | ✅ added | (none) |
-| `headlineAccent` | ✅ added | (none) |
-| `body` (rich text) | ✅ added | (none) |
-| `features[].title` | ✅ added | (none) |
-| `features[].description` | ✅ added | (none) |
+**Migration:** add `body_zh`, `feature.title_zh`, `feature.description_zh`.
 
-## Component fallback resolution
+### Hardcoded in components (not CMS) — handled by code dictionary
 
-In each block component (`src/components/blocks/*.tsx`):
+These don't need CMS changes — they'll move to `src/lib/i18n/strings.ts` instead:
 
-```tsx
-'use client'
-import { useLocale } from '@/lib/i18n/context'
+- AboutBlock `milestones[]` — currently a hardcoded array in the component, both EN/CN are present. Will be split into `{ en, zh }` per-milestone.
+- ClientsBlock `partnerTypes[]`, `regions[]` — hardcoded. Will be split same way.
+- WeConnect screen content (NeedsScreen sample needs, AlertsScreen sample alerts, ProfileScreen company info) — all hardcoded. Will be split.
 
-export default function ExampleBlock({ headline, chineseHeadline /* legacy */ }) {
-  const { locale } = useLocale()
+## Migration phases
 
-  // Resolve display value with fallback chain:
-  // 1. Use whatever Payload returned (already locale-aware on server query)
-  // 2. If we're in ZH and the value is empty, fall back to the legacy companion field
-  // 3. Else show what we have (Payload fallback: true already gives us EN if ZH missing)
-  const display = (locale === 'zh' && !headline) ? chineseHeadline ?? '' : headline
+**Phase 5 (this implementation):**
+- Code-side: render Chinese from existing CMS Chinese fields where they exist
+- Where missing: render English fallback under ZH locale (visible imperfection, documented to user)
+- Hardcoded EN+CN in components: split into `{ en, zh }` and use `useLocale()`
+
+**Post-launch (deferred):**
+- Run a Payload migration that adds the missing `*_zh` fields to AboutBlock, ServicesBlock, PlatformTeaserBlock
+- CMS admin populates the new fields
+- Once filled, the fallback automatically resolves to the new Chinese version (no further code change needed)
+
+## Schema changes (when ready to migrate)
+
+In each Payload block file, alongside `body` add:
+```ts
+{
+  name: 'body_zh',
+  type: 'richText',
+  label: 'Body (Chinese / 中文)',
+  admin: { description: 'Translated content for Chinese mode. If empty, English will be shown as fallback.' },
 }
 ```
 
-## Future cleanup migration (deferred phase)
+Same pattern for sub-array items (e.g., `description_zh` on each service).
 
-Once admin team has populated ZH for all base fields:
+After the schema migration:
+- Run `npx payload migrate:create`
+- Push the migration; existing rows have empty `body_zh` → fallback to English (no breakage)
+- CMS team fills in translations gradually
 
-1. Write Payload migration in `src/payload/migrations/`:
-   ```ts
-   // For each page with empty headline.zh but populated chineseHeadline,
-   // copy chineseHeadline value into headline.zh
-   ```
-2. Run migration via `npx payload migrate`
-3. Remove fallback chain from components (just use Payload's value directly)
-4. Remove `chinese*` field definitions from block schemas
-5. Run another migration to drop the columns
+## Validation checklist post-migration
 
-This is **NOT in Phase 5** — it's a follow-up after the toggle is verified working in production.
-
-## Validation post-migration
-
-After Phase 5 ships:
-- [ ] Admin UI shows locale switcher at top of page editor
-- [ ] Switching to ZH in admin shows empty fields (no zh data yet) — admin can fill them
-- [ ] Saving with ZH values populates the `zh` locale
-- [ ] Site rendered with ZH cookie shows ZH values where filled, EN otherwise (Payload `fallback: true`)
-- [ ] Existing pages still render correctly in EN (no regression)
-- [ ] Companion `chinese*` fields still show in admin and continue to drive ZH where their localized counterpart is empty
+- [ ] CMS admin can edit `body_zh` field in Payload UI
+- [ ] Empty `body_zh` → ZH locale shows English (current behavior continues)
+- [ ] Filled `body_zh` → ZH locale shows Chinese content
+- [ ] EN locale always shows `body` (English) regardless of `body_zh` state
+- [ ] Saving and publishing a translation updates the live site
