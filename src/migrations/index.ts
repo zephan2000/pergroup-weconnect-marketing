@@ -1,5 +1,6 @@
 import * as migration_20260317_053647 from './20260317_053647';
 import * as migration_20260317_102754 from './20260317_102754';
+import * as migration_20260504_161402_localize_blocks from './20260504_161402_localize_blocks';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20260317_102754.up,
     down: migration_20260317_102754.down,
-    name: '20260317_102754'
+    name: '20260317_102754',
+  },
+  {
+    up: migration_20260504_161402_localize_blocks.up,
+    down: migration_20260504_161402_localize_blocks.down,
+    name: '20260504_161402_localize_blocks'
   },
 ];

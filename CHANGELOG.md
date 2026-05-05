@@ -290,4 +290,13 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-04] MODIFY [docs/improvements/README.md] — Linked the cms-backup-runbook from the operational runbooks section + folder map.
 [2026-05-04] MODIFY [docs/improvements/TEAM_REVIEW.md] — Added "CMS backup runbook" reference for migration workflows.
 
-[2026-05-04] MODIFY [payload.config.ts] — Phase 5 retry: Set `push: false` on postgres adapter. All schema changes now flow through explicit Payload migrations. Prevents the recurrence of the Drizzle auto-push crash that revert 465450f addressed.
+[2026-05-04] MODIFY [payload.config.ts] — Phase 5 retry: Set `push: process.env.NODE_ENV !== 'production'` on postgres adapter. Auto-push enabled in local dev (fast iteration), disabled in production (Vercel) where migrations + hand-edits are the only path. Prevents the recurrence of the Drizzle auto-push crash that revert 465450f addressed.
+
+[2026-05-04] MODIFY [payload.config.ts, src/payload/blocks/*.ts] — Phase 5 retry: re-enabled localization config; marked text fields as localized:true on Hero/Stats/Values/About/Services/PlatformTeaser blocks. Legacy chinese* companion fields kept as fallback.
+[2026-05-04] ADD [src/lib/i18n/{context.tsx,server.ts,strings.ts}] — Phase 5 retry: Cookie-aware I18nProvider, getServerLocale() for SSR, expanded EN/ZH dictionary.
+[2026-05-04] MODIFY [src/components/{Nav,Footer,WeConnectOverlay,LanguageToggle}.tsx] — Phase 5 retry: localized via dictionary; LanguageToggle in nav (desktop + mobile).
+[2026-05-04] MODIFY [src/components/blocks/HeroBlock.tsx] — Phase 5 retry: locale-aware subtitle (new localized → legacy chineseSubtitle fallback).
+[2026-05-04] MODIFY [src/components/weconnect/{NeedsScreen,AlertsScreen,ProfileScreen,PostRequirementModal,SpaceDetailModal}.tsx] — Phase 5 retry: localized labels, validation errors, body.lang in form submissions.
+[2026-05-04] MODIFY [src/app/(marketing)/{layout,page}.tsx] — Phase 5 retry: server reads cookie via getServerLocale, passes locale into Payload findGlobal/find queries.
+[2026-05-04] ADD [src/migrations/20260504_161402_localize_blocks.{ts,json}] — Phase 5 retry: Payload migration with HAND-WRITTEN data preservation. Creates 28 _locales tables, copies existing English column values into _locale='en' rows, copies legacy chinese_* companion data into _locale='zh' rows, then drops the old columns. Reversible via down() function.
+[2026-05-04] MODIFY [src/migrations/index.ts] — Registered the new migration.

@@ -11,44 +11,56 @@ export const HeroBlock: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       label: { en: 'Eyebrow Text', zh: '眉标文字' },
-      admin: { description: { en: 'Small text above the headline, e.g. "Global Tech Innovation Ecosystem"', zh: '标题上方的小字，如 "Global Tech Innovation Ecosystem"' } },
+      admin: { description: { en: 'Small text above the headline. Localized.', zh: '标题上方的小字。可按语言翻译。' } },
     },
     {
       name: 'headline',
       type: 'text',
+      localized: true,
       label: { en: 'Headline (Line 1)', zh: '标题（第一行）' },
       required: true,
-      admin: { description: { en: 'e.g. "Make Innovation"', zh: '如 "Make Innovation"' } },
     },
     {
       name: 'headlineAccent',
       type: 'text',
+      localized: true,
       label: { en: 'Headline (Accent Line — amber gradient)', zh: '标题（强调行 — 琥珀色渐变）' },
-      admin: { description: { en: 'e.g. "Open to Anyone,"', zh: '如 "Open to Anyone,"' } },
     },
     {
       name: 'headlineFaint',
       type: 'text',
+      localized: true,
       label: { en: 'Headline (Faint Line)', zh: '标题（淡化行）' },
-      admin: { description: { en: 'e.g. "Anywhere."', zh: '如 "Anywhere."' } },
     },
     {
       name: 'chineseSubtitle',
       type: 'text',
-      label: { en: 'Chinese Subtitle', zh: '中文副标题' },
-      admin: { description: { en: 'e.g. "科技创新 · 商业赋能 · 人文关怀"', zh: '如 "科技创新 · 商业赋能 · 人文关怀"' } },
+      label: { en: 'Chinese Subtitle (legacy)', zh: '中文副标题（旧版）' },
+      admin: {
+        description: {
+          en: 'LEGACY: kept for fallback in zh locale. Prefer adding a "subtitle" via locale switcher.',
+          zh: '旧版字段：当 zh locale 中 subtitle 为空时作为回退。建议改用 locale 切换器编辑 subtitle。',
+        },
+      },
+    },
+    {
+      name: 'subtitle',
+      type: 'text',
+      localized: true,
+      label: { en: 'Subtitle', zh: '副标题' },
+      admin: { description: { en: 'Tagline below headline. Switch to ZH locale to enter Chinese.', zh: '标题下方的副标题。切换到中文 locale 输入中文。' } },
     },
     {
       name: 'stats',
       type: 'array',
       label: { en: 'Stat Cards (right column)', zh: '数据卡片（右栏）' },
       maxRows: 4,
-      admin: { description: { en: 'The stat cards displayed to the right of the headline. Up to 4; the last two are grouped side-by-side automatically.', zh: '标题右侧显示的数据卡片。最多4个；最后两个自动并排显示。' } },
       fields: [
         { name: 'number', type: 'text', required: true, label: { en: 'Number (e.g. "15+")', zh: '数字（如 "15+"）' } },
-        { name: 'label', type: 'text', required: true, label: { en: 'English Label', zh: '英文标签' } },
-        { name: 'chineseLabel', type: 'text', label: { en: 'Chinese Label', zh: '中文标签' } },
+        { name: 'label', type: 'text', required: true, localized: true, label: { en: 'Label', zh: '标签' } },
+        { name: 'chineseLabel', type: 'text', label: { en: 'Chinese Label (legacy)', zh: '中文标签（旧版）' }, admin: { description: { en: 'LEGACY fallback. Prefer setting label in zh locale.', zh: '旧版回退字段。建议在 zh locale 中设置 label。' } } },
       ],
     },
     {
@@ -57,7 +69,7 @@ export const HeroBlock: Block = {
       label: { en: 'CTA Buttons', zh: '行动按钮' },
       maxRows: 3,
       fields: [
-        { name: 'label', type: 'text', required: true, label: { en: 'Button Label', zh: '按钮文字' } },
+        { name: 'label', type: 'text', required: true, localized: true, label: { en: 'Button Label', zh: '按钮文字' } },
         { name: 'href', type: 'text', required: true, label: { en: 'Link (href)', zh: '链接地址' } },
         {
           name: 'variant',

@@ -16,6 +16,17 @@ export default buildConfig({
     fallbackLanguage: 'en',
   },
 
+  // Frontend content localization. Each field marked `localized: true` stores
+  // a value per locale; queries with `{ locale }` pick the right one.
+  // Fallback: if zh value is empty, return en. See:
+  //   docs/improvements/infrastructure/i18n-architecture.md
+  //   docs/improvements/infrastructure/cms-i18n-migration.md
+  localization: {
+    locales: ['en', 'zh'],
+    defaultLocale: 'en',
+    fallback: true,
+  },
+
   admin: {
     // Payload built-in auth — CMS editors only. See CLAUDE.md Authentication section.
     user: Users.slug,
@@ -55,13 +66,15 @@ export default buildConfig({
     // Postgres schema, keeping them separate from weconnect.* tables.
     // Requires `CREATE SCHEMA IF NOT EXISTS cms;` in Supabase before first run.
     schemaName: 'cms',
-    // Disable Drizzle Kit auto-push at boot. All schema changes flow through
-    // explicit migrations (`npx payload migrate:create` + hand-edit if needed,
-    // then `npx payload migrate`). See:
-    //   docs/improvements/infrastructure/cms-backup-runbook.md
-    // Reason: auto-push with `localized: true` previously tried to drop columns
-    // with live CMS data and crashed Vercel (no TTY for the y/N prompt).
-    push: false,
+    // Drizzle Kit auto-push:
+    //   • In local dev — enabled (fast iteration on schema changes).
+    //   • In production (Vercel build/runtime) — disabled. All schema changes
+    //     flow through explicit migrations: `npx payload migrate:create` +
+    //     hand-edit if needed + `npx payload migrate`.
+    // See docs/improvements/infrastructure/cms-backup-runbook.md.
+    // Reason: auto-push prompts (y/N) for destructive ops. Vercel has no TTY
+    // → prompt hangs → 500. Migrations are also versioned and auditable.
+    push: process.env.NODE_ENV !== 'production',
   }),
 
   // Lexical is the default and recommended rich text editor for Payload v3.
