@@ -300,3 +300,7 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-04] MODIFY [src/app/(marketing)/{layout,page}.tsx] — Phase 5 retry: server reads cookie via getServerLocale, passes locale into Payload findGlobal/find queries.
 [2026-05-04] ADD [src/migrations/20260504_161402_localize_blocks.{ts,json}] — Phase 5 retry: Payload migration with HAND-WRITTEN data preservation. Creates 28 _locales tables, copies existing English column values into _locale='en' rows, copies legacy chinese_* companion data into _locale='zh' rows, then drops the old columns. Reversible via down() function.
 [2026-05-04] MODIFY [src/migrations/index.ts] — Registered the new migration.
+
+[2026-05-05] ADD [docs/improvements/zh-translation-worklist.md] — Phase 5b.1: Full inventory of every text rendered on the site. 53 ZH-MISSING CMS fields + ~12 mixed-locale strings + ~80 dictionary keys + 3 hardcoded arrays catalogued, with proposed CMS field path for each.
+[2026-05-05] ADD [docs/improvements/05b-cms-everything.md] — Phase 5b plan doc: move EVERY rendered string into CMS, with phased rollout (5b.2 schema → 5b.3 component refactor in 4 sub-commits → 5b.4 SQL-driven translation fill → 5b.5 drop legacy chinese* companions). Locked decisions captured.
+[2026-05-05] MODIFY [docs/improvements/README.md] — Added Phase 5b row + sub-phase status table. Updated locked decisions: EN+CN side-by-side banned, dictionary becomes thin fallback, lite dropdown control, hero ZH 3-line constraint, SQL-driven translation workflow.

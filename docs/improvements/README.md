@@ -20,7 +20,21 @@ This folder contains the **persistent, agent-friendly implementation plan** for 
 | 2 | Form field validation UX | [`02-field-validation-ux.md`](./02-field-validation-ux.md) | ✅ Done | 3 |
 | 3 | Google Sheets integration | [`03-google-sheets.md`](./03-google-sheets.md) | ✅ Code done (awaits owner OAuth setup) | 9 |
 | 4 | User acknowledgement email | [`04-user-acknowledgement.md`](./04-user-acknowledgement.md) | ✅ Done (awaits Resend domain verify) | 5 |
-| 5 | EN/CN site-wide toggle | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ⏳ Pending | ~15 |
+| 5 | EN/CN site-wide toggle (initial) | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ✅ Done (commit `1578f0c`) | 25 |
+| 5b | Move everything to CMS — phased rollout | [`05b-cms-everything.md`](./05b-cms-everything.md) | ⏳ 5b.1 done, 5b.2 next | ~25 |
+
+### Phase 5b sub-phase status
+
+| Sub-phase | Description | Status |
+|---|---|---|
+| 5b.1 | Translation worksheet — full inventory | ✅ Done — see [`zh-translation-worklist.md`](./zh-translation-worklist.md) |
+| 5b.2 | Schema migration (additive) — add 5 new globals + 3 array fields, pre-populate | ⏳ Next |
+| 5b.3a | Component refactor — Nav + Footer | ⏳ Pending |
+| 5b.3b | Component refactor — WeConnect overlay | ⏳ Pending |
+| 5b.3c | Component refactor — marketing blocks | ⏳ Pending |
+| 5b.3d | Component refactor — forms | ⏳ Pending |
+| 5b.4 | ZH translation fill (SQL-driven) | ⏳ Pending |
+| 5b.5 | Drop legacy `chinese*` companion fields | ⏳ Pending (after 48h stable) |
 
 ## Locked design decisions
 
@@ -34,7 +48,12 @@ These were settled with the project owner before this plan was written. **Do not
 | Toggle UI | `EN | 中文` text in nav, active language highlighted in amber. Inside hamburger on mobile. |
 | Language detection | First visit: `navigator.language` starts with `zh` → `zh`; else `en`. Persist in `localStorage['pergroup-lang']`. |
 | Decorative Chinese characters | Single brand calligraphy chars (e.g. `心 家 社 世`, `易 医 爱 艺 义`) **stay regardless of locale** — they are iconic, not translatable text. Paragraph-level CN/EN hides under the opposite locale. |
-| i18n string source | Code dictionary (`src/lib/i18n/strings.ts`) for UI labels. CMS Payload fields for content (already has `chinese*` companion fields). |
+| EN+CN side-by-side display | **Banned** as of 2026-05-05 (Phase 5b). Pure single-locale rendering. Old `English · 中文` mixed strings get split during 5b.4. |
+| i18n string source (final state) | **All rendered text lives in CMS.** Dictionary (`src/lib/i18n/strings.ts`) becomes a thin fallback by end of Phase 5b.3. |
+| Form dropdown options | Lite CMS control: admin edits LABELS, option `value` codes stay frozen in code (API references them). Adding/removing options deferred. |
+| Footer brand pillar (`pillarLine`) | Separate slot from `mission`. EN: `Tech Innovation · Business Empowerment · Human Care`. ZH: `科技创新 · 商业赋能 · 人文关怀`. |
+| Hero ZH headline layout | Same 3-line visual pattern as EN (`headline / accent / faint`). Constrain Chinese phrasing to fit. |
+| Translation workflow | SQL-driven (Phase 5b.4). Single annotated SQL file lists every translation for owner review. Avoids 53+ admin clicks. |
 | Sheets structure | One spreadsheet, **4 separate tabs** — Contact, Requirement, Need, Offering. Each tab has form-specific columns. |
 | Sheets auth | **OAuth refresh-token flow** (not service account — Google Workspace org policy blocks SAs). One-time consent at `/api/admin/sheets-oauth/init`. |
 | Sheets setup | One-shot script `npm run sheets:setup`. Idempotent. Creates tabs + headers. |
@@ -62,11 +81,13 @@ docs/improvements/
 ├── 02-field-validation-ux.md
 ├── 03-google-sheets.md
 ├── 04-user-acknowledgement.md
-├── 05-i18n-toggle.md
+├── 05-i18n-toggle.md               ← Phase 5 (initial localization, done)
+├── 05b-cms-everything.md           ← Phase 5b (move all rendered text to CMS, in progress)
+├── zh-translation-worklist.md      ← full inventory of every text on the site
 ├── TEAM_REVIEW.md                  ← open questions
 └── infrastructure/
     ├── cms-backup-runbook.md       ← backup/restore SOP for any CMS migration
     ├── i18n-architecture.md        ← how toggle + dictionary + CMS interact
-    ├── cms-i18n-migration.md       ← which CMS fields need a Chinese pair added
+    ├── cms-i18n-migration.md       ← (legacy field migration plan)
     └── sheets-schema.md            ← exact column definitions per tab
 ```
