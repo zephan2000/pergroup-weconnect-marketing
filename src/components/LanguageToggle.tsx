@@ -13,9 +13,11 @@ import { useLocale } from '@/lib/i18n/context'
 
 interface LanguageToggleProps {
   className?: string
+  /** ARIA label for the wrapper. Comes from NavSettings global (CMS-editable). */
+  ariaLabel?: string
 }
 
-export default function LanguageToggle({ className = '' }: LanguageToggleProps) {
+export default function LanguageToggle({ className = '', ariaLabel = 'Switch language' }: LanguageToggleProps) {
   const { locale, setLocale } = useLocale()
 
   const baseBtn = 'text-sm font-semibold transition-colors cursor-pointer bg-transparent border-none font-sora'
@@ -23,7 +25,7 @@ export default function LanguageToggle({ className = '' }: LanguageToggleProps) 
   const inactiveBtn = 'text-muted hover:text-pg-text'
 
   return (
-    <div className={`inline-flex items-center gap-1.5 ${className}`} aria-label="Switch language">
+    <div className={`inline-flex items-center gap-1.5 ${className}`} aria-label={ariaLabel}>
       <button
         type="button"
         onClick={() => setLocale('en')}

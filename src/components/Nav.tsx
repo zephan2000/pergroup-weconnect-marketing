@@ -2,7 +2,11 @@
 
 /**
  * Nav — sticky glass navbar for all PER GROUP marketing routes.
- * Client component — needs scroll detection, mobile menu state, and locale.
+ * Client component for scroll detection + mobile menu state.
+ *
+ * Text values come from the NavSettings Payload global, fetched server-side
+ * in (marketing)/layout.tsx and passed as `settings`. Single-locale rendering
+ * — Payload returns the right locale based on the cookie.
  */
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,18 +14,17 @@ import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import WeConnectTrigger from '@/components/WeConnectTrigger'
 import LanguageToggle from '@/components/LanguageToggle'
-import { useStrings } from '@/lib/i18n/context'
+import type { NavSettingsData } from '@/lib/cms/site-text'
 
-export default function Nav() {
+export default function Nav({ settings }: { settings: NavSettingsData }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const t = useStrings()
 
   const navLinks = [
-    { label: t.nav.philosophy, href: '/#values' },
-    { label: t.nav.about, href: '/#about' },
-    { label: t.nav.services, href: '/#services' },
-    { label: t.nav.partners, href: '/#clients' },
+    { label: settings.linkPhilosophy, href: '/#values' },
+    { label: settings.linkAbout, href: '/#about' },
+    { label: settings.linkServices, href: '/#services' },
+    { label: settings.linkPartners, href: '/#clients' },
   ]
 
   useEffect(() => {
@@ -37,7 +40,6 @@ export default function Nav() {
       }`}
     >
       <div className="max-w-[1400px] mx-auto flex items-center justify-between h-16 px-4 md:px-8">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-3 no-underline">
           <Image
             src="/e-harbour-logo.png"
@@ -51,7 +53,6 @@ export default function Nav() {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map(({ label, href }) => (
             <Link
@@ -66,20 +67,18 @@ export default function Nav() {
             tab="needs"
             className="text-amber text-sm font-semibold px-3 py-1.5 rounded-lg border border-amber/25 bg-amber/5 hover:bg-amber/15 transition-all duration-200 cursor-pointer font-sora"
           >
-            {t.nav.weconnect}
+            {settings.weconnectLabel}
           </WeConnectTrigger>
-          <LanguageToggle />
+          <LanguageToggle ariaLabel={settings.languageToggleAria} />
         </div>
 
-        {/* Desktop CTA */}
         <WeConnectTrigger
           tab="needs"
           className="hidden md:inline-flex items-center gap-2 bg-amber text-pg-text text-sm font-semibold px-5 py-2 rounded-lg hover:bg-amber/85 transition-all duration-200 border-none cursor-pointer font-sora"
         >
-          {t.nav.weconnectCta}
+          {settings.weconnectCta}
         </WeConnectTrigger>
 
-        {/* Mobile hamburger */}
         <button
           className="md:hidden text-pg-text bg-transparent border-none cursor-pointer"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -89,13 +88,11 @@ export default function Nav() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden absolute inset-x-0 top-16 bg-bg border-b border-line shadow-lg z-50 animate-fade-in">
           <div className="flex flex-col py-2">
-            {/* Language toggle at top of mobile menu */}
             <div className="px-6 py-3 border-b border-line/50">
-              <LanguageToggle />
+              <LanguageToggle ariaLabel={settings.languageToggleAria} />
             </div>
             {navLinks.map(({ label, href }) => (
               <Link
@@ -112,7 +109,7 @@ export default function Nav() {
                 tab="needs"
                 className="w-full bg-amber text-pg-text text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-amber/90 transition-colors border-none cursor-pointer font-sora"
               >
-                {t.nav.weconnectCta}
+                {settings.weconnectCta}
               </WeConnectTrigger>
             </div>
           </div>

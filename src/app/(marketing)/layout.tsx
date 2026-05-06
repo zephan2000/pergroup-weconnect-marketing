@@ -28,6 +28,12 @@ import {
   DEFAULT_PLATFORM_SETTINGS,
   type PlatformSettingsData,
 } from '@/lib/weconnect/platform-settings'
+import {
+  DEFAULT_NAV_SETTINGS,
+  DEFAULT_FOOTER_SETTINGS,
+  type NavSettingsData,
+  type FooterSettingsData,
+} from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 
 /** Color variable names that map from SiteSettings fields to CSS custom properties. */
@@ -47,11 +53,13 @@ async function fetchPayloadData(locale: Locale) {
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
 
-    const [platformDoc, siteDoc] = await Promise.all([
+    const [platformDoc, siteDoc, navDoc, footerDoc] = await Promise.all([
       // Locale-aware fetch — Payload returns localized fields in the requested locale.
       // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
       payload.findGlobal({ slug: 'platform-settings', locale }),
       payload.findGlobal({ slug: 'site-settings', locale }),
+      payload.findGlobal({ slug: 'nav-settings', locale }),
+      payload.findGlobal({ slug: 'footer-settings', locale }),
     ])
 
     const d = DEFAULT_PLATFORM_SETTINGS
@@ -89,15 +97,42 @@ async function fetchPayloadData(locale: Locale) {
       }
     }
 
-    return { platformSettings, colorOverrides }
+    const dn = DEFAULT_NAV_SETTINGS
+    const n = navDoc as unknown as Record<string, unknown>
+    const navSettings: NavSettingsData = {
+      linkPhilosophy: (n.linkPhilosophy as string) || dn.linkPhilosophy,
+      linkAbout: (n.linkAbout as string) || dn.linkAbout,
+      linkServices: (n.linkServices as string) || dn.linkServices,
+      linkPartners: (n.linkPartners as string) || dn.linkPartners,
+      weconnectLabel: (n.weconnectLabel as string) || dn.weconnectLabel,
+      weconnectCta: (n.weconnectCta as string) || dn.weconnectCta,
+      languageToggleAria: (n.languageToggleAria as string) || dn.languageToggleAria,
+    }
+
+    const df = DEFAULT_FOOTER_SETTINGS
+    const f = footerDoc as unknown as Record<string, unknown>
+    const footerSettings: FooterSettingsData = {
+      tagline: (f.tagline as string) || df.tagline,
+      mission: (f.mission as string) || df.mission,
+      pillarLine: (f.pillarLine as string) || df.pillarLine,
+      eHarborTag: (f.eHarborTag as string) || df.eHarborTag,
+      copyright: (f.copyright as string) || df.copyright,
+    }
+
+    return { platformSettings, colorOverrides, navSettings, footerSettings }
   } catch {
-    return { platformSettings: DEFAULT_PLATFORM_SETTINGS, colorOverrides: {} }
+    return {
+      platformSettings: DEFAULT_PLATFORM_SETTINGS,
+      colorOverrides: {},
+      navSettings: DEFAULT_NAV_SETTINGS,
+      footerSettings: DEFAULT_FOOTER_SETTINGS,
+    }
   }
 }
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
-  const { platformSettings, colorOverrides } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides, navSettings, footerSettings } = await fetchPayloadData(locale)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
@@ -112,9 +147,9 @@ export default async function MarketingLayout({ children }: { children: React.Re
               <CursorEffect />
               <ScrollReveal />
               <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
-                <Nav />
+                <Nav settings={navSettings} />
                 {children}
-                <Footer />
+                <Footer settings={footerSettings} nav={navSettings} locale={locale} />
               </div>
               <WeConnectOverlay settings={platformSettings} />
             </WeConnectProvider>

@@ -2,30 +2,39 @@
 
 /**
  * Footer — site footer for all PER GROUP marketing routes.
- * Localized via i18n strings dictionary. Some lines (Chinese pillar tagline,
- * e创码头) stay in Chinese in both locales — they're brand identity, not
- * translatable text.
+ *
+ * Text values come from the FooterSettings + NavSettings Payload globals,
+ * fetched server-side in (marketing)/layout.tsx. Single-locale rendering —
+ * no EN+CN side-by-side anywhere. The pillarLine field is translated per
+ * locale; the brand calligraphy elsewhere on the site stays untranslated
+ * as iconography.
  */
 import Link from 'next/link'
-import { useStrings, useLocale } from '@/lib/i18n/context'
+import type { FooterSettingsData, NavSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 
-export default function Footer() {
-  const t = useStrings()
-  const { locale } = useLocale()
+interface FooterProps {
+  settings: FooterSettingsData
+  nav: NavSettingsData
+  locale: Locale
+}
+
+export default function Footer({ settings, nav, locale }: FooterProps) {
+  const isZh = locale === 'zh'
+  const cnFont = isZh ? 'font-noto-sans-sc' : 'font-sora'
 
   const navLinks = [
-    { label: t.nav.philosophy, href: '/#values' },
-    { label: t.nav.about, href: '/#about' },
-    { label: t.nav.services, href: '/#services' },
-    { label: t.nav.partners, href: '/#clients' },
-    { label: 'WeConnect', href: '/#platform-teaser' },
+    { label: nav.linkPhilosophy, href: '/#values' },
+    { label: nav.linkAbout, href: '/#about' },
+    { label: nav.linkServices, href: '/#services' },
+    { label: nav.linkPartners, href: '/#clients' },
+    { label: nav.weconnectLabel, href: '/#platform-teaser' },
   ]
 
   return (
     <footer className="py-12" style={{ backgroundColor: 'hsl(20, 12%, 16%)' }}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-          {/* Brand */}
           <div className="flex items-start gap-3">
             <div
               className="w-10 h-10 bg-amber flex items-center justify-center font-extrabold text-sm text-white rounded-lg flex-shrink-0"
@@ -35,22 +44,20 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-sora font-extrabold text-white text-xl">PER GROUP</div>
-              <div className="text-white/50 text-xs mt-0.5">
-                {t.footer.eHarborTag} · <span className="font-noto-sans-sc">{t.footer.eHarborTagCn}</span>
+              <div className={`text-white/50 text-xs mt-0.5 ${cnFont}`}>
+                {settings.eHarborTag}
               </div>
-              <p className="text-white/40 text-[10px] mt-1 italic">Innovative Solution Provider</p>
-              {/* Brand pillar line stays in Chinese in both locales — it's iconography */}
-              <p className="text-white/50 text-sm mt-2 font-noto-sans-sc">{t.footer.pillarLine}</p>
+              <p className="text-white/40 text-[10px] mt-1 italic">{settings.tagline}</p>
+              <p className={`text-white/50 text-sm mt-2 ${cnFont}`}>{settings.pillarLine}</p>
             </div>
           </div>
 
-          {/* Nav links */}
-          <div className="flex gap-8">
+          <div className="flex flex-wrap gap-x-8 gap-y-2">
             {navLinks.map((l) => (
               <Link
-                key={l.label}
+                key={l.href}
                 href={l.href}
-                className="text-white/60 text-sm no-underline hover:text-amber transition-colors"
+                className={`text-white/60 text-sm no-underline hover:text-amber transition-colors ${cnFont}`}
               >
                 {l.label}
               </Link>
@@ -58,9 +65,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row justify-between text-white/40 text-xs">
-          <span>{t.footer.copyright}</span>
-          <span className={`${locale === 'zh' ? 'font-noto-sans-sc' : ''} mt-2 md:mt-0`}>{t.footer.mission}</span>
+        <div className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row justify-between text-white/40 text-xs gap-2">
+          <span className={cnFont}>{settings.copyright}</span>
+          <span className={cnFont}>{settings.mission}</span>
         </div>
       </div>
     </footer>

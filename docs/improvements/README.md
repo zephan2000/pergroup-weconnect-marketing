@@ -21,7 +21,7 @@ This folder contains the **persistent, agent-friendly implementation plan** for 
 | 3 | Google Sheets integration | [`03-google-sheets.md`](./03-google-sheets.md) | ✅ Code done (awaits owner OAuth setup) | 9 |
 | 4 | User acknowledgement email | [`04-user-acknowledgement.md`](./04-user-acknowledgement.md) | ✅ Done (awaits Resend domain verify) | 5 |
 | 5 | EN/CN site-wide toggle (initial) | [`05-i18n-toggle.md`](./05-i18n-toggle.md) | ✅ Done (commit `1578f0c`) | 25 |
-| 5b | Move everything to CMS — phased rollout | [`05b-cms-everything.md`](./05b-cms-everything.md) | ⏳ 5b.2 done, 5b.3a next | ~25 |
+| 5b | Move everything to CMS — phased rollout | [`05b-cms-everything.md`](./05b-cms-everything.md) | ⏳ 5b.3a done, 5b.3b next | ~25 |
 
 ### Phase 5b sub-phase status
 
@@ -29,8 +29,8 @@ This folder contains the **persistent, agent-friendly implementation plan** for 
 |---|---|---|
 | 5b.1 | Translation worksheet — full inventory | ✅ Done — see [`zh-translation-worklist.md`](./zh-translation-worklist.md) |
 | 5b.2 | Schema migration (additive) — add 5 new globals + 3 array fields, pre-populate | ✅ Done 2026-05-06 (migration `20260506_010000_phase5b2_globals_arrays.ts`) |
-| 5b.3a | Component refactor — Nav + Footer | ⏳ Next |
-| 5b.3b | Component refactor — WeConnect overlay | ⏳ Pending |
+| 5b.3a | Component refactor — Nav + Footer | ✅ Done 2026-05-06 |
+| 5b.3b | Component refactor — WeConnect overlay | ⏳ Next |
 | 5b.3c | Component refactor — marketing blocks | ⏳ Pending |
 | 5b.3d | Component refactor — forms | ⏳ Pending |
 | 5b.4 | ZH translation fill (SQL-driven) | ⏳ Pending |

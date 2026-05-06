@@ -13,14 +13,6 @@
 
 export const strings = {
   en: {
-    nav: {
-      philosophy: 'Philosophy',
-      about: 'About',
-      services: 'Services',
-      partners: 'Partners',
-      weconnect: 'WeConnect ✦',
-      weconnectCta: 'WECONNECT PLATFORM →',
-    },
     languageToggle: {
       en: 'EN',
       zh: '中文',
@@ -113,13 +105,9 @@ export const strings = {
       enterpriseRole: 'Enterprise Member',
     },
     footer: {
-      tagline: 'A globalized tech innovation ecosystem.',
-      mission: 'Making innovation open to anyone, anywhere.',
-      missionCn: '让创新对任何人、任何地方开放',  // shown only in EN as a tagline
-      copyright: '© 2026 E-Harbor / PER GROUP · Singapore',
+      // Only `eHarborTag` remains until Phase 5b.3b refactors WeConnectOverlay.
+      // Everything else moved to FooterSettings global (Phase 5b.3a).
       eHarborTag: 'by E-Harbor',
-      eHarborTagCn: 'e创码头',
-      pillarLine: '科技创新 · 商业赋能 · 人文关怀',  // brand pillars - kept Chinese in both
     },
     hero: {
       eyebrow: 'Global Tech Innovation Ecosystem',
@@ -128,14 +116,6 @@ export const strings = {
     },
   },
   zh: {
-    nav: {
-      philosophy: '理念',
-      about: '关于我们',
-      services: '服务',
-      partners: '合作伙伴',
-      weconnect: 'WeConnect ✦',
-      weconnectCta: 'WECONNECT 平台 →',
-    },
     languageToggle: {
       en: 'EN',
       zh: '中文',
@@ -228,13 +208,7 @@ export const strings = {
       enterpriseRole: '企业会员',
     },
     footer: {
-      tagline: '全球化的科技创新生态平台。',
-      mission: '让创新对任何人、任何地方开放。',
-      missionCn: '让创新对任何人、任何地方开放',
-      copyright: '© 2026 E-Harbor / PER GROUP · 新加坡',
-      eHarborTag: 'E-Harbor 出品',  // AI-LOW-CONF
-      eHarborTagCn: 'e创码头',
-      pillarLine: '科技创新 · 商业赋能 · 人文关怀',
+      eHarborTag: 'E-Harbor 出品',
     },
     hero: {
       eyebrow: '全球科技创新生态平台',

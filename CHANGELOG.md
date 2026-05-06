@@ -314,3 +314,10 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-06] ADD [scripts/check-cms-state.mjs, scripts/verify-5b2.mjs, scripts/patch-services-zh.mjs] — Phase 5b.2 verification + post-migration patch (insert missing ZH parent row for ServicesBlock locales since the previous Phase 5 migration only seeded EN).
 [2026-05-06] MODIFY [docs/improvements/infrastructure/cms-backup-runbook.md] — Documented "Known blocker: Payload CLI broken on Node v24 + tsx 4.21" — workaround, root cause, fix options. Required reading before any future migration.
 [2026-05-06] MODIFY [docs/improvements/{05b-cms-everything,README}.md] — Marked Phase 5b.2 done; 5b.3a is next.
+
+[2026-05-06] ADD [src/lib/cms/site-text.ts] — Phase 5b.3a: NavSettingsData + FooterSettingsData types + DEFAULT_* fallbacks. Mirrors src/lib/weconnect/platform-settings.ts pattern.
+[2026-05-06] MODIFY [src/app/(marketing)/layout.tsx] — Phase 5b.3a: fetch nav-settings + footer-settings globals (locale-aware) via Payload, pass typed objects as props to Nav and Footer.
+[2026-05-06] MODIFY [src/components/Nav.tsx] — Phase 5b.3a: takes `settings: NavSettingsData` prop, no longer reads from i18n strings dictionary. Removed `useStrings()` import.
+[2026-05-06] MODIFY [src/components/Footer.tsx] — Phase 5b.3a: takes `settings: FooterSettingsData` + `nav: NavSettingsData` + `locale` props. Removed EN+CN side-by-side rendering of `eHarborTag` (was `{eHarborTag} · {eHarborTagCn}`) — now renders the locale-correct value only. pillarLine reads from CMS (translated per locale).
+[2026-05-06] MODIFY [src/components/LanguageToggle.tsx] — Phase 5b.3a: accepts `ariaLabel` prop sourced from NavSettings.languageToggleAria so admin can edit the screen-reader label.
+[2026-05-06] MODIFY [src/lib/i18n/strings.ts] — Phase 5b.3a: removed entire `nav.*` namespace from EN + ZH dicts. Removed `footer.{tagline,mission,missionCn,copyright,pillarLine,eHarborTagCn}` from both locales. Kept `footer.eHarborTag` only — last consumer is WeConnectOverlay.tsx, refactored in 5b.3b. Dict shrinks from ~80 keys to ~70.
