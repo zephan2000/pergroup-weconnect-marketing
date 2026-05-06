@@ -71,11 +71,6 @@ export const strings = {
       typeMarketEntry: '🌏 Market Entry Partner',
       typeOther: '📋 Other',
     },
-    hero: {
-      eyebrow: 'Global Tech Innovation Ecosystem',
-      eyebrowCn: '全球科技创新生态平台',  // shown alongside in EN context
-      scrollHint: 'SCROLL',
-    },
   },
   zh: {
     languageToggle: {
@@ -135,11 +130,6 @@ export const strings = {
       typeFunding: '💰 投资/融资',
       typeMarketEntry: '🌏 市场进入合作',
       typeOther: '📋 其他',
-    },
-    hero: {
-      eyebrow: '全球科技创新生态平台',
-      eyebrowCn: '全球科技创新生态平台',
-      scrollHint: '向下滚动',
     },
   },
 } as const
