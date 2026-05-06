@@ -3,35 +3,32 @@
 /**
  * FormField — shared label + input wrapper for WeConnect forms.
  *
- * Pure render — state, validation, and error logic all live in the parent.
- * Renders:
- *  - Label row with optional bilingual subtext + red asterisk if required
+ * Single-locale label: parent passes the already-translated string. Renders:
+ *  - Label with red asterisk if required
  *  - Children (the actual input)
- *  - Inline error message below if `error` is set
+ *  - Inline error below if `error` is set
  *
  * Per docs/improvements/02-field-validation-ux.md.
- *
- * NOTE: The `label`/`labelZh` pair will become locale-driven in Phase 5.
- * For now we render both English and Chinese (current pattern).
  */
 
 import { type ReactNode } from 'react'
 
 interface FormFieldProps {
   label: string
-  labelZh?: string
   required?: boolean
   error?: string
   htmlFor?: string
+  /** Optional font-family class — `font-noto-sans-sc` for ZH locale, default `font-inter`. */
+  labelClassName?: string
   children: ReactNode
 }
 
 export default function FormField({
   label,
-  labelZh,
   required = false,
   error,
   htmlFor,
+  labelClassName = 'font-inter',
   children,
 }: FormFieldProps) {
   const errorId = htmlFor ? `${htmlFor}-error` : undefined
@@ -40,10 +37,9 @@ export default function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-xs text-muted mb-1.5 font-inter"
+        className={`block text-xs text-muted mb-1.5 ${labelClassName}`}
       >
         {label}
-        {labelZh && <span className="font-noto-sans-sc"> · {labelZh}</span>}
         {required && (
           <span className="text-alert-red ml-0.5" aria-hidden="true">
             *

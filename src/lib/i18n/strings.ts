@@ -1,14 +1,15 @@
 /**
- * UI string dictionary for the EN/CN toggle.
+ * Tiny EN/ZH dictionary. As of Phase 5b.3d, all rendered UI strings live in
+ * Payload globals (NavSettings, FooterSettings, WeConnectSettings,
+ * RequirementFormSettings, ContactFormSettings) and on individual blocks.
  *
- * Hardcoded UI labels live here. CMS content uses Payload's native localization
- * (see docs/improvements/infrastructure/cms-i18n-migration.md).
+ * The only thing that remains here is the language-toggle button label
+ * itself — `EN` / `中文` are constants by design (each button shows the
+ * other language's name regardless of current locale, so they're not
+ * locale-dependent).
  *
- * Translation accuracy must be reviewed by a native Mandarin speaker before
- * launch (TEAM_REVIEW item). Comments tagged "AI-LOW-CONF" mark translations
- * with lower confidence that especially need review.
- *
- * Add new keys to BOTH `en` and `zh` to keep the dictionary in sync.
+ * Locale type is exported for typing server-side fetches and props
+ * throughout the app.
  */
 
 export const strings = {
@@ -18,118 +19,12 @@ export const strings = {
       zh: '中文',
       ariaLabel: 'Switch language',
     },
-    forms: {
-      requiredHint: 'Required fields are marked with',
-      requiredAsterisk: '*',
-      sectionBasic: 'Basic Information',
-      sectionRequirement: 'Requirement Details',
-      sectionCommercial: 'Commercial Parameters',
-      sectionContact: 'Contact Information',
-      labelSubject: 'Subject',
-      labelInquiryType: 'Inquiry Type',
-      labelDescription: 'Description',
-      labelGoal: 'Goal / Objective',
-      labelTargetLocation: 'Target Location',
-      labelBudget: 'Budget',
-      labelTimeline: 'Timeline',
-      labelFullName: 'Full Name',
-      labelJobTitle: 'Job Title',
-      labelCompany: 'Company',
-      labelEmail: 'Email',
-      labelPhone: 'Phone',
-      labelMessage: 'Message',
-      placeholderSubject: 'Brief title for your inquiry',
-      placeholderDescription: "Describe what you're looking for",
-      placeholderGoal: 'What does success look like?',
-      placeholderTargetLocation: 'e.g. Singapore, Vietnam, EU',
-      placeholderBudget: 'e.g. SGD 5k–15k/mo',
-      placeholderName: 'Your name',
-      placeholderTitle: 'e.g. Director',
-      placeholderCompany: 'Company name',
-      placeholderEmail: 'your@email.com',
-      placeholderPhone: '+65 xxxx xxxx',
-      placeholderMessage: "Tell us a bit about what you're looking for",
-      buttonSubmit: 'Submit Requirement',
-      buttonSubmitting: 'Submitting…',
-      buttonSendIntro: 'Send Introduction',
-      buttonSending: 'Sending…',
-      successTitleRequirement: "Got it — we'll be in touch.",
-      successMessageRequirement: 'PER GROUP will respond within 1 business day.',
-      responseSla: 'PER GROUP will respond within 1 business day',
-      errorRequired: 'Required',
-      errorInvalidEmail: 'Invalid email',
-      errorGeneric: 'Please fill in the required fields.',
-      timelineSelect: 'Select timeline',
-      timelineUrgent: '⚡ Urgent (< 2 weeks)',
-      timelineThisQuarter: '📅 This Quarter',
-      timeline3to6: '📆 3–6 Months',
-      timelineExploring: '🔍 Just Exploring',
-      typeOffice: '🏢 Office Space',
-      typeLab: '🔬 Lab / R&D Space',
-      typeFactory: '🏭 Factory / Industrial Land',
-      typeFunding: '💰 Investment / Funding',
-      typeMarketEntry: '🌏 Market Entry Partner',
-      typeOther: '📋 Other',
-    },
   },
   zh: {
     languageToggle: {
       en: 'EN',
       zh: '中文',
       ariaLabel: '切换语言',
-    },
-    forms: {
-      requiredHint: '必填项标记为',
-      requiredAsterisk: '*',
-      sectionBasic: '基本信息',
-      sectionRequirement: '需求详情',
-      sectionCommercial: '商业参数',
-      sectionContact: '联系方式',
-      labelSubject: '主题',
-      labelInquiryType: '需求类型',
-      labelDescription: '需求描述',
-      labelGoal: '目标',
-      labelTargetLocation: '目标地区',
-      labelBudget: '预算',
-      labelTimeline: '时间',
-      labelFullName: '姓名',
-      labelJobTitle: '职位',
-      labelCompany: '公司',
-      labelEmail: '邮箱',
-      labelPhone: '电话',
-      labelMessage: '留言',
-      placeholderSubject: '简要描述您的需求',
-      placeholderDescription: '详细描述您的需求',
-      placeholderGoal: '您希望达成什么目标?',
-      placeholderTargetLocation: '例如：新加坡、越南、欧盟',
-      placeholderBudget: '例如：每月新币5千至1万5',  // AI-LOW-CONF: review with native speaker
-      placeholderName: '您的姓名',
-      placeholderTitle: '职位',
-      placeholderCompany: '公司名称',
-      placeholderEmail: 'your@email.com',
-      placeholderPhone: '+65 xxxx xxxx',
-      placeholderMessage: '简述需求',
-      buttonSubmit: '提交需求',
-      buttonSubmitting: '提交中…',
-      buttonSendIntro: '发送介绍',
-      buttonSending: '发送中…',
-      successTitleRequirement: '已收到 — 我们会尽快与您联系。',
-      successMessageRequirement: 'PER GROUP将在1个工作日内回复您。',
-      responseSla: 'PER GROUP将在1个工作日内回复',
-      errorRequired: '必填',
-      errorInvalidEmail: '邮箱格式错误',
-      errorGeneric: '请填写所有必填字段。',
-      timelineSelect: '选择时间',
-      timelineUrgent: '⚡ 紧急（2周内）',
-      timelineThisQuarter: '📅 本季度',
-      timeline3to6: '📆 3-6个月',
-      timelineExploring: '🔍 初步了解',
-      typeOffice: '🏢 办公室',
-      typeLab: '🔬 实验室',
-      typeFactory: '🏭 厂房/工业用地',
-      typeFunding: '💰 投资/融资',
-      typeMarketEntry: '🌏 市场进入合作',
-      typeOther: '📋 其他',
     },
   },
 } as const

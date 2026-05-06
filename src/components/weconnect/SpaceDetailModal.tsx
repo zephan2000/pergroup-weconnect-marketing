@@ -1,11 +1,21 @@
 'use client'
 
+/**
+ * SpaceDetailModal — single space detail + introduction-request form.
+ *
+ * Currently not rendered in v1 (the Spaces browser is disabled in NeedsScreen).
+ * Preserved for future re-enablement. All visible labels come from the
+ * ContactFormSettings global plus a reuse of RequirementFormSettings field
+ * labels (Name, Title, Company, Email, Phone, Message) — keeps owner editing
+ * those strings in one place.
+ */
+
 import { useEffect, useState } from 'react'
-import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import type { SpaceWithSimilarity } from '@/hooks/useSpacesSearch'
+import type { ContactFormSettingsData, RequirementFormSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 import ModalBackdrop from './ModalBackdrop'
 import FormField from './FormField'
-import { useLocale, useStrings } from '@/lib/i18n/context'
 
 interface ContactFieldErrors {
   name?: string
@@ -43,7 +53,14 @@ interface SpaceDetailModalProps {
   similarity?: number
   isOpen: boolean
   onClose: () => void
-  settings: PlatformSettingsData
+  contactForm: ContactFormSettingsData
+  requirementForm: RequirementFormSettingsData
+  locale: Locale
+}
+
+const aiMatchScoreByLocale: Record<Locale, string> = {
+  en: 'AI Match Score',
+  zh: 'AI 匹配度',
 }
 
 export default function SpaceDetailModal({
@@ -51,10 +68,10 @@ export default function SpaceDetailModal({
   similarity,
   isOpen,
   onClose,
-  settings,
+  contactForm: cf,
+  requirementForm: rf,
+  locale,
 }: SpaceDetailModalProps) {
-  const { locale } = useLocale()
-  const t = useStrings()
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -65,6 +82,9 @@ export default function SpaceDetailModal({
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
+
+  const labelFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-inter'
+  const headingFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
 
   useEffect(() => {
     if (!isOpen) {
@@ -83,14 +103,13 @@ export default function SpaceDetailModal({
 
   function validate(): ContactFieldErrors {
     const errs: ContactFieldErrors = {}
-    if (!name.trim()) errs.name = t.forms.errorRequired
-    if (!company.trim()) errs.company = t.forms.errorRequired
-    if (!email.trim()) errs.email = t.forms.errorRequired
-    else if (!email.includes('@')) errs.email = t.forms.errorInvalidEmail
+    if (!name.trim()) errs.name = rf.errorRequired
+    if (!company.trim()) errs.company = rf.errorRequired
+    if (!email.trim()) errs.email = rf.errorRequired
+    else if (!email.includes('@')) errs.email = rf.errorInvalidEmail
     return errs
   }
 
-  // Live-validate after first submit attempt
   useEffect(() => {
     if (!submitted) return
     setFieldErrors(validate())
@@ -115,11 +134,11 @@ export default function SpaceDetailModal({
   const priceStr = priceMin && priceMax && priceMin !== priceMax ? `${priceMin} – ${priceMax} /month` : priceMin ? `${priceMin} /month` : null
 
   const detailRows: { label: string; value: string | null }[] = [
-    { label: settings.detailLabelSize, value: sizeStr },
-    { label: settings.detailLabelZone, value: space.district },
-    { label: settings.detailLabelSetup, value: space.amenities?.length > 0 ? space.amenities.join(', ') : null },
-    { label: settings.detailLabelLease, value: space.lease_type },
-    { label: settings.detailLabelPrice, value: priceStr },
+    { label: cf.detailLabelSize, value: sizeStr },
+    { label: cf.detailLabelZone, value: space.district },
+    { label: cf.detailLabelSetup, value: space.amenities?.length > 0 ? space.amenities.join(', ') : null },
+    { label: cf.detailLabelLease, value: space.lease_type },
+    { label: cf.detailLabelPrice, value: priceStr },
   ]
 
   const handleSubmit = async () => {
@@ -127,7 +146,7 @@ export default function SpaceDetailModal({
     setFieldErrors(errs)
     setSubmitted(true)
     if (Object.keys(errs).length > 0) {
-      setErrorMsg(t.forms.errorGeneric)
+      setErrorMsg(rf.errorGeneric)
       setFormState('error')
       return
     }
@@ -148,25 +167,24 @@ export default function SpaceDetailModal({
           email: email.trim(),
           phone: phone.trim() || undefined,
           message: message.trim() || undefined,
-          lang: locale,  // server uses this to override Accept-Language for ack email
+          lang: locale,
         }),
       })
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || 'Something went wrong. Please try again.')
+        throw new Error(data.error || rf.errorGeneric)
       }
 
       setFormState('success')
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      setErrorMsg(err instanceof Error ? err.message : rf.errorGeneric)
       setFormState('error')
     }
   }
 
   return (
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
-      {/* Type badge */}
       <span
         style={{
           fontSize: 10,
@@ -182,18 +200,17 @@ export default function SpaceDetailModal({
         {space.type}
       </span>
 
-      <h2 className="font-sora" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 12, lineHeight: 1.3 }}>
+      <h2 className={headingFont} style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 12, lineHeight: 1.3 }}>
         {space.name}
       </h2>
       {location && (
         <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>📍 {location}</div>
       )}
 
-      {/* AI Match Score bar */}
       {matchPct != null && (
         <div style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-            <span style={{ color: 'var(--muted)' }}>AI Match Score · 匹配度</span>
+            <span style={{ color: 'var(--muted)' }} className={labelFont}>{aiMatchScoreByLocale[locale]}</span>
             <span style={{ color: matchColor, fontWeight: 600 }}>{matchPct}%</span>
           </div>
           <div style={{ height: 4, borderRadius: 2, background: 'var(--faint)', overflow: 'hidden' }}>
@@ -210,7 +227,6 @@ export default function SpaceDetailModal({
         </div>
       )}
 
-      {/* Detail rows */}
       <div style={{ marginTop: 16 }}>
         {detailRows
           .filter((r) => r.value)
@@ -225,7 +241,7 @@ export default function SpaceDetailModal({
                 fontSize: 13,
               }}
             >
-              <span style={{ color: 'var(--muted)' }}>{r.label}</span>
+              <span style={{ color: 'var(--muted)' }} className={labelFont}>{r.label}</span>
               <span style={{ color: 'var(--text)', fontWeight: 500, textAlign: 'right', maxWidth: '65%' }}>
                 {r.value}
               </span>
@@ -233,7 +249,6 @@ export default function SpaceDetailModal({
           ))}
       </div>
 
-      {/* Tags */}
       {space.amenities && space.amenities.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 14 }}>
           {space.amenities.map((tag) => (
@@ -253,60 +268,58 @@ export default function SpaceDetailModal({
         </div>
       )}
 
-      {/* Contact form / Success */}
       {formState === 'success' ? (
         <div style={{ textAlign: 'center', padding: '32px 0 8px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
-          <h3 className="font-sora" style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
-            {settings.contactModalSuccessTitle}
+          <h3 className={headingFont} style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
+            {cf.successTitle}
           </h3>
-          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
-            {settings.contactModalSuccessMessage}
+          <p className={labelFont} style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+            {cf.successMessage}
           </p>
         </div>
       ) : (
         <div style={{ marginTop: 24 }}>
-          <h4 className="font-sora" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
-            {settings.contactModalHeading}
+          <h4 className={headingFont} style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+            {cf.heading}
           </h4>
-          <p className="text-xs text-muted mb-3">
-            Required fields are marked with <span className="text-alert-red">*</span>
-            <span className="font-noto-sans-sc"> · 必填项标记为 <span className="text-alert-red">*</span></span>
+          <p className={`text-xs text-muted mb-3 ${labelFont}`}>
+            {rf.requiredHint} <span className="text-alert-red">*</span>
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <FormField label="Your Name" labelZh="姓名" required error={fieldErrors.name} htmlFor="contact-name">
-                <input id="contact-name" type="text" placeholder="Your name · 姓名" value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label={rf.labelFullName} labelClassName={labelFont} required error={fieldErrors.name} htmlFor="contact-name">
+                <input id="contact-name" type="text" placeholder={rf.placeholderName} value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
-              <FormField label="Job Title" labelZh="职位" htmlFor="contact-title">
-                <input id="contact-title" type="text" placeholder="e.g. Director · 职位" value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label={rf.labelJobTitle} labelClassName={labelFont} htmlFor="contact-title">
+                <input id="contact-title" type="text" placeholder={rf.placeholderTitle} value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
             </div>
-            <FormField label="Company" labelZh="公司" required error={fieldErrors.company} htmlFor="contact-company">
-              <input id="contact-company" type="text" placeholder="Company name · 公司名称" value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+            <FormField label={rf.labelCompany} labelClassName={labelFont} required error={fieldErrors.company} htmlFor="contact-company">
+              <input id="contact-company" type="text" placeholder={rf.placeholderCompany} value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
             </FormField>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <FormField label="Email" labelZh="邮箱" required error={fieldErrors.email} htmlFor="contact-email">
-                <input id="contact-email" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label={rf.labelEmail} labelClassName={labelFont} required error={fieldErrors.email} htmlFor="contact-email">
+                <input id="contact-email" type="email" placeholder={rf.placeholderEmail} value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
-              <FormField label="Phone" labelZh="电话" htmlFor="contact-phone">
-                <input id="contact-phone" type="tel" placeholder="+65 xxxx xxxx" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
+              <FormField label={rf.labelPhone} labelClassName={labelFont} htmlFor="contact-phone">
+                <input id="contact-phone" type="tel" placeholder={rf.placeholderPhone} value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
             </div>
-            <FormField label="Message" labelZh="留言" htmlFor="contact-message">
-              <textarea id="contact-message" placeholder="Tell us a bit about what you're looking for · 简述需求" rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
+            <FormField label={rf.labelMessage} labelClassName={labelFont} htmlFor="contact-message">
+              <textarea id="contact-message" placeholder={rf.placeholderMessage} rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
             </FormField>
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
+            <div className={labelFont} style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
-            className="font-sora"
+            className={headingFont}
             style={{
               width: '100%',
               marginTop: 14,
@@ -330,10 +343,10 @@ export default function SpaceDetailModal({
             {formState === 'loading' ? (
               <>
                 <LoadingDots />
-                Sending…
+                {cf.buttonSending}
               </>
             ) : (
-              'Send Introduction · 发送介绍'
+              cf.buttonSendIntro
             )}
           </button>
         </div>

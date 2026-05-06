@@ -10,7 +10,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
-import type { WeConnectSettingsData } from '@/lib/cms/site-text'
+import type {
+  WeConnectSettingsData,
+  RequirementFormSettingsData,
+  ContactFormSettingsData,
+} from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 import Image from 'next/image'
 import { Zap, AlertTriangle, User, X, Bell, ChevronDown } from 'lucide-react'
@@ -21,11 +25,20 @@ import ProfileScreen from '@/components/weconnect/ProfileScreen'
 interface WeConnectOverlayProps {
   settings: PlatformSettingsData
   weconnect: WeConnectSettingsData
+  requirementForm: RequirementFormSettingsData
+  contactForm: ContactFormSettingsData
   eHarborTag: string
   locale: Locale
 }
 
-export default function WeConnectOverlay({ settings, weconnect, eHarborTag, locale }: WeConnectOverlayProps) {
+export default function WeConnectOverlay({
+  settings: _settings,
+  weconnect,
+  requirementForm,
+  contactForm: _contactForm,
+  eHarborTag,
+  locale,
+}: WeConnectOverlayProps) {
   const { isOpen, activeTab, close, setActiveTab } = useWeConnect()
   const [visible, setVisible] = useState(false)
 
@@ -129,7 +142,14 @@ export default function WeConnectOverlay({ settings, weconnect, eHarborTag, loca
         {/* Content area */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-4 py-4">
-            {activeTab === 'needs' && <NeedsScreen settings={settings} weconnect={weconnect} locale={locale} isActive={isOpen && activeTab === 'needs'} />}
+            {activeTab === 'needs' && (
+              <NeedsScreen
+                weconnect={weconnect}
+                requirementForm={requirementForm}
+                locale={locale}
+                isActive={isOpen && activeTab === 'needs'}
+              />
+            )}
             {activeTab === 'alerts' && <AlertsScreen weconnect={weconnect} locale={locale} />}
             {activeTab === 'profile' && <ProfileScreen weconnect={weconnect} locale={locale} />}
           </div>

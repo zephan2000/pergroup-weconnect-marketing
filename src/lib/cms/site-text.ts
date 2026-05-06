@@ -77,6 +77,147 @@ export interface WeConnectSettingsData {
   settingAbout: string
 }
 
+export interface RequirementFormSettingsData {
+  // Modal header
+  heading: string
+  description: string
+  requiredHint: string
+  responseSla: string
+  // Section titles
+  sectionBasic: string
+  sectionRequirement: string
+  sectionCommercial: string
+  sectionContact: string
+  // Field labels
+  labelSubject: string
+  labelInquiryType: string
+  labelDescription: string
+  labelGoal: string
+  labelTargetLocation: string
+  labelBudget: string
+  labelTimeline: string
+  labelFullName: string
+  labelJobTitle: string
+  labelCompany: string
+  labelEmail: string
+  labelPhone: string
+  labelMessage: string
+  // Placeholders
+  placeholderSubject: string
+  placeholderDescription: string
+  placeholderGoal: string
+  placeholderTargetLocation: string
+  placeholderBudget: string
+  placeholderName: string
+  placeholderTitle: string
+  placeholderCompany: string
+  placeholderEmail: string
+  placeholderPhone: string
+  placeholderMessage: string
+  // Buttons
+  buttonSubmit: string
+  buttonSubmitting: string
+  // Success
+  successTitle: string
+  successMessage: string
+  // Errors
+  errorRequired: string
+  errorInvalidEmail: string
+  errorGeneric: string
+  // Inquiry type option labels (values stay frozen in code)
+  typeOffice: string
+  typeLab: string
+  typeFactory: string
+  typeFunding: string
+  typeMarketEntry: string
+  typeOther: string
+  // Timeline option labels
+  timelineSelect: string
+  timelineUrgent: string
+  timelineThisQuarter: string
+  timeline3to6: string
+  timelineExploring: string
+}
+
+export const DEFAULT_REQUIREMENT_FORM_SETTINGS: RequirementFormSettingsData = {
+  heading: 'Post a Requirement',
+  description: 'Tell the WeConnect network what you need',
+  requiredHint: 'Required fields are marked with',
+  responseSla: 'PER GROUP will respond within 1 business day',
+  sectionBasic: 'Basic Information',
+  sectionRequirement: 'Requirement Details',
+  sectionCommercial: 'Commercial Parameters',
+  sectionContact: 'Contact Information',
+  labelSubject: 'Subject',
+  labelInquiryType: 'Inquiry Type',
+  labelDescription: 'Description',
+  labelGoal: 'Goal / Objective',
+  labelTargetLocation: 'Target Location',
+  labelBudget: 'Budget',
+  labelTimeline: 'Timeline',
+  labelFullName: 'Full Name',
+  labelJobTitle: 'Job Title',
+  labelCompany: 'Company',
+  labelEmail: 'Email',
+  labelPhone: 'Phone',
+  labelMessage: 'Message',
+  placeholderSubject: 'Brief title for your inquiry',
+  placeholderDescription: "Describe what you're looking for",
+  placeholderGoal: 'What does success look like?',
+  placeholderTargetLocation: 'e.g. Singapore, Vietnam, EU',
+  placeholderBudget: 'e.g. SGD 5k–15k/mo',
+  placeholderName: 'Your name',
+  placeholderTitle: 'e.g. Director',
+  placeholderCompany: 'Company name',
+  placeholderEmail: 'your@email.com',
+  placeholderPhone: '+65 xxxx xxxx',
+  placeholderMessage: "Tell us a bit about what you're looking for",
+  buttonSubmit: 'Submit Requirement',
+  buttonSubmitting: 'Submitting…',
+  successTitle: "Got it — we'll be in touch.",
+  successMessage: 'PER GROUP will respond within 1 business day.',
+  errorRequired: 'Required',
+  errorInvalidEmail: 'Invalid email',
+  errorGeneric: 'Please fill in the required fields.',
+  typeOffice: '🏢 Office Space',
+  typeLab: '🔬 Lab / R&D Space',
+  typeFactory: '🏭 Factory / Industrial Land',
+  typeFunding: '💰 Investment / Funding',
+  typeMarketEntry: '🌏 Market Entry Partner',
+  typeOther: '📋 Other',
+  timelineSelect: 'Select timeline',
+  timelineUrgent: '⚡ Urgent (< 2 weeks)',
+  timelineThisQuarter: '📅 This Quarter',
+  timeline3to6: '📆 3–6 Months',
+  timelineExploring: '🔍 Just Exploring',
+}
+
+export interface ContactFormSettingsData {
+  heading: string
+  successTitle: string
+  successMessage: string
+  buttonSendIntro: string
+  buttonSending: string
+  detailLabelSize: string
+  detailLabelZone: string
+  detailLabelSetup: string
+  detailLabelLease: string
+  detailLabelPrice: string
+}
+
+export const DEFAULT_CONTACT_FORM_SETTINGS: ContactFormSettingsData = {
+  heading: 'Connect with this partner',
+  successTitle: 'Introduction Sent!',
+  successMessage: 'WeConnect will facilitate the connection within 1–2 business days.',
+  buttonSendIntro: 'Send Introduction',
+  buttonSending: 'Sending…',
+  detailLabelSize: 'Size',
+  detailLabelZone: 'Zone',
+  detailLabelSetup: 'Setup',
+  detailLabelLease: 'Lease',
+  detailLabelPrice: 'Price',
+}
+
 export const DEFAULT_WECONNECT_SETTINGS: WeConnectSettingsData = {
   tabNeeds: 'Needs',
   tabAlerts: 'Alerts',

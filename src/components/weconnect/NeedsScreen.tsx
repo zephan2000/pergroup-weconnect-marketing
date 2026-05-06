@@ -14,8 +14,7 @@
 
 import { useState } from 'react'
 import { Zap, Package, TrendingUp } from 'lucide-react'
-import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
-import type { WeConnectSettingsData } from '@/lib/cms/site-text'
+import type { WeConnectSettingsData, RequirementFormSettingsData } from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 import PostRequirementModal from '@/components/weconnect/PostRequirementModal'
 import DotMotif from '@/components/DotMotif'
@@ -45,13 +44,13 @@ const previewAlertByLocale = {
 }
 
 interface NeedsScreenProps {
-  settings: PlatformSettingsData
   weconnect: WeConnectSettingsData
+  requirementForm: RequirementFormSettingsData
   locale: Locale
   isActive: boolean
 }
 
-export default function NeedsScreen({ settings, weconnect, locale }: NeedsScreenProps) {
+export default function NeedsScreen({ weconnect, requirementForm, locale }: NeedsScreenProps) {
   const [showRequirementModal, setShowRequirementModal] = useState(false)
   const [showOfferingModal, setShowOfferingModal] = useState(false)
 
@@ -160,7 +159,8 @@ export default function NeedsScreen({ settings, weconnect, locale }: NeedsScreen
           setShowRequirementModal(false)
           setShowOfferingModal(false)
         }}
-        settings={settings}
+        requirementForm={requirementForm}
+        locale={locale}
       />
     </div>
   )

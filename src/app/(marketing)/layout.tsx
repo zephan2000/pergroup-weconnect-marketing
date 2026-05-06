@@ -32,9 +32,13 @@ import {
   DEFAULT_NAV_SETTINGS,
   DEFAULT_FOOTER_SETTINGS,
   DEFAULT_WECONNECT_SETTINGS,
+  DEFAULT_REQUIREMENT_FORM_SETTINGS,
+  DEFAULT_CONTACT_FORM_SETTINGS,
   type NavSettingsData,
   type FooterSettingsData,
   type WeConnectSettingsData,
+  type RequirementFormSettingsData,
+  type ContactFormSettingsData,
 } from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 
@@ -55,7 +59,7 @@ async function fetchPayloadData(locale: Locale) {
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
 
-    const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc] = await Promise.all([
+    const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc, requirementFormDoc, contactFormDoc] = await Promise.all([
       // Locale-aware fetch — Payload returns localized fields in the requested locale.
       // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
       payload.findGlobal({ slug: 'platform-settings', locale }),
@@ -63,6 +67,8 @@ async function fetchPayloadData(locale: Locale) {
       payload.findGlobal({ slug: 'nav-settings', locale }),
       payload.findGlobal({ slug: 'footer-settings', locale }),
       payload.findGlobal({ slug: 'weconnect-settings', locale }),
+      payload.findGlobal({ slug: 'requirement-form-settings', locale }),
+      payload.findGlobal({ slug: 'contact-form-settings', locale }),
     ])
 
     const d = DEFAULT_PLATFORM_SETTINGS
@@ -122,6 +128,76 @@ async function fetchPayloadData(locale: Locale) {
       copyright: (f.copyright as string) || df.copyright,
     }
 
+    const drf = DEFAULT_REQUIREMENT_FORM_SETTINGS
+    const rf = requirementFormDoc as unknown as Record<string, unknown>
+    const requirementFormSettings: RequirementFormSettingsData = {
+      heading: (rf.heading as string) || drf.heading,
+      description: (rf.description as string) || drf.description,
+      requiredHint: (rf.requiredHint as string) || drf.requiredHint,
+      responseSla: (rf.responseSla as string) || drf.responseSla,
+      sectionBasic: (rf.sectionBasic as string) || drf.sectionBasic,
+      sectionRequirement: (rf.sectionRequirement as string) || drf.sectionRequirement,
+      sectionCommercial: (rf.sectionCommercial as string) || drf.sectionCommercial,
+      sectionContact: (rf.sectionContact as string) || drf.sectionContact,
+      labelSubject: (rf.labelSubject as string) || drf.labelSubject,
+      labelInquiryType: (rf.labelInquiryType as string) || drf.labelInquiryType,
+      labelDescription: (rf.labelDescription as string) || drf.labelDescription,
+      labelGoal: (rf.labelGoal as string) || drf.labelGoal,
+      labelTargetLocation: (rf.labelTargetLocation as string) || drf.labelTargetLocation,
+      labelBudget: (rf.labelBudget as string) || drf.labelBudget,
+      labelTimeline: (rf.labelTimeline as string) || drf.labelTimeline,
+      labelFullName: (rf.labelFullName as string) || drf.labelFullName,
+      labelJobTitle: (rf.labelJobTitle as string) || drf.labelJobTitle,
+      labelCompany: (rf.labelCompany as string) || drf.labelCompany,
+      labelEmail: (rf.labelEmail as string) || drf.labelEmail,
+      labelPhone: (rf.labelPhone as string) || drf.labelPhone,
+      labelMessage: (rf.labelMessage as string) || drf.labelMessage,
+      placeholderSubject: (rf.placeholderSubject as string) || drf.placeholderSubject,
+      placeholderDescription: (rf.placeholderDescription as string) || drf.placeholderDescription,
+      placeholderGoal: (rf.placeholderGoal as string) || drf.placeholderGoal,
+      placeholderTargetLocation: (rf.placeholderTargetLocation as string) || drf.placeholderTargetLocation,
+      placeholderBudget: (rf.placeholderBudget as string) || drf.placeholderBudget,
+      placeholderName: (rf.placeholderName as string) || drf.placeholderName,
+      placeholderTitle: (rf.placeholderTitle as string) || drf.placeholderTitle,
+      placeholderCompany: (rf.placeholderCompany as string) || drf.placeholderCompany,
+      placeholderEmail: (rf.placeholderEmail as string) || drf.placeholderEmail,
+      placeholderPhone: (rf.placeholderPhone as string) || drf.placeholderPhone,
+      placeholderMessage: (rf.placeholderMessage as string) || drf.placeholderMessage,
+      buttonSubmit: (rf.buttonSubmit as string) || drf.buttonSubmit,
+      buttonSubmitting: (rf.buttonSubmitting as string) || drf.buttonSubmitting,
+      successTitle: (rf.successTitle as string) || drf.successTitle,
+      successMessage: (rf.successMessage as string) || drf.successMessage,
+      errorRequired: (rf.errorRequired as string) || drf.errorRequired,
+      errorInvalidEmail: (rf.errorInvalidEmail as string) || drf.errorInvalidEmail,
+      errorGeneric: (rf.errorGeneric as string) || drf.errorGeneric,
+      typeOffice: (rf.typeOffice as string) || drf.typeOffice,
+      typeLab: (rf.typeLab as string) || drf.typeLab,
+      typeFactory: (rf.typeFactory as string) || drf.typeFactory,
+      typeFunding: (rf.typeFunding as string) || drf.typeFunding,
+      typeMarketEntry: (rf.typeMarketEntry as string) || drf.typeMarketEntry,
+      typeOther: (rf.typeOther as string) || drf.typeOther,
+      timelineSelect: (rf.timelineSelect as string) || drf.timelineSelect,
+      timelineUrgent: (rf.timelineUrgent as string) || drf.timelineUrgent,
+      timelineThisQuarter: (rf.timelineThisQuarter as string) || drf.timelineThisQuarter,
+      timeline3to6: (rf.timeline3to6 as string) || drf.timeline3to6,
+      timelineExploring: (rf.timelineExploring as string) || drf.timelineExploring,
+    }
+
+    const dcf = DEFAULT_CONTACT_FORM_SETTINGS
+    const cf = contactFormDoc as unknown as Record<string, unknown>
+    const contactFormSettings: ContactFormSettingsData = {
+      heading: (cf.heading as string) || dcf.heading,
+      successTitle: (cf.successTitle as string) || dcf.successTitle,
+      successMessage: (cf.successMessage as string) || dcf.successMessage,
+      buttonSendIntro: (cf.buttonSendIntro as string) || dcf.buttonSendIntro,
+      buttonSending: (cf.buttonSending as string) || dcf.buttonSending,
+      detailLabelSize: (cf.detailLabelSize as string) || dcf.detailLabelSize,
+      detailLabelZone: (cf.detailLabelZone as string) || dcf.detailLabelZone,
+      detailLabelSetup: (cf.detailLabelSetup as string) || dcf.detailLabelSetup,
+      detailLabelLease: (cf.detailLabelLease as string) || dcf.detailLabelLease,
+      detailLabelPrice: (cf.detailLabelPrice as string) || dcf.detailLabelPrice,
+    }
+
     const dw = DEFAULT_WECONNECT_SETTINGS
     const w = weconnectDoc as unknown as Record<string, unknown>
     const weconnectSettings: WeConnectSettingsData = {
@@ -151,7 +227,7 @@ async function fetchPayloadData(locale: Locale) {
       settingAbout: (w.settingAbout as string) || dw.settingAbout,
     }
 
-    return { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings }
+    return { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, contactFormSettings }
   } catch {
     return {
       platformSettings: DEFAULT_PLATFORM_SETTINGS,
@@ -159,13 +235,15 @@ async function fetchPayloadData(locale: Locale) {
       navSettings: DEFAULT_NAV_SETTINGS,
       footerSettings: DEFAULT_FOOTER_SETTINGS,
       weconnectSettings: DEFAULT_WECONNECT_SETTINGS,
+      requirementFormSettings: DEFAULT_REQUIREMENT_FORM_SETTINGS,
+      contactFormSettings: DEFAULT_CONTACT_FORM_SETTINGS,
     }
   }
 }
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
-  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, contactFormSettings } = await fetchPayloadData(locale)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
@@ -187,6 +265,8 @@ export default async function MarketingLayout({ children }: { children: React.Re
               <WeConnectOverlay
                 settings={platformSettings}
                 weconnect={weconnectSettings}
+                requirementForm={requirementFormSettings}
+                contactForm={contactFormSettings}
                 eHarborTag={footerSettings.eHarborTag}
                 locale={locale}
               />

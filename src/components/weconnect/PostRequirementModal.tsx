@@ -1,41 +1,26 @@
 'use client'
 
 /**
- * PostRequirementModal — structured requirement form with 4 sections:
- * 1. Basic Information (subject, inquiry type)
- * 2. Requirement Confirmation (description, goal alignment)
- * 3. Commercial Parameters (budget, timeline)
- * 4. Contact & Card Info (name, title, company, phone, email)
+ * PostRequirementModal — structured requirement form.
  *
- * Per-field validation: errors appear after first submit attempt; then
- * live-validates on every keystroke until the form is closed/reset.
+ * 4 sections: Basic Information, Requirement Details, Commercial Parameters,
+ * Contact Information. Per-field validation: errors appear after first submit
+ * attempt; live-validates on every keystroke after that.
+ *
+ * Every visible label, placeholder, button, dropdown option, success/error
+ * message comes from the RequirementFormSettings global. Dropdown option
+ * `value` codes (`'office'`, `'lab'`, etc.) stay frozen — the API references
+ * them.
  */
 
-import { useEffect, useState } from 'react'
-import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
+import { useEffect, useMemo, useState } from 'react'
+import type { RequirementFormSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 import ModalBackdrop from './ModalBackdrop'
 import FormField from './FormField'
-import { useLocale, useStrings } from '@/lib/i18n/context'
 
 const inputClass =
   'w-full bg-bg-2 border border-line rounded-[10px] px-3.5 py-2.5 text-pg-text font-inter text-sm outline-none placeholder:text-muted focus:border-amber/50 transition-colors'
-
-const REQUIREMENT_TYPES = [
-  { value: 'office', label: '🏢 Office Space · 办公室' },
-  { value: 'lab', label: '🔬 Lab / R&D Space · 实验室' },
-  { value: 'factory', label: '🏭 Factory / Industrial Land · 厂房/土地' },
-  { value: 'funding', label: '💰 Investment / Funding · 融资' },
-  { value: 'market-entry', label: '🌏 Market Entry Partner · 市场进入' },
-  { value: 'other', label: '📋 Other · 其他' },
-]
-
-const TIMELINE_OPTIONS = [
-  { value: '', label: 'Select timeline · 选择时间' },
-  { value: 'urgent', label: '⚡ Urgent (< 2 weeks) · 紧急' },
-  { value: 'this-quarter', label: '📅 This Quarter · 本季度' },
-  { value: '3-6-months', label: '📆 3–6 Months · 3-6个月' },
-  { value: 'exploring', label: '🔍 Just Exploring · 初步了解' },
-]
 
 const selectInline: React.CSSProperties = {
   appearance: 'none',
@@ -52,7 +37,8 @@ type FormState = 'idle' | 'loading' | 'success' | 'error'
 interface PostRequirementModalProps {
   isOpen: boolean
   onClose: () => void
-  settings: PlatformSettingsData
+  requirementForm: RequirementFormSettingsData
+  locale: Locale
 }
 
 interface FieldErrors {
@@ -62,35 +48,55 @@ interface FieldErrors {
   contactEmail?: string
 }
 
-export default function PostRequirementModal({ isOpen, onClose, settings }: PostRequirementModalProps) {
-  const { locale } = useLocale()
-  const t = useStrings()
+export default function PostRequirementModal({
+  isOpen,
+  onClose,
+  requirementForm: rf,
+  locale,
+}: PostRequirementModalProps) {
+  const labelFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-inter'
+
+  // Build option arrays from CMS labels. Values are frozen codes the API uses.
+  const REQUIREMENT_TYPES = useMemo(
+    () => [
+      { value: 'office', label: rf.typeOffice },
+      { value: 'lab', label: rf.typeLab },
+      { value: 'factory', label: rf.typeFactory },
+      { value: 'funding', label: rf.typeFunding },
+      { value: 'market-entry', label: rf.typeMarketEntry },
+      { value: 'other', label: rf.typeOther },
+    ],
+    [rf.typeOffice, rf.typeLab, rf.typeFactory, rf.typeFunding, rf.typeMarketEntry, rf.typeOther],
+  )
+  const TIMELINE_OPTIONS = useMemo(
+    () => [
+      { value: '', label: rf.timelineSelect },
+      { value: 'urgent', label: rf.timelineUrgent },
+      { value: 'this-quarter', label: rf.timelineThisQuarter },
+      { value: '3-6-months', label: rf.timeline3to6 },
+      { value: 'exploring', label: rf.timelineExploring },
+    ],
+    [rf.timelineSelect, rf.timelineUrgent, rf.timelineThisQuarter, rf.timeline3to6, rf.timelineExploring],
+  )
+
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
-  // Section 1: Basic Information
   const [subject, setSubject] = useState('')
   const [type, setType] = useState(REQUIREMENT_TYPES[0].value)
-
-  // Section 2: Requirement Confirmation
   const [description, setDescription] = useState('')
   const [goalAlignment, setGoalAlignment] = useState('')
   const [targetLocation, setTargetLocation] = useState('')
-
-  // Section 3: Commercial Parameters
   const [budget, setBudget] = useState('')
   const [timeline, setTimeline] = useState('')
-
-  // Section 4: Contact Card
   const [contactName, setContactName] = useState('')
   const [contactTitle, setContactTitle] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [contactPhone, setContactPhone] = useState('')
   const [contactEmail, setContactEmail] = useState('')
 
-  // Reset everything when the modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormState('idle')
@@ -110,19 +116,18 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
       setContactPhone('')
       setContactEmail('')
     }
-  }, [isOpen])
+  }, [isOpen, REQUIREMENT_TYPES])
 
   function validate(): FieldErrors {
     const errs: FieldErrors = {}
-    if (!description.trim()) errs.description = t.forms.errorRequired
-    if (!contactName.trim()) errs.contactName = t.forms.errorRequired
-    if (!companyName.trim()) errs.companyName = t.forms.errorRequired
-    if (!contactEmail.trim()) errs.contactEmail = t.forms.errorRequired
-    else if (!contactEmail.includes('@')) errs.contactEmail = t.forms.errorInvalidEmail
+    if (!description.trim()) errs.description = rf.errorRequired
+    if (!contactName.trim()) errs.contactName = rf.errorRequired
+    if (!companyName.trim()) errs.companyName = rf.errorRequired
+    if (!contactEmail.trim()) errs.contactEmail = rf.errorRequired
+    else if (!contactEmail.includes('@')) errs.contactEmail = rf.errorInvalidEmail
     return errs
   }
 
-  // Live-validate after first submit attempt
   useEffect(() => {
     if (!submitted) return
     setFieldErrors(validate())
@@ -134,7 +139,7 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
     setFieldErrors(errs)
     setSubmitted(true)
     if (Object.keys(errs).length > 0) {
-      setErrorMsg(t.forms.errorGeneric)
+      setErrorMsg(rf.errorGeneric)
       setFormState('error')
       return
     }
@@ -159,18 +164,18 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
           companyName: companyName.trim(),
           contactEmail: contactEmail.trim(),
           contactPhone: contactPhone.trim() || undefined,
-          lang: locale,  // server uses this to override Accept-Language for ack email
+          lang: locale,
         }),
       })
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || 'Something went wrong. Please try again.')
+        throw new Error(data.error || rf.errorGeneric)
       }
 
       setFormState('success')
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      setErrorMsg(err instanceof Error ? err.message : rf.errorGeneric)
       setFormState('error')
     }
   }
@@ -180,46 +185,41 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
       {formState === 'success' ? (
         <div className="text-center py-8">
           <div className="text-3xl mb-3">✅</div>
-          <h3 className="font-sora text-base font-semibold text-pg-text mb-2">
-            {settings.requirementModalSuccessTitle}
+          <h3 className={`text-base font-semibold text-pg-text mb-2 ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>
+            {rf.successTitle}
           </h3>
-          <p className="text-sm text-muted leading-relaxed">
-            {settings.requirementModalSuccessMessage}
-          </p>
+          <p className={`text-sm text-muted leading-relaxed ${labelFont}`}>{rf.successMessage}</p>
         </div>
       ) : (
         <>
-          <h2 className="font-sora text-lg font-bold text-pg-text mb-1">
-            {settings.requirementModalHeading}
+          <h2 className={`text-lg font-bold text-pg-text mb-1 ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>
+            {rf.heading}
           </h2>
-          <p className="text-xs text-muted mb-2">
-            {settings.requirementModalDescription}
-          </p>
-          <p className="text-xs text-muted mb-5">
-            Required fields are marked with <span className="text-alert-red">*</span>
-            <span className="font-noto-sans-sc"> · 必填项标记为 <span className="text-alert-red">*</span></span>
+          <p className={`text-xs text-muted mb-2 ${labelFont}`}>{rf.description}</p>
+          <p className={`text-xs text-muted mb-5 ${labelFont}`}>
+            {rf.requiredHint} <span className="text-alert-red">*</span>
           </p>
 
           <div className="space-y-5">
-            {/* ── Section 1: Basic Information ── */}
+            {/* ── Section 1 ── */}
             <div>
-              <div className="text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2">
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
                 <span className="w-4 h-px bg-amber" />
-                Basic Information · 基本信息
+                {rf.sectionBasic}
               </div>
               <div className="space-y-2.5">
-                <FormField label="Subject" labelZh="主题" htmlFor="req-subject">
+                <FormField label={rf.labelSubject} labelClassName={labelFont} htmlFor="req-subject">
                   <input
                     id="req-subject"
                     type="text"
-                    placeholder="Brief title for your inquiry · 简要描述您的需求"
+                    placeholder={rf.placeholderSubject}
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label="Inquiry Type" labelZh="需求类型" required htmlFor="req-type">
+                <FormField label={rf.labelInquiryType} labelClassName={labelFont} required htmlFor="req-type">
                   <select
                     id="req-type"
                     value={type}
@@ -236,17 +236,17 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               </div>
             </div>
 
-            {/* ── Section 2: Requirement Confirmation ── */}
+            {/* ── Section 2 ── */}
             <div>
-              <div className="text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2">
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
                 <span className="w-4 h-px bg-amber" />
-                Requirement Details · 需求详情
+                {rf.sectionRequirement}
               </div>
               <div className="space-y-2.5">
-                <FormField label="Description" labelZh="需求描述" required error={fieldErrors.description} htmlFor="req-description">
+                <FormField label={rf.labelDescription} labelClassName={labelFont} required error={fieldErrors.description} htmlFor="req-description">
                   <textarea
                     id="req-description"
-                    placeholder="Describe what you're looking for · 详细描述您的需求..."
+                    placeholder={rf.placeholderDescription}
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -255,22 +255,22 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     style={{ resize: 'none' }}
                   />
                 </FormField>
-                <FormField label="Goal / Objective" labelZh="目标" htmlFor="req-goal">
+                <FormField label={rf.labelGoal} labelClassName={labelFont} htmlFor="req-goal">
                   <input
                     id="req-goal"
                     type="text"
-                    placeholder="What does success look like? · 您希望达成什么目标?"
+                    placeholder={rf.placeholderGoal}
                     value={goalAlignment}
                     onChange={(e) => setGoalAlignment(e.target.value)}
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label="Target Location" labelZh="目标地区" htmlFor="req-location">
+                <FormField label={rf.labelTargetLocation} labelClassName={labelFont} htmlFor="req-location">
                   <input
                     id="req-location"
                     type="text"
-                    placeholder="e.g. Singapore, Vietnam, EU · 目标地区"
+                    placeholder={rf.placeholderTargetLocation}
                     value={targetLocation}
                     onChange={(e) => setTargetLocation(e.target.value)}
                     disabled={formState === 'loading'}
@@ -280,25 +280,25 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               </div>
             </div>
 
-            {/* ── Section 3: Commercial Parameters ── */}
+            {/* ── Section 3 ── */}
             <div>
-              <div className="text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2">
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
                 <span className="w-4 h-px bg-amber" />
-                Commercial Parameters · 商业参数
+                {rf.sectionCommercial}
               </div>
               <div className="grid grid-cols-2 gap-2.5">
-                <FormField label="Budget" labelZh="预算" htmlFor="req-budget">
+                <FormField label={rf.labelBudget} labelClassName={labelFont} htmlFor="req-budget">
                   <input
                     id="req-budget"
                     type="text"
-                    placeholder="e.g. SGD 5k–15k/mo"
+                    placeholder={rf.placeholderBudget}
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
                     disabled={formState === 'loading'}
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label="Timeline" labelZh="时间" htmlFor="req-timeline">
+                <FormField label={rf.labelTimeline} labelClassName={labelFont} htmlFor="req-timeline">
                   <select
                     id="req-timeline"
                     value={timeline}
@@ -315,30 +315,30 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
               </div>
             </div>
 
-            {/* ── Section 4: Contact & Card Info ── */}
+            {/* ── Section 4 ── */}
             <div>
-              <div className="text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2">
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
                 <span className="w-4 h-px bg-amber" />
-                Contact Information · 联系方式
+                {rf.sectionContact}
               </div>
               <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2.5">
-                  <FormField label="Full Name" labelZh="姓名" required error={fieldErrors.contactName} htmlFor="req-name">
+                  <FormField label={rf.labelFullName} labelClassName={labelFont} required error={fieldErrors.contactName} htmlFor="req-name">
                     <input
                       id="req-name"
                       type="text"
-                      placeholder="Your name · 您的姓名"
+                      placeholder={rf.placeholderName}
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
                   </FormField>
-                  <FormField label="Job Title" labelZh="职位" htmlFor="req-title">
+                  <FormField label={rf.labelJobTitle} labelClassName={labelFont} htmlFor="req-title">
                     <input
                       id="req-title"
                       type="text"
-                      placeholder="e.g. Director · 职位"
+                      placeholder={rf.placeholderTitle}
                       value={contactTitle}
                       onChange={(e) => setContactTitle(e.target.value)}
                       disabled={formState === 'loading'}
@@ -346,11 +346,11 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                     />
                   </FormField>
                 </div>
-                <FormField label="Company" labelZh="公司" required error={fieldErrors.companyName} htmlFor="req-company">
+                <FormField label={rf.labelCompany} labelClassName={labelFont} required error={fieldErrors.companyName} htmlFor="req-company">
                   <input
                     id="req-company"
                     type="text"
-                    placeholder="Company name · 公司名称"
+                    placeholder={rf.placeholderCompany}
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     disabled={formState === 'loading'}
@@ -358,22 +358,22 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
                   />
                 </FormField>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <FormField label="Email" labelZh="邮箱" required error={fieldErrors.contactEmail} htmlFor="req-email">
+                  <FormField label={rf.labelEmail} labelClassName={labelFont} required error={fieldErrors.contactEmail} htmlFor="req-email">
                     <input
                       id="req-email"
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder={rf.placeholderEmail}
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
                       disabled={formState === 'loading'}
                       className={inputClass}
                     />
                   </FormField>
-                  <FormField label="Phone" labelZh="电话" htmlFor="req-phone">
+                  <FormField label={rf.labelPhone} labelClassName={labelFont} htmlFor="req-phone">
                     <input
                       id="req-phone"
                       type="tel"
-                      placeholder="+65 xxxx xxxx"
+                      placeholder={rf.placeholderPhone}
                       value={contactPhone}
                       onChange={(e) => setContactPhone(e.target.value)}
                       disabled={formState === 'loading'}
@@ -386,13 +386,13 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div className="text-xs text-alert-red mt-2">{errorMsg}</div>
+            <div className={`text-xs text-alert-red mt-2 ${labelFont}`}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
-            className="w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold font-sora cursor-pointer flex items-center justify-center gap-2 text-pg-text"
+            className={`w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 text-pg-text ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}
             style={{
               background: formState === 'loading'
                 ? 'hsla(36, 90%, 47%, 0.5)'
@@ -403,16 +403,14 @@ export default function PostRequirementModal({ isOpen, onClose, settings }: Post
             {formState === 'loading' ? (
               <>
                 <LoadingDots />
-                Submitting…
+                {rf.buttonSubmitting}
               </>
             ) : (
-              'Submit Requirement · 提交需求'
+              rf.buttonSubmit
             )}
           </button>
 
-          <p className="text-[10px] text-muted text-center mt-2">
-            PER GROUP will respond within 1 business day · PER GROUP将在1个工作日内回复
-          </p>
+          <p className={`text-[10px] text-muted text-center mt-2 ${labelFont}`}>{rf.responseSla}</p>
         </>
       )}
     </ModalBackdrop>
