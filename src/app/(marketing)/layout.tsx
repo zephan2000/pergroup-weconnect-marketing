@@ -31,8 +31,10 @@ import {
 import {
   DEFAULT_NAV_SETTINGS,
   DEFAULT_FOOTER_SETTINGS,
+  DEFAULT_WECONNECT_SETTINGS,
   type NavSettingsData,
   type FooterSettingsData,
+  type WeConnectSettingsData,
 } from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 
@@ -53,13 +55,14 @@ async function fetchPayloadData(locale: Locale) {
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
 
-    const [platformDoc, siteDoc, navDoc, footerDoc] = await Promise.all([
+    const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc] = await Promise.all([
       // Locale-aware fetch — Payload returns localized fields in the requested locale.
       // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
       payload.findGlobal({ slug: 'platform-settings', locale }),
       payload.findGlobal({ slug: 'site-settings', locale }),
       payload.findGlobal({ slug: 'nav-settings', locale }),
       payload.findGlobal({ slug: 'footer-settings', locale }),
+      payload.findGlobal({ slug: 'weconnect-settings', locale }),
     ])
 
     const d = DEFAULT_PLATFORM_SETTINGS
@@ -119,20 +122,50 @@ async function fetchPayloadData(locale: Locale) {
       copyright: (f.copyright as string) || df.copyright,
     }
 
-    return { platformSettings, colorOverrides, navSettings, footerSettings }
+    const dw = DEFAULT_WECONNECT_SETTINGS
+    const w = weconnectDoc as unknown as Record<string, unknown>
+    const weconnectSettings: WeConnectSettingsData = {
+      tabNeeds: (w.tabNeeds as string) || dw.tabNeeds,
+      tabAlerts: (w.tabAlerts as string) || dw.tabAlerts,
+      tabProfile: (w.tabProfile as string) || dw.tabProfile,
+      postNeed: (w.postNeed as string) || dw.postNeed,
+      postNeedAccent: (w.postNeedAccent as string) || dw.postNeedAccent,
+      postNeedDescription: (w.postNeedDescription as string) || dw.postNeedDescription,
+      shareOffering: (w.shareOffering as string) || dw.shareOffering,
+      shareOfferingAccent: (w.shareOfferingAccent as string) || dw.shareOfferingAccent,
+      shareOfferingDescription: (w.shareOfferingDescription as string) || dw.shareOfferingDescription,
+      recentNeeds: (w.recentNeeds as string) || dw.recentNeeds,
+      advisoryAlerts: (w.advisoryAlerts as string) || dw.advisoryAlerts,
+      previewLabel: (w.previewLabel as string) || dw.previewLabel,
+      comingSoonLabel: (w.comingSoonLabel as string) || dw.comingSoonLabel,
+      profileMember: (w.profileMember as string) || dw.profileMember,
+      profileMemberSince: (w.profileMemberSince as string) || dw.profileMemberSince,
+      myPosts: (w.myPosts as string) || dw.myPosts,
+      companyProfile: (w.companyProfile as string) || dw.companyProfile,
+      enterpriseUser: (w.enterpriseUser as string) || dw.enterpriseUser,
+      enterpriseRole: (w.enterpriseRole as string) || dw.enterpriseRole,
+      settingsHeading: (w.settingsHeading as string) || dw.settingsHeading,
+      settingLanguage: (w.settingLanguage as string) || dw.settingLanguage,
+      settingNotifications: (w.settingNotifications as string) || dw.settingNotifications,
+      settingContactPg: (w.settingContactPg as string) || dw.settingContactPg,
+      settingAbout: (w.settingAbout as string) || dw.settingAbout,
+    }
+
+    return { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings }
   } catch {
     return {
       platformSettings: DEFAULT_PLATFORM_SETTINGS,
       colorOverrides: {},
       navSettings: DEFAULT_NAV_SETTINGS,
       footerSettings: DEFAULT_FOOTER_SETTINGS,
+      weconnectSettings: DEFAULT_WECONNECT_SETTINGS,
     }
   }
 }
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
-  const { platformSettings, colorOverrides, navSettings, footerSettings } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings } = await fetchPayloadData(locale)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
@@ -151,7 +184,12 @@ export default async function MarketingLayout({ children }: { children: React.Re
                 {children}
                 <Footer settings={footerSettings} nav={navSettings} locale={locale} />
               </div>
-              <WeConnectOverlay settings={platformSettings} />
+              <WeConnectOverlay
+                settings={platformSettings}
+                weconnect={weconnectSettings}
+                eHarborTag={footerSettings.eHarborTag}
+                locale={locale}
+              />
             </WeConnectProvider>
           </I18nProvider>
         </AnalyticsProvider>

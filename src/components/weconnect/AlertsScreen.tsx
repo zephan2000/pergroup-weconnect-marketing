@@ -2,11 +2,14 @@
 
 /**
  * AlertsScreen — Advisory alerts with severity levels.
- * v1: preview/coming-soon state with sample alerts. Locale-aware content.
+ * v1: preview/coming-soon state with hardcoded sample alerts. The `advisoryAlerts`
+ * heading and preview/coming-soon badges come from the WeConnectSettings global.
+ * Sample alert content stays hardcoded (mock content, not editorial copy).
  */
 
 import { Zap, Eye, Info, Clock } from 'lucide-react'
-import { useLocale, useStrings } from '@/lib/i18n/context'
+import type { WeConnectSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 
 const alertsByLocale = {
   en: [
@@ -75,32 +78,35 @@ const severityClass = {
   info: { border: 'border-l-muted', bg: 'bg-faint text-muted' },
 } as const
 
-export default function AlertsScreen() {
-  const t = useStrings()
-  const { locale } = useLocale()
+const comingSoonBodyByLocale: Record<Locale, string> = {
+  en: 'Personalised alerts based on your business profile will be available in a future update.',
+  zh: '基于您的业务档案的个性化预警将在未来版本中推出。',
+}
+
+interface AlertsScreenProps {
+  weconnect: WeConnectSettingsData
+  locale: Locale
+}
+
+export default function AlertsScreen({ weconnect, locale }: AlertsScreenProps) {
   const alerts = alertsByLocale[locale]
+  const titleFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
 
   return (
     <div className="space-y-4 pb-4">
       <div>
-        <h3 className={`font-bold text-pg-text ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>
-          {t.weconnect.advisoryAlerts}
-        </h3>
+        <h3 className={`font-bold text-pg-text ${titleFont}`}>{weconnect.advisoryAlerts}</h3>
       </div>
 
       <div className="glass-card rounded-xl p-4 flex items-center gap-3 border-l-4 border-l-amber">
         <Clock className="w-5 h-5 text-amber flex-shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-pg-text">{t.weconnect.comingSoonLabel}</p>
-          <p className="text-xs text-muted">
-            {locale === 'zh'
-              ? '基于您的业务档案的个性化预警将在未来版本中推出。'
-              : 'Personalised alerts based on your business profile will be available in a future update.'}
-          </p>
+          <p className="text-sm font-semibold text-pg-text">{weconnect.comingSoonLabel}</p>
+          <p className="text-xs text-muted">{comingSoonBodyByLocale[locale]}</p>
         </div>
       </div>
 
-      <p className="text-xs text-muted">{t.weconnect.previewLabel}</p>
+      <p className="text-xs text-muted">{weconnect.previewLabel}</p>
 
       {alerts.map((a) => {
         const cls = severityClass[a.severity]
@@ -115,12 +121,10 @@ export default function AlertsScreen() {
                 <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${cls.bg}`}>
                   <Icon size={10} /> {a.pillLabel}
                 </span>
-                <span className="bg-amber/10 text-deep-orange text-[10px] font-semibold px-2 py-0.5 rounded-md">
-                  {a.tag}
-                </span>
+                <span className="bg-amber/10 text-deep-orange text-[10px] font-semibold px-2 py-0.5 rounded-md">{a.tag}</span>
                 <span className="text-[10px] text-muted ml-auto">{a.time}</span>
               </div>
-              <h4 className={`font-semibold text-sm text-pg-text ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>{a.title}</h4>
+              <h4 className={`font-semibold text-sm text-pg-text ${titleFont}`}>{a.title}</h4>
               <p className="text-xs text-muted mt-2 leading-relaxed">{a.body}</p>
             </div>
           </div>

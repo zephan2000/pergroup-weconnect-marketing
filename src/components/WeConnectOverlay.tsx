@@ -9,23 +9,30 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
-import { useStrings } from '@/lib/i18n/context'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
+import type { WeConnectSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 import Image from 'next/image'
 import { Zap, AlertTriangle, User, X, Bell, ChevronDown } from 'lucide-react'
 import NeedsScreen from '@/components/weconnect/NeedsScreen'
 import AlertsScreen from '@/components/weconnect/AlertsScreen'
 import ProfileScreen from '@/components/weconnect/ProfileScreen'
 
-export default function WeConnectOverlay({ settings }: { settings: PlatformSettingsData }) {
+interface WeConnectOverlayProps {
+  settings: PlatformSettingsData
+  weconnect: WeConnectSettingsData
+  eHarborTag: string
+  locale: Locale
+}
+
+export default function WeConnectOverlay({ settings, weconnect, eHarborTag, locale }: WeConnectOverlayProps) {
   const { isOpen, activeTab, close, setActiveTab } = useWeConnect()
-  const t = useStrings()
   const [visible, setVisible] = useState(false)
 
   const TABS: { tab: WeConnectTab; icon: typeof Zap; label: string; badge?: number }[] = [
-    { tab: 'needs', icon: Zap, label: t.weconnect.tabNeeds },
-    { tab: 'alerts', icon: AlertTriangle, label: t.weconnect.tabAlerts, badge: 2 },
-    { tab: 'profile', icon: User, label: t.weconnect.tabProfile },
+    { tab: 'needs', icon: Zap, label: weconnect.tabNeeds },
+    { tab: 'alerts', icon: AlertTriangle, label: weconnect.tabAlerts, badge: 2 },
+    { tab: 'profile', icon: User, label: weconnect.tabProfile },
   ]
 
   useEffect(() => {
@@ -68,13 +75,13 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
           />
           <div className="hidden md:flex flex-col mr-4">
             <span className="font-sora font-extrabold text-pg-text text-sm">WeConnect</span>
-            <span className="text-muted text-[9px]">{t.footer.eHarborTag}</span>
+            <span className="text-muted text-[9px]">{eHarborTag}</span>
           </div>
 
           {/* Org selector stub */}
           <button className="flex items-center gap-1 text-pg-text text-sm bg-transparent border-none cursor-pointer">
             <span className="w-2 h-2 rounded-full bg-amber" />
-            {t.weconnect.enterpriseUser}
+            {weconnect.enterpriseUser}
             <ChevronDown size={14} className="text-muted" />
           </button>
         </div>
@@ -122,9 +129,9 @@ export default function WeConnectOverlay({ settings }: { settings: PlatformSetti
         {/* Content area */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl mx-auto px-4 py-4">
-            {activeTab === 'needs' && <NeedsScreen settings={settings} isActive={isOpen && activeTab === 'needs'} />}
-            {activeTab === 'alerts' && <AlertsScreen />}
-            {activeTab === 'profile' && <ProfileScreen />}
+            {activeTab === 'needs' && <NeedsScreen settings={settings} weconnect={weconnect} locale={locale} isActive={isOpen && activeTab === 'needs'} />}
+            {activeTab === 'alerts' && <AlertsScreen weconnect={weconnect} locale={locale} />}
+            {activeTab === 'profile' && <ProfileScreen weconnect={weconnect} locale={locale} />}
           </div>
         </div>
       </div>
