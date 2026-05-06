@@ -1,13 +1,15 @@
 /**
  * ServicesBlock — "End-to-End Global Services" grid with Lucide icons.
- * Server component. `subtitle` is now CMS-sourced; reads via locale-aware
- * Payload query in the parent. The legacy `chineseTitle` per-service field
- * is no longer rendered (would duplicate `title` already returned in the
- * current locale). Column drop deferred to Phase 5b.5.
+ * Server component. `subtitle` is CMS-sourced (Phase 5b.2 schema).
+ *
+ * Font: `font-sora` everywhere. The Sora stack falls back to Noto Sans SC
+ * for Chinese glyphs (see tailwind.config.ts). No locale-dependent class.
+ *
+ * The legacy `chineseTitle` per-service field is no longer rendered.
+ * Column drop deferred to Phase 5b.5.
  */
 import { Search, MapPin, Users, Shield, Leaf, Rocket } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { getServerLocale } from '@/lib/i18n/server'
 
 type ServiceItem = {
   number: string
@@ -37,31 +39,27 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 const DEFAULT_ICONS: LucideIcon[] = [Search, MapPin, Users, Shield, Leaf, Rocket]
 
-export default async function ServicesBlock({
+export default function ServicesBlock({
   sectionLabel,
   headline,
   headlineAccent,
   subtitle,
   services = [],
 }: ServicesBlockProps) {
-  const locale = await getServerLocale()
-  const cnFont = locale === 'zh' ? 'font-noto-sans-sc' : ''
-  const headingFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
-
   return (
     <section id="services" className="bg-bg py-20 md:py-28">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="text-center mb-14 reveal">
           {sectionLabel && (
-            <p className={`text-amber text-xs tracking-widest uppercase mb-3 ${cnFont || 'font-sora'}`}>
+            <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
               {sectionLabel}
             </p>
           )}
-          <h2 className={`font-extrabold text-3xl md:text-4xl text-pg-text ${headingFont}`}>
+          <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-pg-text">
             {headline} {headlineAccent && <span className="text-amber">{headlineAccent}</span>}
           </h2>
           {subtitle && (
-            <p className={`text-muted text-lg mt-2 ${cnFont}`}>{subtitle}</p>
+            <p className="text-muted text-lg mt-2">{subtitle}</p>
           )}
         </div>
 
@@ -80,10 +78,10 @@ export default async function ServicesBlock({
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2">
                       <span className="text-amber/40 font-sora font-extrabold text-xs">{svc.number}</span>
-                      <h3 className={`font-bold text-base text-pg-text ${headingFont}`}>{svc.title}</h3>
+                      <h3 className="font-sora font-bold text-base text-pg-text">{svc.title}</h3>
                     </div>
                     {svc.description && (
-                      <p className={`text-sm text-muted mt-2 leading-relaxed ${cnFont}`}>{svc.description}</p>
+                      <p className="text-sm text-muted mt-2 leading-relaxed">{svc.description}</p>
                     )}
                   </div>
                 </div>

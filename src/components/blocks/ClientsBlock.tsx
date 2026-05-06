@@ -1,14 +1,16 @@
 /**
  * ClientsBlock — Partners section with partner types and regional presence.
  * Server component; reads partnerTypes / regions / networkSubtitle / regionsHeading
- * from CMS (5b.2 schema). Locale-aware via getServerLocale() for font class.
+ * from CMS (5b.2 schema).
+ *
+ * Font: `font-sora` everywhere. The Sora stack falls back to Noto Sans SC
+ * for Chinese glyphs (see tailwind.config.ts). No locale-dependent class.
  *
  * The icon enum on each partnerType is one of the four Lucide icon names —
  * adding new icons requires a code change.
  */
 import { Globe, Handshake, Building2, Award } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { getServerLocale } from '@/lib/i18n/server'
 
 type ClientItem = { name: string }
 type PartnerType = { icon: 'Globe' | 'Building2' | 'Handshake' | 'Award'; title: string; examples?: string }
@@ -31,7 +33,7 @@ const ICON_MAP: Record<PartnerType['icon'], LucideIcon> = {
   Award,
 }
 
-export default async function ClientsBlock({
+export default function ClientsBlock({
   sectionLabel,
   headline,
   networkSubtitle,
@@ -40,10 +42,6 @@ export default async function ClientsBlock({
   partnerTypes = [],
   regions = [],
 }: ClientsBlockProps) {
-  const locale = await getServerLocale()
-  const cnFont = locale === 'zh' ? 'font-noto-sans-sc' : ''
-  const headingFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
-
   return (
     <section id="clients" className="py-20 md:py-28 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg-2/20 to-bg" />
@@ -51,17 +49,17 @@ export default async function ClientsBlock({
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center mb-14 reveal">
           {sectionLabel && (
-            <p className={`text-amber text-xs tracking-widest uppercase mb-3 ${cnFont || 'font-sora'}`}>
+            <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
               {sectionLabel}
             </p>
           )}
           {headline && (
-            <h2 className={`font-extrabold text-3xl md:text-4xl text-pg-text ${headingFont}`}>
+            <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-pg-text">
               {headline}
             </h2>
           )}
           {networkSubtitle && (
-            <p className={`text-muted text-lg mt-2 ${cnFont}`}>{networkSubtitle}</p>
+            <p className="text-muted text-lg mt-2">{networkSubtitle}</p>
           )}
         </div>
 
@@ -76,9 +74,9 @@ export default async function ClientsBlock({
                       <Icon className="w-5 h-5 text-amber" />
                     </div>
                     <div>
-                      <h3 className={`font-bold text-pg-text ${headingFont}`}>{p.title}</h3>
+                      <h3 className="font-sora font-bold text-pg-text">{p.title}</h3>
                       {p.examples && (
-                        <p className={`text-muted text-sm mt-2 leading-relaxed ${cnFont}`}>{p.examples}</p>
+                        <p className="text-muted text-sm mt-2 leading-relaxed">{p.examples}</p>
                       )}
                     </div>
                   </div>
@@ -92,14 +90,14 @@ export default async function ClientsBlock({
           <>
             <div className="text-center mb-6">
               {regionsHeading && (
-                <h3 className={`font-bold text-lg text-pg-text ${headingFont}`}>{regionsHeading}</h3>
+                <h3 className="font-sora font-bold text-lg text-pg-text">{regionsHeading}</h3>
               )}
             </div>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-3 reveal d2">
               {regions.map((r) => (
                 <div key={r.name} className="glass-card rounded-xl p-4 text-center hover:shadow-md transition-shadow">
                   <div className="font-sora font-extrabold text-amber text-xl">{r.count}</div>
-                  <div className={`text-pg-text text-xs font-semibold mt-1 ${cnFont}`}>{r.name}</div>
+                  <div className="text-pg-text text-xs font-semibold mt-1">{r.name}</div>
                 </div>
               ))}
             </div>

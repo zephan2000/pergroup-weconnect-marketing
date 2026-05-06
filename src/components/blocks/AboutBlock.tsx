@@ -1,11 +1,12 @@
 /**
  * AboutBlock — "15 Years Bridging East & West" section with timeline.
  * Server component; reads timeline milestones from CMS (5b.2 schema).
- * Locale-aware via getServerLocale() so the right font class is applied.
+ *
+ * Font: `font-sora` for headings; the Sora stack falls back to Noto Sans SC
+ * for Chinese glyphs (see tailwind.config.ts). No locale-dependent class.
  */
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import DotMotif from '@/components/DotMotif'
-import { getServerLocale } from '@/lib/i18n/server'
 
 type Advantage = { icon?: string; title: string; description?: string }
 type GlobeStat = { number?: string; label?: string }
@@ -21,7 +22,7 @@ type AboutBlockProps = {
   milestones?: Milestone[]
 }
 
-export default async function AboutBlock({
+export default function AboutBlock({
   sectionLabel,
   headline,
   headlineAccent,
@@ -29,10 +30,6 @@ export default async function AboutBlock({
   advantages = [],
   milestones = [],
 }: AboutBlockProps) {
-  const locale = await getServerLocale()
-  const cnFont = locale === 'zh' ? 'font-noto-sans-sc' : ''
-  const headingFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
-
   return (
     <section id="about" className="py-20 md:py-28 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg-2/30 to-bg" />
@@ -41,16 +38,16 @@ export default async function AboutBlock({
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div className="reveal">
             {sectionLabel && (
-              <p className={`text-amber text-xs tracking-widest uppercase mb-3 ${cnFont || 'font-sora'}`}>
+              <p className="text-amber text-xs tracking-widest uppercase mb-3 font-sora">
                 {sectionLabel}
               </p>
             )}
-            <h2 className={`font-extrabold text-3xl md:text-4xl text-pg-text leading-tight ${headingFont}`}>
+            <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-pg-text leading-tight">
               {headline} {headlineAccent && <><br /><span className="text-amber">{headlineAccent}</span></>}
             </h2>
 
             {body && (
-              <div className={`mt-8 text-muted text-sm leading-relaxed space-y-4 ${cnFont}`}>
+              <div className="mt-8 text-muted text-sm leading-relaxed space-y-4">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <RichText data={body as any} />
               </div>
@@ -61,9 +58,9 @@ export default async function AboutBlock({
                 {advantages.map((adv) => (
                   <div key={adv.title} className="glass-card rounded-lg px-4 py-2">
                     {adv.icon && <span className="mr-2">{adv.icon}</span>}
-                    <span className={`text-amber text-sm font-bold ${cnFont}`}>{adv.title}</span>
+                    <span className="text-amber text-sm font-bold">{adv.title}</span>
                     {adv.description && (
-                      <span className={`text-muted text-xs ml-2 ${cnFont}`}>{adv.description}</span>
+                      <span className="text-muted text-xs ml-2">{adv.description}</span>
                     )}
                   </div>
                 ))}
@@ -84,7 +81,7 @@ export default async function AboutBlock({
                   </div>
                   <div className="pb-8">
                     <span className="font-sora font-extrabold text-amber text-lg">{m.year}</span>
-                    <div className={`font-semibold text-pg-text text-sm mt-1 ${headingFont}`}>{m.title}</div>
+                    <div className="font-sora font-semibold text-pg-text text-sm mt-1">{m.title}</div>
                   </div>
                 </div>
               ))}

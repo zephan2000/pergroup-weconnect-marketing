@@ -260,7 +260,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
               <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
                 <Nav settings={navSettings} />
                 {children}
-                <Footer settings={footerSettings} nav={navSettings} locale={locale} />
+                <Footer settings={footerSettings} nav={navSettings} />
               </div>
               <WeConnectOverlay
                 settings={platformSettings}

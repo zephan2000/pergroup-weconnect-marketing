@@ -83,9 +83,6 @@ export default function SpaceDetailModal({
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
 
-  const labelFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-inter'
-  const headingFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
-
   useEffect(() => {
     if (!isOpen) {
       setFormState('idle')
@@ -200,7 +197,7 @@ export default function SpaceDetailModal({
         {space.type}
       </span>
 
-      <h2 className={headingFont} style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 12, lineHeight: 1.3 }}>
+      <h2 className="font-sora" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginTop: 12, lineHeight: 1.3 }}>
         {space.name}
       </h2>
       {location && (
@@ -210,7 +207,7 @@ export default function SpaceDetailModal({
       {matchPct != null && (
         <div style={{ marginTop: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-            <span style={{ color: 'var(--muted)' }} className={labelFont}>{aiMatchScoreByLocale[locale]}</span>
+            <span style={{ color: 'var(--muted)' }} >{aiMatchScoreByLocale[locale]}</span>
             <span style={{ color: matchColor, fontWeight: 600 }}>{matchPct}%</span>
           </div>
           <div style={{ height: 4, borderRadius: 2, background: 'var(--faint)', overflow: 'hidden' }}>
@@ -241,7 +238,7 @@ export default function SpaceDetailModal({
                 fontSize: 13,
               }}
             >
-              <span style={{ color: 'var(--muted)' }} className={labelFont}>{r.label}</span>
+              <span style={{ color: 'var(--muted)' }} >{r.label}</span>
               <span style={{ color: 'var(--text)', fontWeight: 500, textAlign: 'right', maxWidth: '65%' }}>
                 {r.value}
               </span>
@@ -271,55 +268,55 @@ export default function SpaceDetailModal({
       {formState === 'success' ? (
         <div style={{ textAlign: 'center', padding: '32px 0 8px' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
-          <h3 className={headingFont} style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
+          <h3 className="font-sora" style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>
             {cf.successTitle}
           </h3>
-          <p className={labelFont} style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
             {cf.successMessage}
           </p>
         </div>
       ) : (
         <div style={{ marginTop: 24 }}>
-          <h4 className={headingFont} style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+          <h4 className="font-sora" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
             {cf.heading}
           </h4>
-          <p className={`text-xs text-muted mb-3 ${labelFont}`}>
+          <p className={`text-xs text-muted mb-3`}>
             {rf.requiredHint} <span className="text-alert-red">*</span>
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <FormField label={rf.labelFullName} labelClassName={labelFont} required error={fieldErrors.name} htmlFor="contact-name">
+              <FormField label={rf.labelFullName} required error={fieldErrors.name} htmlFor="contact-name">
                 <input id="contact-name" type="text" placeholder={rf.placeholderName} value={name} onChange={(e) => setName(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
-              <FormField label={rf.labelJobTitle} labelClassName={labelFont} htmlFor="contact-title">
+              <FormField label={rf.labelJobTitle} htmlFor="contact-title">
                 <input id="contact-title" type="text" placeholder={rf.placeholderTitle} value={title} onChange={(e) => setTitle(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
             </div>
-            <FormField label={rf.labelCompany} labelClassName={labelFont} required error={fieldErrors.company} htmlFor="contact-company">
+            <FormField label={rf.labelCompany} required error={fieldErrors.company} htmlFor="contact-company">
               <input id="contact-company" type="text" placeholder={rf.placeholderCompany} value={company} onChange={(e) => setCompany(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
             </FormField>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <FormField label={rf.labelEmail} labelClassName={labelFont} required error={fieldErrors.email} htmlFor="contact-email">
+              <FormField label={rf.labelEmail} required error={fieldErrors.email} htmlFor="contact-email">
                 <input id="contact-email" type="email" placeholder={rf.placeholderEmail} value={email} onChange={(e) => setEmail(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
-              <FormField label={rf.labelPhone} labelClassName={labelFont} htmlFor="contact-phone">
+              <FormField label={rf.labelPhone} htmlFor="contact-phone">
                 <input id="contact-phone" type="tel" placeholder={rf.placeholderPhone} value={phone} onChange={(e) => setPhone(e.target.value)} disabled={formState === 'loading'} style={inputStyle} />
               </FormField>
             </div>
-            <FormField label={rf.labelMessage} labelClassName={labelFont} htmlFor="contact-message">
+            <FormField label={rf.labelMessage} htmlFor="contact-message">
               <textarea id="contact-message" placeholder={rf.placeholderMessage} rows={2} value={message} onChange={(e) => setMessage(e.target.value)} disabled={formState === 'loading'} style={{ ...inputStyle, resize: 'none' }} />
             </FormField>
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div className={labelFont} style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
+            <div style={{ fontSize: 12, color: 'hsl(7 72% 48%)', marginTop: 8 }}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
-            className={headingFont}
+            className="font-sora"
             style={{
               width: '100%',
               marginTop: 14,

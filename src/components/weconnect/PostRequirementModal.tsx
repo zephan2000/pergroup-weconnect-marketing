@@ -54,8 +54,6 @@ export default function PostRequirementModal({
   requirementForm: rf,
   locale,
 }: PostRequirementModalProps) {
-  const labelFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-inter'
-
   // Build option arrays from CMS labels. Values are frozen codes the API uses.
   const REQUIREMENT_TYPES = useMemo(
     () => [
@@ -185,30 +183,30 @@ export default function PostRequirementModal({
       {formState === 'success' ? (
         <div className="text-center py-8">
           <div className="text-3xl mb-3">✅</div>
-          <h3 className={`text-base font-semibold text-pg-text mb-2 ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>
+          <h3 className={`text-base font-semibold text-pg-text mb-2`}>
             {rf.successTitle}
           </h3>
-          <p className={`text-sm text-muted leading-relaxed ${labelFont}`}>{rf.successMessage}</p>
+          <p className={`text-sm text-muted leading-relaxed`}>{rf.successMessage}</p>
         </div>
       ) : (
         <>
-          <h2 className={`text-lg font-bold text-pg-text mb-1 ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}>
+          <h2 className={`text-lg font-bold text-pg-text mb-1`}>
             {rf.heading}
           </h2>
-          <p className={`text-xs text-muted mb-2 ${labelFont}`}>{rf.description}</p>
-          <p className={`text-xs text-muted mb-5 ${labelFont}`}>
+          <p className={`text-xs text-muted mb-2`}>{rf.description}</p>
+          <p className={`text-xs text-muted mb-5`}>
             {rf.requiredHint} <span className="text-alert-red">*</span>
           </p>
 
           <div className="space-y-5">
             {/* ── Section 1 ── */}
             <div>
-              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2`}>
                 <span className="w-4 h-px bg-amber" />
                 {rf.sectionBasic}
               </div>
               <div className="space-y-2.5">
-                <FormField label={rf.labelSubject} labelClassName={labelFont} htmlFor="req-subject">
+                <FormField label={rf.labelSubject} htmlFor="req-subject">
                   <input
                     id="req-subject"
                     type="text"
@@ -219,7 +217,7 @@ export default function PostRequirementModal({
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label={rf.labelInquiryType} labelClassName={labelFont} required htmlFor="req-type">
+                <FormField label={rf.labelInquiryType} required htmlFor="req-type">
                   <select
                     id="req-type"
                     value={type}
@@ -238,12 +236,12 @@ export default function PostRequirementModal({
 
             {/* ── Section 2 ── */}
             <div>
-              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2`}>
                 <span className="w-4 h-px bg-amber" />
                 {rf.sectionRequirement}
               </div>
               <div className="space-y-2.5">
-                <FormField label={rf.labelDescription} labelClassName={labelFont} required error={fieldErrors.description} htmlFor="req-description">
+                <FormField label={rf.labelDescription} required error={fieldErrors.description} htmlFor="req-description">
                   <textarea
                     id="req-description"
                     placeholder={rf.placeholderDescription}
@@ -255,7 +253,7 @@ export default function PostRequirementModal({
                     style={{ resize: 'none' }}
                   />
                 </FormField>
-                <FormField label={rf.labelGoal} labelClassName={labelFont} htmlFor="req-goal">
+                <FormField label={rf.labelGoal} htmlFor="req-goal">
                   <input
                     id="req-goal"
                     type="text"
@@ -266,7 +264,7 @@ export default function PostRequirementModal({
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label={rf.labelTargetLocation} labelClassName={labelFont} htmlFor="req-location">
+                <FormField label={rf.labelTargetLocation} htmlFor="req-location">
                   <input
                     id="req-location"
                     type="text"
@@ -282,12 +280,12 @@ export default function PostRequirementModal({
 
             {/* ── Section 3 ── */}
             <div>
-              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2`}>
                 <span className="w-4 h-px bg-amber" />
                 {rf.sectionCommercial}
               </div>
               <div className="grid grid-cols-2 gap-2.5">
-                <FormField label={rf.labelBudget} labelClassName={labelFont} htmlFor="req-budget">
+                <FormField label={rf.labelBudget} htmlFor="req-budget">
                   <input
                     id="req-budget"
                     type="text"
@@ -298,7 +296,7 @@ export default function PostRequirementModal({
                     className={inputClass}
                   />
                 </FormField>
-                <FormField label={rf.labelTimeline} labelClassName={labelFont} htmlFor="req-timeline">
+                <FormField label={rf.labelTimeline} htmlFor="req-timeline">
                   <select
                     id="req-timeline"
                     value={timeline}
@@ -317,13 +315,13 @@ export default function PostRequirementModal({
 
             {/* ── Section 4 ── */}
             <div>
-              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2 ${labelFont}`}>
+              <div className={`text-[10px] uppercase tracking-[2px] text-amber font-semibold mb-3 flex items-center gap-2`}>
                 <span className="w-4 h-px bg-amber" />
                 {rf.sectionContact}
               </div>
               <div className="space-y-2.5">
                 <div className="grid grid-cols-2 gap-2.5">
-                  <FormField label={rf.labelFullName} labelClassName={labelFont} required error={fieldErrors.contactName} htmlFor="req-name">
+                  <FormField label={rf.labelFullName} required error={fieldErrors.contactName} htmlFor="req-name">
                     <input
                       id="req-name"
                       type="text"
@@ -334,7 +332,7 @@ export default function PostRequirementModal({
                       className={inputClass}
                     />
                   </FormField>
-                  <FormField label={rf.labelJobTitle} labelClassName={labelFont} htmlFor="req-title">
+                  <FormField label={rf.labelJobTitle} htmlFor="req-title">
                     <input
                       id="req-title"
                       type="text"
@@ -346,7 +344,7 @@ export default function PostRequirementModal({
                     />
                   </FormField>
                 </div>
-                <FormField label={rf.labelCompany} labelClassName={labelFont} required error={fieldErrors.companyName} htmlFor="req-company">
+                <FormField label={rf.labelCompany} required error={fieldErrors.companyName} htmlFor="req-company">
                   <input
                     id="req-company"
                     type="text"
@@ -358,7 +356,7 @@ export default function PostRequirementModal({
                   />
                 </FormField>
                 <div className="grid grid-cols-2 gap-2.5">
-                  <FormField label={rf.labelEmail} labelClassName={labelFont} required error={fieldErrors.contactEmail} htmlFor="req-email">
+                  <FormField label={rf.labelEmail} required error={fieldErrors.contactEmail} htmlFor="req-email">
                     <input
                       id="req-email"
                       type="email"
@@ -369,7 +367,7 @@ export default function PostRequirementModal({
                       className={inputClass}
                     />
                   </FormField>
-                  <FormField label={rf.labelPhone} labelClassName={labelFont} htmlFor="req-phone">
+                  <FormField label={rf.labelPhone} htmlFor="req-phone">
                     <input
                       id="req-phone"
                       type="tel"
@@ -386,13 +384,13 @@ export default function PostRequirementModal({
           </div>
 
           {formState === 'error' && errorMsg && (
-            <div className={`text-xs text-alert-red mt-2 ${labelFont}`}>{errorMsg}</div>
+            <div className={`text-xs text-alert-red mt-2`}>{errorMsg}</div>
           )}
 
           <button
             onClick={handleSubmit}
             disabled={formState === 'loading'}
-            className={`w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 text-pg-text ${locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'}`}
+            className={`w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 text-pg-text`}
             style={{
               background: formState === 'loading'
                 ? 'hsla(36, 90%, 47%, 0.5)'
@@ -410,7 +408,7 @@ export default function PostRequirementModal({
             )}
           </button>
 
-          <p className={`text-[10px] text-muted text-center mt-2 ${labelFont}`}>{rf.responseSla}</p>
+          <p className={`text-[10px] text-muted text-center mt-2`}>{rf.responseSla}</p>
         </>
       )}
     </ModalBackdrop>

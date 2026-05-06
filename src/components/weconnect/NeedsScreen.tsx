@@ -56,10 +56,9 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
 
   const recentNeeds = recentNeedsByLocale[locale]
   const previewAlert = previewAlertByLocale[locale]
-  const titleFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 font-sora">
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => setShowRequirementModal(true)}
@@ -76,7 +75,7 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
             >
               <Zap className="w-5 h-5 text-amber" />
             </div>
-            <div className={`font-extrabold text-sm text-pg-text ${titleFont}`}>{weconnect.postNeed}</div>
+            <div className="font-extrabold text-sm text-pg-text">{weconnect.postNeed}</div>
             <div className="text-[11px] text-muted mt-1.5 leading-relaxed">{weconnect.postNeedDescription}</div>
           </div>
         </button>
@@ -96,7 +95,7 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
             >
               <Package className="w-5 h-5 text-deep-orange" />
             </div>
-            <div className={`font-extrabold text-sm text-pg-text ${titleFont}`}>{weconnect.shareOffering}</div>
+            <div className="font-extrabold text-sm text-pg-text">{weconnect.shareOffering}</div>
             <div className="text-[11px] text-muted mt-1.5 leading-relaxed">{weconnect.shareOfferingDescription}</div>
           </div>
         </button>
@@ -117,7 +116,7 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
               <span className="inline-flex items-center gap-1 text-xs font-semibold bg-alert-red/15 text-alert-red px-2.5 py-1 rounded-full mb-3">
                 <Zap size={12} /> {previewAlert.badge}
               </span>
-              <h3 className={`font-extrabold text-pg-text text-lg ${titleFont}`}>{previewAlert.title}</h3>
+              <h3 className="font-extrabold text-pg-text text-lg">{previewAlert.title}</h3>
               <p className="text-muted text-sm mt-2 leading-relaxed">{previewAlert.body}</p>
             </div>
           </div>
@@ -139,7 +138,7 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
                   <r.icon className="w-5 h-5 text-pg-text/70" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-semibold text-sm text-pg-text leading-snug ${titleFont}`}>{r.title}</h4>
+                  <h4 className="font-semibold text-sm text-pg-text leading-snug">{r.title}</h4>
                   <div className="flex items-center gap-2 mt-2">
                     {r.tags.map((tag) => (
                       <span key={tag} className="bg-amber/10 text-deep-orange text-[10px] font-semibold px-2 py-0.5 rounded-md">{tag}</span>

@@ -9,6 +9,9 @@
  *  - Inline error below if `error` is set
  *
  * Per docs/improvements/02-field-validation-ux.md.
+ *
+ * Font handling: labels render in `font-inter` which falls back to Noto Sans
+ * SC for Chinese glyphs (see tailwind.config.ts). No locale-dependent class.
  */
 
 import { type ReactNode } from 'react'
@@ -18,8 +21,6 @@ interface FormFieldProps {
   required?: boolean
   error?: string
   htmlFor?: string
-  /** Optional font-family class — `font-noto-sans-sc` for ZH locale, default `font-inter`. */
-  labelClassName?: string
   children: ReactNode
 }
 
@@ -28,7 +29,6 @@ export default function FormField({
   required = false,
   error,
   htmlFor,
-  labelClassName = 'font-inter',
   children,
 }: FormFieldProps) {
   const errorId = htmlFor ? `${htmlFor}-error` : undefined
@@ -37,7 +37,7 @@ export default function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className={`block text-xs text-muted mb-1.5 ${labelClassName}`}
+        className="block text-xs text-muted mb-1.5 font-inter"
       >
         {label}
         {required && (

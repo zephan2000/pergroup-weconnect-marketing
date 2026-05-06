@@ -51,9 +51,12 @@ const config: Config = {
         'wc-muted': 'rgba(232,234,240,0.45)',
       },
       fontFamily: {
-        sora: ['var(--font-sora)', 'sans-serif'],
+        // Sora and Inter both fall back to Noto Sans SC so Chinese glyphs render
+        // in the same span as Latin glyphs without a className change. This is
+        // why components no longer toggle a font class on locale.
+        sora: ['var(--font-sora)', 'var(--font-noto-sans-sc)', 'sans-serif'],
         'noto-sans-sc': ['var(--font-noto-sans-sc)', 'sans-serif'],
-        inter: ['var(--font-inter)', 'sans-serif'],
+        inter: ['var(--font-inter)', 'var(--font-noto-sans-sc)', 'sans-serif'],
       },
       keyframes: {
         'slide-up': {

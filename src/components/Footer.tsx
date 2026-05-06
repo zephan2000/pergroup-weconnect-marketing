@@ -1,5 +1,3 @@
-'use client'
-
 /**
  * Footer — site footer for all PER GROUP marketing routes.
  *
@@ -8,21 +6,20 @@
  * no EN+CN side-by-side anywhere. The pillarLine field is translated per
  * locale; the brand calligraphy elsewhere on the site stays untranslated
  * as iconography.
+ *
+ * Font: `font-sora` everywhere. The Sora stack falls back to Noto Sans SC
+ * for Chinese glyphs (see tailwind.config.ts), so locale never changes
+ * the font class.
  */
 import Link from 'next/link'
 import type { FooterSettingsData, NavSettingsData } from '@/lib/cms/site-text'
-import type { Locale } from '@/lib/i18n/strings'
 
 interface FooterProps {
   settings: FooterSettingsData
   nav: NavSettingsData
-  locale: Locale
 }
 
-export default function Footer({ settings, nav, locale }: FooterProps) {
-  const isZh = locale === 'zh'
-  const cnFont = isZh ? 'font-noto-sans-sc' : 'font-sora'
-
+export default function Footer({ settings, nav }: FooterProps) {
   const navLinks = [
     { label: nav.linkPhilosophy, href: '/#values' },
     { label: nav.linkAbout, href: '/#about' },
@@ -32,7 +29,7 @@ export default function Footer({ settings, nav, locale }: FooterProps) {
   ]
 
   return (
-    <footer className="py-12" style={{ backgroundColor: 'hsl(20, 12%, 16%)' }}>
+    <footer className="py-12 font-sora" style={{ backgroundColor: 'hsl(20, 12%, 16%)' }}>
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div className="flex items-start gap-3">
@@ -43,12 +40,10 @@ export default function Footer({ settings, nav, locale }: FooterProps) {
               P
             </div>
             <div>
-              <div className="font-sora font-extrabold text-white text-xl">PER GROUP</div>
-              <div className={`text-white/50 text-xs mt-0.5 ${cnFont}`}>
-                {settings.eHarborTag}
-              </div>
+              <div className="font-extrabold text-white text-xl">PER GROUP</div>
+              <div className="text-white/50 text-xs mt-0.5">{settings.eHarborTag}</div>
               <p className="text-white/40 text-[10px] mt-1 italic">{settings.tagline}</p>
-              <p className={`text-white/50 text-sm mt-2 ${cnFont}`}>{settings.pillarLine}</p>
+              <p className="text-white/50 text-sm mt-2">{settings.pillarLine}</p>
             </div>
           </div>
 
@@ -57,7 +52,7 @@ export default function Footer({ settings, nav, locale }: FooterProps) {
               <Link
                 key={l.href}
                 href={l.href}
-                className={`text-white/60 text-sm no-underline hover:text-amber transition-colors ${cnFont}`}
+                className="text-white/60 text-sm no-underline hover:text-amber transition-colors"
               >
                 {l.label}
               </Link>
@@ -66,8 +61,8 @@ export default function Footer({ settings, nav, locale }: FooterProps) {
         </div>
 
         <div className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row justify-between text-white/40 text-xs gap-2">
-          <span className={cnFont}>{settings.copyright}</span>
-          <span className={cnFont}>{settings.mission}</span>
+          <span>{settings.copyright}</span>
+          <span>{settings.mission}</span>
         </div>
       </div>
     </footer>

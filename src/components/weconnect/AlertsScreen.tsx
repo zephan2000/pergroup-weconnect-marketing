@@ -90,12 +90,11 @@ interface AlertsScreenProps {
 
 export default function AlertsScreen({ weconnect, locale }: AlertsScreenProps) {
   const alerts = alertsByLocale[locale]
-  const titleFont = locale === 'zh' ? 'font-noto-sans-sc' : 'font-sora'
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 font-sora">
       <div>
-        <h3 className={`font-bold text-pg-text ${titleFont}`}>{weconnect.advisoryAlerts}</h3>
+        <h3 className="font-bold text-pg-text">{weconnect.advisoryAlerts}</h3>
       </div>
 
       <div className="glass-card rounded-xl p-4 flex items-center gap-3 border-l-4 border-l-amber">
@@ -124,7 +123,7 @@ export default function AlertsScreen({ weconnect, locale }: AlertsScreenProps) {
                 <span className="bg-amber/10 text-deep-orange text-[10px] font-semibold px-2 py-0.5 rounded-md">{a.tag}</span>
                 <span className="text-[10px] text-muted ml-auto">{a.time}</span>
               </div>
-              <h4 className={`font-semibold text-sm text-pg-text ${titleFont}`}>{a.title}</h4>
+              <h4 className="font-semibold text-sm text-pg-text">{a.title}</h4>
               <p className="text-xs text-muted mt-2 leading-relaxed">{a.body}</p>
             </div>
           </div>
