@@ -241,3 +241,29 @@ Append a row each time a new backup is taken. Update "Drop after" once the migra
 | Drop old backup | `DROP SCHEMA cms_backup_YYYYMMDD CASCADE;` |
 | Off-site backup | `pg_dump ... --schema=cms --file=backups/cms-$(date +%Y%m%d-%H%M%S).sql` |
 | Restore from off-site | `psql ... -f backups/cms-YYYYMMDD.sql` |
+
+---
+
+## Known blocker: Payload CLI broken on Node v24 + tsx 4.21
+
+**Symptoms (as of 2026-05-06):**
+- `npx payload generate:types` fails with `Cannot find module '/.../src/payload/collections/Pages'` (tsx ESM resolver doesn't resolve extensionless relative imports)
+- `npx payload migrate:create` fails with the same error
+- `npx tsx -e "import('./payload.config.ts')..."` fails with `Cannot destructure property 'loadEnvConfig' of 'import_env.default'`
+
+**Root cause:** Node v24's stricter ESM resolution combined with tsx 4.21's loader doesn't honour TypeScript's `moduleResolution: "bundler"` for extensionless `import` statements in `payload.config.ts` and the files it references.
+
+**Confirmed not affected:** `npm run dev`, `npm run build`, `npx tsc --noEmit` — Next.js handles these imports correctly at build time.
+
+**Workaround used in Phase 5b.2:**
+1. Hand-write the migration file under `src/migrations/` following Drizzle/Payload's exact table-naming conventions observed in prior auto-generated migrations.
+2. Apply via [`scripts/apply-migration.mjs`](../../../scripts/apply-migration.mjs) which uses raw `pg` to execute the migration's SQL inside a transaction and records the migration name in `cms.payload_migrations`.
+3. Always dry-run first via [`scripts/dry-run-migration.mjs`](../../../scripts/dry-run-migration.mjs) (`BEGIN; ...; ROLLBACK;`) to validate the SQL parses + executes.
+
+**Permanent fix options (for future investigation):**
+- Pin tsx to a version known to work with Node 24
+- Downgrade Node to v22 (LTS) — install via `nvm install 22 && nvm use 22`
+- Wait for upstream Payload + tsx fix
+- Install `@swc-node/register` and run `npx payload <cmd> --use-swc` (requires new dependency)
+
+Do not skip this until the CLI works again — every future migration must be hand-written following the patterns in `src/migrations/20260506_010000_phase5b2_globals_arrays.ts`.

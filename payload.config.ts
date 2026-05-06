@@ -9,6 +9,11 @@ import { Pages } from './src/payload/collections/Pages'
 import { Users } from './src/payload/collections/Users'
 import { PlatformSettings } from './src/payload/globals/PlatformSettings'
 import { SiteSettings } from './src/payload/globals/SiteSettings'
+import { NavSettings } from './src/payload/globals/NavSettings'
+import { FooterSettings } from './src/payload/globals/FooterSettings'
+import { WeConnectSettings } from './src/payload/globals/WeConnectSettings'
+import { RequirementFormSettings } from './src/payload/globals/RequirementFormSettings'
+import { ContactFormSettings } from './src/payload/globals/ContactFormSettings'
 
 export default buildConfig({
   i18n: {
@@ -40,7 +45,15 @@ export default buildConfig({
         return `${base}/api/draft?secret=${process.env.PAYLOAD_SECRET}&slug=${slug}`
       },
       collections: ['pages'],
-      globals: ['platform-settings', 'site-settings'],
+      globals: [
+        'platform-settings',
+        'site-settings',
+        'nav-settings',
+        'footer-settings',
+        'weconnect-settings',
+        'requirement-form-settings',
+        'contact-form-settings',
+      ],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
@@ -51,7 +64,15 @@ export default buildConfig({
 
   collections: [Pages, Users],
 
-  globals: [PlatformSettings, SiteSettings],
+  globals: [
+    PlatformSettings,
+    SiteSettings,
+    NavSettings,
+    FooterSettings,
+    WeConnectSettings,
+    RequirementFormSettings,
+    ContactFormSettings,
+  ],
 
   db: postgresAdapter({
     pool: {

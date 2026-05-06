@@ -28,6 +28,13 @@ export const ServicesBlock: Block = {
       label: { en: 'Headline Accent Line (amber)', zh: '标题强调行（琥珀色）' },
     },
     {
+      name: 'subtitle',
+      type: 'text',
+      localized: true,
+      label: { en: 'Subtitle', zh: '副标题' },
+      admin: { description: { en: 'Short line under the headline (e.g. "End-to-end global services").', zh: '主标题下方的副标题。' } },
+    },
+    {
       name: 'services',
       type: 'array',
       label: { en: 'Service Items', zh: '服务项目' },

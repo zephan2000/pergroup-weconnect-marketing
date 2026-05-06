@@ -53,6 +53,13 @@ export const HeroBlock: Block = {
       admin: { description: { en: 'Tagline below headline. Switch to ZH locale to enter Chinese.', zh: '标题下方的副标题。切换到中文 locale 输入中文。' } },
     },
     {
+      name: 'scrollHintLabel',
+      type: 'text',
+      localized: true,
+      label: { en: 'Scroll Hint Label', zh: '滚动提示文字' },
+      admin: { description: { en: 'Small label near the scroll-down indicator (e.g. "SCROLL").', zh: '滚动指示器旁的小字提示（如"向下滚动"）。' } },
+    },
+    {
       name: 'stats',
       type: 'array',
       label: { en: 'Stat Cards (right column)', zh: '数据卡片（右栏）' },

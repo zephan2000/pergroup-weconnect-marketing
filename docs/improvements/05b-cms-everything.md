@@ -41,9 +41,20 @@ Key numbers:
 - ~80 dictionary strings to migrate to CMS
 - 3 hardcoded arrays to migrate (milestones, partner types, regions)
 
-### Phase 5b.2 — Schema migration (additive) — NEXT
+### Phase 5b.2 — Schema migration (additive) ✅ DONE 2026-05-06
 
-**Goal:** all CMS fields exist + are pre-populated with current EN/ZH values from dictionary and hardcoded arrays. **Frontend code unchanged.** Site continues to render exactly as today.
+**Migration:** `src/migrations/20260506_010000_phase5b2_globals_arrays.ts`. Applied via `scripts/apply-migration.mjs` because the Payload CLI is currently broken on this dev box (Node v24 + tsx 4.21 ESM resolution). See cms-backup-runbook.md → "Known blocker" for details and workaround.
+
+**Verified state on prod after migration:**
+- 5 globals × 2 locales = 10 locale rows seeded ✓
+- 4 milestones × 2 locales = 8 milestone-locale rows ✓
+- 4 partner types × 2 locales = 8 partner-type-locale rows ✓
+- 6 regions × 2 locales = 12 region-locale rows ✓
+- ClientsBlock parent locales: 2 rows (en/zh, with networkSubtitle + regionsHeading) ✓
+- Hero `scroll_hint_label`: en=SCROLL, zh=向下滚动 ✓
+- Services `subtitle`: en="End-to-end global services", zh=全方位全球化服务 ✓ (zh row inserted via `scripts/patch-services-zh.mjs` since the previous Phase 5 migration only seeded EN for ServicesBlock parent locales)
+
+**Goal (achieved):** all CMS fields exist + are pre-populated with current EN/ZH values. **Frontend code unchanged.** Site renders exactly as today.
 
 **Schema additions:**
 
@@ -82,12 +93,11 @@ The migration's UP function will:
 
 This means the moment the migration runs, admin can see all current strings in `/admin` — ready to edit with live preview.
 
-**Validation gate:**
-- Backup taken? (Optional for additive — recommended but skippable)
-- TypeScript clean
-- `npm run build` succeeds
-- Migration runs without error in transaction
-- Admin loads `/admin` → sees all 5 new globals + new array fields populated with current values
+**Validation gate (passed):**
+- ✅ TypeScript clean
+- ✅ `npm run build` succeeds
+- ✅ Dry-run on prod (BEGIN/ROLLBACK) passed before real apply
+- ✅ Migration recorded in `cms.payload_migrations` table
 
 ### Phase 5b.3 — Component refactor (4 sub-commits)
 

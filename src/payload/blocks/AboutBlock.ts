@@ -57,5 +57,15 @@ export const AboutBlock: Block = {
         { name: 'label', type: 'text', localized: true, label: { en: 'Label', zh: '标签' } },
       ],
     },
+    {
+      name: 'milestones',
+      type: 'array',
+      label: { en: 'Timeline Milestones', zh: '时间轴里程碑' },
+      admin: { description: { en: 'Year + short title shown on the right-side timeline.', zh: '右侧时间轴上的年份和简短标题。' } },
+      fields: [
+        { name: 'year', type: 'text', required: true, label: { en: 'Year', zh: '年份' } },
+        { name: 'title', type: 'text', required: true, localized: true, label: { en: 'Title', zh: '标题' } },
+      ],
+    },
   ],
 }
