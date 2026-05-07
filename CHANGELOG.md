@@ -360,3 +360,13 @@ Types: INIT | ADD | MODIFY | SCHEMA | FIX | STUB | CONFIG
 [2026-05-07] MODIFY [src/payload/collections/Pages.ts] — Registered VideoBlock in the Pages blocks array.
 [2026-05-07] MODIFY [src/components/BlockRenderer.tsx] — Added 'video' → VideoBlock dispatch.
 [2026-05-07] MODIFY [src/payload/CLAUDE.md] — Documented VideoBlock in the block list.
+[2026-05-07] MODIFY [src/components/Footer.tsx] — Footer brand mark now matches the navbar. Replaced the hexagon "P" placeholder with the e-harbour logo image, wrapped in a warm-white circular background (bg-bg) so the multicolor dot pattern reads cleanly against the dark footer instead of clashing.
+[2026-05-07] ADD [src/payload/globals/OfferingFormSettings.ts] — New Payload global for the supplier-side "Share an Offering" form. Sections: Basic, Capability, Availability & Coverage, Contact. Frozen option codes (category, availability) keep API contract stable.
+[2026-05-07] ADD [src/components/weconnect/PostOfferingModal.tsx] — Dedicated supplier offering modal posting to /api/offering. Distinct from PostRequirementModal (the Need form); separate state in NeedsScreen so the two cards open different modals.
+[2026-05-07] ADD [src/lib/cms/site-text.ts] — OfferingFormSettingsData type + DEFAULT_OFFERING_FORM_SETTINGS fallback values.
+[2026-05-07] MODIFY [payload.config.ts] — Registered OfferingFormSettings global. livePreview.url now branches per global slug to append ?preview=<form-tag> so editors auto-land in the right modal.
+[2026-05-07] MODIFY [src/app/api/draft/route.ts] — Forwards optional ?preview=<tag> query to redirect target so client components can detect preview intent.
+[2026-05-07] MODIFY [src/components/WeConnectOverlay.tsx] — Reads ?preview=need-form|offering-form, opens overlay + activates Needs tab + signals NeedsScreen which modal to auto-open.
+[2026-05-07] MODIFY [src/components/weconnect/NeedsScreen.tsx] — Split into separate state for Need vs Offering modals (previously both buttons opened the requirement modal). Added `autoOpen` prop driven by the preview hook.
+[2026-05-07] MODIFY [src/app/(marketing)/layout.tsx] — Fetches offering-form-settings global and threads OfferingFormSettingsData through to WeConnectOverlay.
+[2026-05-07] MODIFY [src/payload/globals/RequirementFormSettings.ts, src/lib/cms/site-text.ts] — UX rename Requirement → Need. Admin label "Need Form Settings", "Need Details" section title, EN defaults "Post a Need" / "Submit Need" / "Need Details". Slug, file path, types, API contract, and DB tables unchanged.

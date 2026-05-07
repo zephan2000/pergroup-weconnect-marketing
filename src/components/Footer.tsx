@@ -12,6 +12,7 @@
  * the font class.
  */
 import Link from 'next/link'
+import Image from 'next/image'
 import type { FooterSettingsData, NavSettingsData } from '@/lib/cms/site-text'
 
 interface FooterProps {
@@ -33,14 +34,17 @@ export default function Footer({ settings, nav }: FooterProps) {
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
           <div className="flex items-start gap-3">
-            <div
-              className="w-10 h-10 bg-amber flex items-center justify-center font-extrabold text-sm text-white rounded-lg flex-shrink-0"
-              style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
-            >
-              P
+            <div className="w-12 h-12 rounded-full bg-bg flex items-center justify-center flex-shrink-0 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+              <Image
+                src="/e-harbour-logo.png"
+                alt="PER GROUP by E-Harbor"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
             </div>
             <div>
-              <div className="font-extrabold text-white text-xl">PER GROUP</div>
+              <div className="font-extrabold text-white text-xl tracking-[2px]">PER GROUP</div>
               <div className="text-white/50 text-xs mt-0.5">{settings.eHarborTag}</div>
               <p className="text-white/40 text-[10px] mt-1 italic">{settings.tagline}</p>
               <p className="text-white/50 text-sm mt-2">{settings.pillarLine}</p>
