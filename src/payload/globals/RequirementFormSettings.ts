@@ -20,6 +20,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const RequirementFormSettings: GlobalConfig = {
   slug: 'requirement-form-settings',
   label: t('Need Form Settings', '需求表单设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     {
       type: 'collapsible',

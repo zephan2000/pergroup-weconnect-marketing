@@ -10,6 +10,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const NavSettings: GlobalConfig = {
   slug: 'nav-settings',
   label: t('Nav Settings', '导航设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     { name: 'linkPhilosophy', type: 'text', localized: true, label: t('Link: Philosophy', '链接：理念') },
     { name: 'linkAbout', type: 'text', localized: true, label: t('Link: About', '链接：关于我们') },

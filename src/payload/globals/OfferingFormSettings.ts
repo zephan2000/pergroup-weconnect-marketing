@@ -16,6 +16,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const OfferingFormSettings: GlobalConfig = {
   slug: 'offering-form-settings',
   label: t('Offering Form Settings', '能力分享表单设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     {
       type: 'collapsible',

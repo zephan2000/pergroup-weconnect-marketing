@@ -57,7 +57,7 @@ const COLOR_VAR_MAP: Record<string, string> = {
   line: '--line',
 }
 
-async function fetchPayloadData(locale: Locale) {
+async function fetchPayloadData(locale: Locale, isDraft: boolean) {
   try {
     const { getPayload } = await import('payload')
     const configPromise = (await import('@payload-config')).default
@@ -66,14 +66,16 @@ async function fetchPayloadData(locale: Locale) {
     const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc, requirementFormDoc, offeringFormDoc, contactFormDoc] = await Promise.all([
       // Locale-aware fetch — Payload returns localized fields in the requested locale.
       // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
-      payload.findGlobal({ slug: 'platform-settings', locale }),
-      payload.findGlobal({ slug: 'site-settings', locale }),
-      payload.findGlobal({ slug: 'nav-settings', locale }),
-      payload.findGlobal({ slug: 'footer-settings', locale }),
-      payload.findGlobal({ slug: 'weconnect-settings', locale }),
-      payload.findGlobal({ slug: 'requirement-form-settings', locale }),
-      payload.findGlobal({ slug: 'offering-form-settings', locale }),
-      payload.findGlobal({ slug: 'contact-form-settings', locale }),
+      // draft: passes through Next.js draftMode — Live Preview iframe renders the
+      // in-progress draft, production (no cookie) only sees the published version.
+      payload.findGlobal({ slug: 'platform-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'site-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'nav-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'footer-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'weconnect-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'requirement-form-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'offering-form-settings', locale, draft: isDraft }),
+      payload.findGlobal({ slug: 'contact-form-settings', locale, draft: isDraft }),
     ])
 
     const d = DEFAULT_PLATFORM_SETTINGS
@@ -306,7 +308,7 @@ async function fetchPayloadData(locale: Locale) {
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
   const { isEnabled: isDraft } = await draftMode()
-  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, offeringFormSettings, contactFormSettings } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, offeringFormSettings, contactFormSettings } = await fetchPayloadData(locale, isDraft)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)

@@ -10,6 +10,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const WeConnectSettings: GlobalConfig = {
   slug: 'weconnect-settings',
   label: t('WeConnect Overlay Settings', 'WeConnect 弹窗设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     {
       type: 'collapsible',

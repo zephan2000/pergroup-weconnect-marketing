@@ -232,3 +232,29 @@ Severities: INFO | WARN | DEFERRED
   (previously dead code). Endpoint validates required fields server-side, sends
   via Resend, and best-effort logs to Sheets. RLS / abuse considerations are
   identical to /api/requirement and /api/need.
+
+
+[2026-05-07] CONFIG [src/payload/globals/*.ts, src/app/(marketing)/layout.tsx]
+  Enabled `versions: { drafts: true }` on all 8 globals (Nav, Footer, Platform,
+  Site, WeConnect, RequirementForm, OfferingForm, ContactForm).
+
+  Why this matters for security/access:
+    - Before this change, every save to a global hit the live record. The
+      public marketing site read the latest write directly, so any editor
+      mistake (typo, accidental empty field, in-progress copy) was visible
+      to all visitors immediately. There was no "preview" gate.
+    - With drafts enabled, public reads (no draft cookie) return only the
+      published version; only authenticated editors with draftMode active
+      see the in-progress draft.
+
+  Trust path for draft visibility:
+    - draftMode() is enabled exclusively via `/api/draft`, which already
+      requires PAYLOAD_SECRET (server-side livePreview iframe) or a valid
+      `payload-token` httpOnly cookie (logged-in admin). See the Phase 5b
+      preview-tag entry above for the same gate on Pages.
+    - The marketing layout's `fetchPayloadData(locale, isDraft)` only
+      forwards `draft: isDraft` — so an unauthenticated request always
+      gets `draft: false`, regardless of headers/query params.
+
+  This brings globals to parity with the Pages collection, which already
+  had drafts + the same gating in (marketing)/page.tsx.

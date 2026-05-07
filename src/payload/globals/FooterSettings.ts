@@ -9,6 +9,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const FooterSettings: GlobalConfig = {
   slug: 'footer-settings',
   label: t('Footer Settings', '页脚设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     { name: 'tagline', type: 'text', localized: true, label: t('Tagline', '标语') },
     { name: 'mission', type: 'text', localized: true, label: t('Mission Statement', '使命宣言') },

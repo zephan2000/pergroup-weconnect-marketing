@@ -8,6 +8,9 @@ import type { GlobalConfig } from 'payload'
 export const PlatformSettings: GlobalConfig = {
   slug: 'platform-settings',
   label: { en: 'WeConnect Platform Settings', zh: 'WeConnect 平台设置' },
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     {
       name: 'aiMatchingHeadline',

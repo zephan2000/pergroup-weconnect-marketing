@@ -10,6 +10,9 @@ const t = (en: string, zh: string) => ({ en, zh })
 export const ContactFormSettings: GlobalConfig = {
   slug: 'contact-form-settings',
   label: t('Contact Form Settings', '联系表单设置'),
+  // Drafts on: editors get Save Draft + Publish; production renders the
+  // published version, Live Preview iframe renders the draft.
+  versions: { drafts: true },
   fields: [
     { name: 'heading', type: 'text', localized: true, label: t('Modal heading', '弹窗标题') },
     { name: 'successTitle', type: 'text', localized: true, label: t('Success title', '成功标题') },
