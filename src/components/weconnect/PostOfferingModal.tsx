@@ -145,6 +145,15 @@ export default function PostOfferingModal({
     return errs
   }
 
+  // Live readiness check — toggles the submit button between dim/inactive and
+  // active. Mirrors validate() without writing error state, so the user never
+  // sees errors before they've tried to submit.
+  const isFormComplete =
+    capability.trim().length > 0 &&
+    companyName.trim().length > 0 &&
+    contactEmail.trim().length > 0 &&
+    contactEmail.includes('@')
+
   useEffect(() => {
     if (!submitted) return
     setFieldErrors(validate())
@@ -435,13 +444,16 @@ export default function PostOfferingModal({
 
           <button
             onClick={handleSubmit}
-            disabled={formState === 'loading'}
-            className={`w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold cursor-pointer flex items-center justify-center gap-2 text-pg-text`}
+            disabled={formState === 'loading' || !isFormComplete}
+            className={`w-full mt-4 py-3 rounded-[10px] border-none text-sm font-semibold flex items-center justify-center gap-2 text-pg-text transition-opacity`}
             style={{
-              background: formState === 'loading'
-                ? 'hsla(140, 35%, 44%, 0.5)'
-                : 'linear-gradient(135deg, hsl(140 35% 44%), hsl(36 90% 47%))',
-              cursor: formState === 'loading' ? 'wait' : 'pointer',
+              background: 'linear-gradient(135deg, hsl(36 90% 47%), hsl(20 75% 48%))',
+              opacity: formState === 'loading' ? 0.7 : isFormComplete ? 1 : 0.4,
+              cursor: formState === 'loading'
+                ? 'wait'
+                : isFormComplete
+                  ? 'pointer'
+                  : 'not-allowed',
             }}
           >
             {formState === 'loading' ? (
