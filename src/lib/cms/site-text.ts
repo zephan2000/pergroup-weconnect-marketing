@@ -192,6 +192,123 @@ export const DEFAULT_REQUIREMENT_FORM_SETTINGS: RequirementFormSettingsData = {
   timelineExploring: '🔍 Just Exploring',
 }
 
+export interface OfferingFormSettingsData {
+  // Modal header
+  heading: string
+  description: string
+  requiredHint: string
+  responseSla: string
+  // Section titles
+  sectionBasic: string
+  sectionCapability: string
+  sectionAvailability: string
+  sectionContact: string
+  // Field labels
+  labelSubject: string
+  labelCategory: string
+  labelCapability: string
+  labelTrackRecord: string
+  labelIdealClient: string
+  labelAvailability: string
+  labelCoverage: string
+  labelCapacity: string
+  labelFullName: string
+  labelJobTitle: string
+  labelCompany: string
+  labelEmail: string
+  labelPhone: string
+  // Placeholders
+  placeholderSubject: string
+  placeholderCapability: string
+  placeholderTrackRecord: string
+  placeholderIdealClient: string
+  placeholderCoverage: string
+  placeholderCapacity: string
+  placeholderName: string
+  placeholderTitle: string
+  placeholderCompany: string
+  placeholderEmail: string
+  placeholderPhone: string
+  // Buttons
+  buttonSubmit: string
+  buttonSubmitting: string
+  // Success
+  successTitle: string
+  successMessage: string
+  // Errors
+  errorRequired: string
+  errorInvalidEmail: string
+  errorGeneric: string
+  // Category option labels (values stay frozen in code)
+  categoryOfficeBrokerage: string
+  categoryLabBrokerage: string
+  categoryFactoryBrokerage: string
+  categoryAdvisory: string
+  categoryMarketEntry: string
+  categoryFunding: string
+  categoryOther: string
+  // Availability option labels
+  availabilitySelect: string
+  availabilityImmediate: string
+  availabilityThisQuarter: string
+  availabilityNextQuarter: string
+  availabilityCustom: string
+}
+
+export const DEFAULT_OFFERING_FORM_SETTINGS: OfferingFormSettingsData = {
+  heading: 'Share What You Offer',
+  description: 'Tell the WeConnect network what you bring to the table',
+  requiredHint: 'Required fields are marked with',
+  responseSla: 'PER GROUP will review and respond within 1 business day',
+  sectionBasic: 'Basic Information',
+  sectionCapability: 'Capability',
+  sectionAvailability: 'Availability & Coverage',
+  sectionContact: 'Contact Information',
+  labelSubject: 'Subject',
+  labelCategory: 'Offering Category',
+  labelCapability: 'Capability Description',
+  labelTrackRecord: 'Track Record',
+  labelIdealClient: 'Ideal Client',
+  labelAvailability: 'Availability',
+  labelCoverage: 'Coverage Regions',
+  labelCapacity: 'Capacity / Lead Time',
+  labelFullName: 'Full Name',
+  labelJobTitle: 'Job Title',
+  labelCompany: 'Company',
+  labelEmail: 'Email',
+  labelPhone: 'Phone',
+  placeholderSubject: 'Brief title for your offering',
+  placeholderCapability: 'Describe what you do, how you deliver, and what sets you apart',
+  placeholderTrackRecord: 'Notable clients, case studies, certifications',
+  placeholderIdealClient: 'e.g. growth-stage tech firms entering Asia',
+  placeholderCoverage: 'e.g. Singapore, Greater Bay Area, ASEAN',
+  placeholderCapacity: 'e.g. 2-week onboarding, 3 active engagements',
+  placeholderName: 'Your name',
+  placeholderTitle: 'e.g. Director',
+  placeholderCompany: 'Company name',
+  placeholderEmail: 'your@email.com',
+  placeholderPhone: '+65 xxxx xxxx',
+  buttonSubmit: 'Submit Offering',
+  buttonSubmitting: 'Submitting…',
+  successTitle: 'Thanks — your offering is on file.',
+  successMessage: 'PER GROUP will review and respond within 1 business day.',
+  errorRequired: 'Required',
+  errorInvalidEmail: 'Invalid email',
+  errorGeneric: 'Please fill in the required fields.',
+  categoryOfficeBrokerage: '🏢 Office Brokerage',
+  categoryLabBrokerage: '🔬 Lab / R&D Brokerage',
+  categoryFactoryBrokerage: '🏭 Factory / Industrial Brokerage',
+  categoryAdvisory: '🧭 Advisory / Consulting',
+  categoryMarketEntry: '🌏 Market Entry Services',
+  categoryFunding: '💰 Funding / Investment',
+  categoryOther: '📋 Other',
+  availabilitySelect: 'Select availability',
+  availabilityImmediate: '⚡ Immediate',
+  availabilityThisQuarter: '📅 This Quarter',
+  availabilityNextQuarter: '📆 Next Quarter',
+  availabilityCustom: '📝 Custom (see notes)',
+}
+
 export interface ContactFormSettingsData {
   heading: string
   successTitle: string

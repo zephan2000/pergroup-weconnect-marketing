@@ -8,17 +8,19 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useWeConnect, type WeConnectTab } from '@/lib/weconnect/context'
 import type { PlatformSettingsData } from '@/lib/weconnect/platform-settings'
 import type {
   WeConnectSettingsData,
   RequirementFormSettingsData,
+  OfferingFormSettingsData,
   ContactFormSettingsData,
 } from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 import Image from 'next/image'
 import { Zap, AlertTriangle, User, X, Bell, ChevronDown } from 'lucide-react'
-import NeedsScreen from '@/components/weconnect/NeedsScreen'
+import NeedsScreen, { type NeedsAutoOpen } from '@/components/weconnect/NeedsScreen'
 import AlertsScreen from '@/components/weconnect/AlertsScreen'
 import ProfileScreen from '@/components/weconnect/ProfileScreen'
 
@@ -26,6 +28,7 @@ interface WeConnectOverlayProps {
   settings: PlatformSettingsData
   weconnect: WeConnectSettingsData
   requirementForm: RequirementFormSettingsData
+  offeringForm: OfferingFormSettingsData
   contactForm: ContactFormSettingsData
   eHarborTag: string
   locale: Locale
@@ -35,12 +38,28 @@ export default function WeConnectOverlay({
   settings: _settings,
   weconnect,
   requirementForm,
+  offeringForm,
   contactForm: _contactForm,
   eHarborTag,
   locale,
 }: WeConnectOverlayProps) {
-  const { isOpen, activeTab, close, setActiveTab } = useWeConnect()
+  const { isOpen, activeTab, open, close, setActiveTab } = useWeConnect()
   const [visible, setVisible] = useState(false)
+
+  // Live Preview: when an editor opens a form-settings global in Payload's
+  // Live Preview iframe, /api/draft routes here with ?preview=<form-name>.
+  // We auto-open WeConnect + the matching modal so they see what they edit.
+  const searchParams = useSearchParams()
+  const previewParam = searchParams?.get('preview') ?? null
+  const previewNeed = previewParam === 'need-form'
+  const previewOffering = previewParam === 'offering-form'
+  const autoOpenInNeeds: NeedsAutoOpen = previewNeed ? 'need' : previewOffering ? 'offering' : null
+
+  useEffect(() => {
+    if (previewNeed || previewOffering) {
+      open('needs')
+    }
+  }, [previewNeed, previewOffering, open])
 
   const TABS: { tab: WeConnectTab; icon: typeof Zap; label: string; badge?: number }[] = [
     { tab: 'needs', icon: Zap, label: weconnect.tabNeeds },
@@ -146,8 +165,10 @@ export default function WeConnectOverlay({
               <NeedsScreen
                 weconnect={weconnect}
                 requirementForm={requirementForm}
+                offeringForm={offeringForm}
                 locale={locale}
                 isActive={isOpen && activeTab === 'needs'}
+                autoOpen={autoOpenInNeeds}
               />
             )}
             {activeTab === 'alerts' && <AlertsScreen weconnect={weconnect} locale={locale} />}

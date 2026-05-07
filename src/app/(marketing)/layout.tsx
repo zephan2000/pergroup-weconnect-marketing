@@ -35,11 +35,13 @@ import {
   DEFAULT_FOOTER_SETTINGS,
   DEFAULT_WECONNECT_SETTINGS,
   DEFAULT_REQUIREMENT_FORM_SETTINGS,
+  DEFAULT_OFFERING_FORM_SETTINGS,
   DEFAULT_CONTACT_FORM_SETTINGS,
   type NavSettingsData,
   type FooterSettingsData,
   type WeConnectSettingsData,
   type RequirementFormSettingsData,
+  type OfferingFormSettingsData,
   type ContactFormSettingsData,
 } from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
@@ -61,7 +63,7 @@ async function fetchPayloadData(locale: Locale) {
     const configPromise = (await import('@payload-config')).default
     const payload = await getPayload({ config: configPromise })
 
-    const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc, requirementFormDoc, contactFormDoc] = await Promise.all([
+    const [platformDoc, siteDoc, navDoc, footerDoc, weconnectDoc, requirementFormDoc, offeringFormDoc, contactFormDoc] = await Promise.all([
       // Locale-aware fetch — Payload returns localized fields in the requested locale.
       // fallbackLocale: 'en' means empty zh values fall back to English (configured globally).
       payload.findGlobal({ slug: 'platform-settings', locale }),
@@ -70,6 +72,7 @@ async function fetchPayloadData(locale: Locale) {
       payload.findGlobal({ slug: 'footer-settings', locale }),
       payload.findGlobal({ slug: 'weconnect-settings', locale }),
       payload.findGlobal({ slug: 'requirement-form-settings', locale }),
+      payload.findGlobal({ slug: 'offering-form-settings', locale }),
       payload.findGlobal({ slug: 'contact-form-settings', locale }),
     ])
 
@@ -185,6 +188,62 @@ async function fetchPayloadData(locale: Locale) {
       timelineExploring: (rf.timelineExploring as string) || drf.timelineExploring,
     }
 
+    const dof = DEFAULT_OFFERING_FORM_SETTINGS
+    const ofd = offeringFormDoc as unknown as Record<string, unknown>
+    const offeringFormSettings: OfferingFormSettingsData = {
+      heading: (ofd.heading as string) || dof.heading,
+      description: (ofd.description as string) || dof.description,
+      requiredHint: (ofd.requiredHint as string) || dof.requiredHint,
+      responseSla: (ofd.responseSla as string) || dof.responseSla,
+      sectionBasic: (ofd.sectionBasic as string) || dof.sectionBasic,
+      sectionCapability: (ofd.sectionCapability as string) || dof.sectionCapability,
+      sectionAvailability: (ofd.sectionAvailability as string) || dof.sectionAvailability,
+      sectionContact: (ofd.sectionContact as string) || dof.sectionContact,
+      labelSubject: (ofd.labelSubject as string) || dof.labelSubject,
+      labelCategory: (ofd.labelCategory as string) || dof.labelCategory,
+      labelCapability: (ofd.labelCapability as string) || dof.labelCapability,
+      labelTrackRecord: (ofd.labelTrackRecord as string) || dof.labelTrackRecord,
+      labelIdealClient: (ofd.labelIdealClient as string) || dof.labelIdealClient,
+      labelAvailability: (ofd.labelAvailability as string) || dof.labelAvailability,
+      labelCoverage: (ofd.labelCoverage as string) || dof.labelCoverage,
+      labelCapacity: (ofd.labelCapacity as string) || dof.labelCapacity,
+      labelFullName: (ofd.labelFullName as string) || dof.labelFullName,
+      labelJobTitle: (ofd.labelJobTitle as string) || dof.labelJobTitle,
+      labelCompany: (ofd.labelCompany as string) || dof.labelCompany,
+      labelEmail: (ofd.labelEmail as string) || dof.labelEmail,
+      labelPhone: (ofd.labelPhone as string) || dof.labelPhone,
+      placeholderSubject: (ofd.placeholderSubject as string) || dof.placeholderSubject,
+      placeholderCapability: (ofd.placeholderCapability as string) || dof.placeholderCapability,
+      placeholderTrackRecord: (ofd.placeholderTrackRecord as string) || dof.placeholderTrackRecord,
+      placeholderIdealClient: (ofd.placeholderIdealClient as string) || dof.placeholderIdealClient,
+      placeholderCoverage: (ofd.placeholderCoverage as string) || dof.placeholderCoverage,
+      placeholderCapacity: (ofd.placeholderCapacity as string) || dof.placeholderCapacity,
+      placeholderName: (ofd.placeholderName as string) || dof.placeholderName,
+      placeholderTitle: (ofd.placeholderTitle as string) || dof.placeholderTitle,
+      placeholderCompany: (ofd.placeholderCompany as string) || dof.placeholderCompany,
+      placeholderEmail: (ofd.placeholderEmail as string) || dof.placeholderEmail,
+      placeholderPhone: (ofd.placeholderPhone as string) || dof.placeholderPhone,
+      buttonSubmit: (ofd.buttonSubmit as string) || dof.buttonSubmit,
+      buttonSubmitting: (ofd.buttonSubmitting as string) || dof.buttonSubmitting,
+      successTitle: (ofd.successTitle as string) || dof.successTitle,
+      successMessage: (ofd.successMessage as string) || dof.successMessage,
+      errorRequired: (ofd.errorRequired as string) || dof.errorRequired,
+      errorInvalidEmail: (ofd.errorInvalidEmail as string) || dof.errorInvalidEmail,
+      errorGeneric: (ofd.errorGeneric as string) || dof.errorGeneric,
+      categoryOfficeBrokerage: (ofd.categoryOfficeBrokerage as string) || dof.categoryOfficeBrokerage,
+      categoryLabBrokerage: (ofd.categoryLabBrokerage as string) || dof.categoryLabBrokerage,
+      categoryFactoryBrokerage: (ofd.categoryFactoryBrokerage as string) || dof.categoryFactoryBrokerage,
+      categoryAdvisory: (ofd.categoryAdvisory as string) || dof.categoryAdvisory,
+      categoryMarketEntry: (ofd.categoryMarketEntry as string) || dof.categoryMarketEntry,
+      categoryFunding: (ofd.categoryFunding as string) || dof.categoryFunding,
+      categoryOther: (ofd.categoryOther as string) || dof.categoryOther,
+      availabilitySelect: (ofd.availabilitySelect as string) || dof.availabilitySelect,
+      availabilityImmediate: (ofd.availabilityImmediate as string) || dof.availabilityImmediate,
+      availabilityThisQuarter: (ofd.availabilityThisQuarter as string) || dof.availabilityThisQuarter,
+      availabilityNextQuarter: (ofd.availabilityNextQuarter as string) || dof.availabilityNextQuarter,
+      availabilityCustom: (ofd.availabilityCustom as string) || dof.availabilityCustom,
+    }
+
     const dcf = DEFAULT_CONTACT_FORM_SETTINGS
     const cf = contactFormDoc as unknown as Record<string, unknown>
     const contactFormSettings: ContactFormSettingsData = {
@@ -229,7 +288,7 @@ async function fetchPayloadData(locale: Locale) {
       settingAbout: (w.settingAbout as string) || dw.settingAbout,
     }
 
-    return { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, contactFormSettings }
+    return { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, offeringFormSettings, contactFormSettings }
   } catch {
     return {
       platformSettings: DEFAULT_PLATFORM_SETTINGS,
@@ -238,6 +297,7 @@ async function fetchPayloadData(locale: Locale) {
       footerSettings: DEFAULT_FOOTER_SETTINGS,
       weconnectSettings: DEFAULT_WECONNECT_SETTINGS,
       requirementFormSettings: DEFAULT_REQUIREMENT_FORM_SETTINGS,
+      offeringFormSettings: DEFAULT_OFFERING_FORM_SETTINGS,
       contactFormSettings: DEFAULT_CONTACT_FORM_SETTINGS,
     }
   }
@@ -246,7 +306,7 @@ async function fetchPayloadData(locale: Locale) {
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
   const { isEnabled: isDraft } = await draftMode()
-  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, contactFormSettings } = await fetchPayloadData(locale)
+  const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, offeringFormSettings, contactFormSettings } = await fetchPayloadData(locale)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
     ? Object.entries(colorOverrides).reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as React.CSSProperties)
@@ -264,12 +324,13 @@ export default async function MarketingLayout({ children }: { children: React.Re
                 <LivePreviewWidthWarning isDraft={isDraft} />
                 <Nav settings={navSettings} eHarborTag={footerSettings.eHarborTag} />
                 {children}
-                <Footer settings={footerSettings} nav={navSettings} />
+                <Footer settings={footerSettings} nav={navSettings} locale={locale} />
               </div>
               <WeConnectOverlay
                 settings={platformSettings}
                 weconnect={weconnectSettings}
                 requirementForm={requirementFormSettings}
+                offeringForm={offeringFormSettings}
                 contactForm={contactFormSettings}
                 eHarborTag={footerSettings.eHarborTag}
                 locale={locale}

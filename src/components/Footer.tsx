@@ -2,10 +2,9 @@
  * Footer — site footer for all PER GROUP marketing routes.
  *
  * Text values come from the FooterSettings + NavSettings Payload globals,
- * fetched server-side in (marketing)/layout.tsx. Single-locale rendering —
- * no EN+CN side-by-side anywhere. The pillarLine field is translated per
- * locale; the brand calligraphy elsewhere on the site stays untranslated
- * as iconography.
+ * fetched server-side in (marketing)/layout.tsx. The pillarLine field is
+ * translated per locale (EN: "Tech Innovation · Business Empowerment ·
+ * Human Care", ZH: "科技创新 · 商业赋能 · 人文关怀").
  *
  * Font: `font-sora` everywhere. The Sora stack falls back to Noto Sans SC
  * for Chinese glyphs (see tailwind.config.ts), so locale never changes
@@ -14,13 +13,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { FooterSettingsData, NavSettingsData } from '@/lib/cms/site-text'
+import type { Locale } from '@/lib/i18n/strings'
 
 interface FooterProps {
   settings: FooterSettingsData
   nav: NavSettingsData
+  locale: Locale
 }
 
-export default function Footer({ settings, nav }: FooterProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function Footer({ settings, nav, locale }: FooterProps) {
   const navLinks = [
     { label: nav.linkPhilosophy, href: '/#values' },
     { label: nav.linkAbout, href: '/#about' },

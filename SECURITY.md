@@ -217,3 +217,18 @@ Severities: INFO | WARN | DEFERRED
 #   noreply@pergroup.sg sends successfully and does not land in Gmail spam.
 # Phase 3: Service account email must have Editor access to the Sheet. Run
 #   `npm run sheets:setup` once after env vars are set in production.
+
+[2026-05-07] INFO [payload.config.ts, src/app/api/draft/route.ts] — Live Preview URL now
+  branches per form-settings global to append a `?preview=<tag>` query (need-form,
+  offering-form, contact-form). Tags are constants chosen by the server config and
+  forwarded by /api/draft via redirect. They control client-side modal auto-open
+  (UX hint only) — they do NOT grant any extra permissions, do not enable draft mode
+  on their own (that still requires PAYLOAD_SECRET or the payload-token cookie),
+  and are not user-controllable for any privileged action. Safe to be reflected in
+  URLs.
+
+[2026-05-07] INFO [src/app/api/offering/route.ts] — Pre-existing public endpoint;
+  no auth changes. PostOfferingModal is now wired to it from the marketing site
+  (previously dead code). Endpoint validates required fields server-side, sends
+  via Resend, and best-effort logs to Sheets. RLS / abuse considerations are
+  identical to /api/requirement and /api/need.

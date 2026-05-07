@@ -13,6 +13,7 @@ import { NavSettings } from './src/payload/globals/NavSettings'
 import { FooterSettings } from './src/payload/globals/FooterSettings'
 import { WeConnectSettings } from './src/payload/globals/WeConnectSettings'
 import { RequirementFormSettings } from './src/payload/globals/RequirementFormSettings'
+import { OfferingFormSettings } from './src/payload/globals/OfferingFormSettings'
 import { ContactFormSettings } from './src/payload/globals/ContactFormSettings'
 
 export default buildConfig({
@@ -39,10 +40,22 @@ export default buildConfig({
       actions: ['@/payload/components/LanguageToggle'],
     },
     livePreview: {
-      url: ({ data }) => {
+      url: ({ data, globalConfig }) => {
         const base = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'
+        const secret = process.env.PAYLOAD_SECRET
+        // Form-settings globals: route to homepage with a preview tag so the
+        // matching modal auto-opens in the iframe (see WeConnectOverlay).
+        const previewByGlobalSlug: Record<string, string> = {
+          'requirement-form-settings': 'need-form',
+          'offering-form-settings': 'offering-form',
+          'contact-form-settings': 'contact-form',
+        }
+        const previewTag = globalConfig?.slug ? previewByGlobalSlug[globalConfig.slug] : undefined
+        if (previewTag) {
+          return `${base}/api/draft?secret=${secret}&slug=/&preview=${previewTag}`
+        }
         const slug = data?.slug && data.slug !== 'home' ? `/${data.slug}` : '/'
-        return `${base}/api/draft?secret=${process.env.PAYLOAD_SECRET}&slug=${slug}`
+        return `${base}/api/draft?secret=${secret}&slug=${slug}`
       },
       collections: ['pages'],
       globals: [
@@ -52,6 +65,7 @@ export default buildConfig({
         'footer-settings',
         'weconnect-settings',
         'requirement-form-settings',
+        'offering-form-settings',
         'contact-form-settings',
       ],
       breakpoints: [
@@ -71,6 +85,7 @@ export default buildConfig({
     FooterSettings,
     WeConnectSettings,
     RequirementFormSettings,
+    OfferingFormSettings,
     ContactFormSettings,
   ],
 

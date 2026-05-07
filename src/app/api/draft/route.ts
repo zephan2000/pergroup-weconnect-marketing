@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const secret = searchParams.get('secret')
   const slug = searchParams.get('slug') || '/'
+  const preview = searchParams.get('preview')
 
   // Path 1: server-side caller passes PAYLOAD_SECRET directly (livePreview iframe)
   const hasSecret = secret === process.env.PAYLOAD_SECRET
@@ -32,5 +33,10 @@ export async function GET(request: NextRequest) {
   const draft = await draftMode()
   draft.enable()
 
-  redirect(slug)
+  // Append preview tag so client components can auto-open the right modal
+  // when an editor is previewing a form-settings global.
+  const target = preview
+    ? `${slug}${slug.includes('?') ? '&' : '?'}preview=${encodeURIComponent(preview)}`
+    : slug
+  redirect(target)
 }

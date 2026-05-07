@@ -12,12 +12,19 @@
  * for future re-enablement; not rendered in v1.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Zap, Package, TrendingUp } from 'lucide-react'
-import type { WeConnectSettingsData, RequirementFormSettingsData } from '@/lib/cms/site-text'
+import type {
+  WeConnectSettingsData,
+  RequirementFormSettingsData,
+  OfferingFormSettingsData,
+} from '@/lib/cms/site-text'
 import type { Locale } from '@/lib/i18n/strings'
 import PostRequirementModal from '@/components/weconnect/PostRequirementModal'
+import PostOfferingModal from '@/components/weconnect/PostOfferingModal'
 import DotMotif from '@/components/DotMotif'
+
+export type NeedsAutoOpen = 'need' | 'offering' | null
 
 const recentNeedsByLocale = {
   en: [
@@ -46,13 +53,27 @@ const previewAlertByLocale = {
 interface NeedsScreenProps {
   weconnect: WeConnectSettingsData
   requirementForm: RequirementFormSettingsData
+  offeringForm: OfferingFormSettingsData
   locale: Locale
   isActive: boolean
+  /** When set, auto-open the matching modal (used by Live Preview). */
+  autoOpen?: NeedsAutoOpen
 }
 
-export default function NeedsScreen({ weconnect, requirementForm, locale }: NeedsScreenProps) {
+export default function NeedsScreen({
+  weconnect,
+  requirementForm,
+  offeringForm,
+  locale,
+  autoOpen,
+}: NeedsScreenProps) {
   const [showRequirementModal, setShowRequirementModal] = useState(false)
   const [showOfferingModal, setShowOfferingModal] = useState(false)
+
+  useEffect(() => {
+    if (autoOpen === 'need') setShowRequirementModal(true)
+    else if (autoOpen === 'offering') setShowOfferingModal(true)
+  }, [autoOpen])
 
   const recentNeeds = recentNeedsByLocale[locale]
   const previewAlert = previewAlertByLocale[locale]
@@ -153,12 +174,16 @@ export default function NeedsScreen({ weconnect, requirementForm, locale }: Need
       </div>
 
       <PostRequirementModal
-        isOpen={showRequirementModal || showOfferingModal}
-        onClose={() => {
-          setShowRequirementModal(false)
-          setShowOfferingModal(false)
-        }}
+        isOpen={showRequirementModal}
+        onClose={() => setShowRequirementModal(false)}
         requirementForm={requirementForm}
+        locale={locale}
+      />
+
+      <PostOfferingModal
+        isOpen={showOfferingModal}
+        onClose={() => setShowOfferingModal(false)}
+        offeringForm={offeringForm}
         locale={locale}
       />
     </div>
