@@ -44,15 +44,15 @@ export default function Nav({ settings, eHarborTag }: { settings: NavSettingsDat
           <Image
             src="/e-harbour-logo.png"
             alt="PER GROUP by E-Harbor"
-            width={40}
-            height={40}
+            width={36}
+            height={36}
             className="object-contain flex-shrink-0"
           />
           <div className="flex flex-col leading-tight">
-            <span className="text-xl font-extrabold tracking-[2px] uppercase text-pg-text font-sora">
+            <span className="text-base font-extrabold tracking-[2px] uppercase text-pg-text font-sora">
               PER GROUP
             </span>
-            <span className="text-xs text-muted font-sora mt-0.5">
+            <span className="text-[11px] text-muted font-sora mt-0.5">
               {eHarborTag}
             </span>
           </div>
