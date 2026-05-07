@@ -67,6 +67,17 @@ export const VideoBlock: Block = {
       },
     },
     {
+      // Legacy field — kept declared so Drizzle doesn't drop the underlying
+      // `autoplay` column on schema push. The 2026-05-07 autoplayMode rename
+      // (Phase 5b.5 pattern) preserves the boolean as a fallback until the
+      // new field is stable. Hidden in admin; the front-end VideoBlock.tsx
+      // reads autoplayMode first, falls back to this if absent.
+      name: 'autoplay',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { hidden: true },
+    },
+    {
       name: 'loop',
       type: 'checkbox',
       defaultValue: false,
