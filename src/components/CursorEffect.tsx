@@ -1,29 +1,28 @@
 'use client'
 
 /**
- * CursorEffect — custom amber dot cursor + trailing ring + canvas
- * with both an ambient particle network AND sunburst bubble trails.
- * Tuned for the warm light theme.
+ * CursorEffect — custom amber dot cursor + trailing ring + fairy-dust canvas.
  *
- * Why z-index: 1 on the canvas (not 0):
- *  Section backgrounds (Hero/PlatformTeaser) use `position: relative` + `bg-bg`, which
- *  paints them at the same stacking layer as a z-index:0 canvas. Because they appear
- *  later in tree order than CursorEffect, they would obscure the particles. Using a
- *  positive z-index promotes the canvas to the positive-z-index layer; inner content
- *  (z-10) and Nav (z-500) still paint above it, so it never blocks UI.
+ * Why z-index: 9000 on the canvas:
+ *  Modal backdrop (z-2100), WeConnectOverlay (z-2000), and the LivePreview
+ *  warning (z-1000) all paint above the marketing layer. We want the trail
+ *  to appear over them too — anything lower would be covered. Cursor dot
+ *  (z-9999) and ring (z-9998) still render above the canvas.
+ *
+ * Fairy dust: each spawn produces tiny soft-glow specks with a gentle
+ * upward drift and randomised horizontal drift, so the overall cloud
+ * floats up but no two particles trace the same path. Wide spawn radius
+ * (16 px) breaks any "line behind the cursor" feeling.
  *
  * - Dot follows mouse instantly; ring trails with 12% easing per frame.
- * - Ambient grid + interactive web of dots that brighten near the cursor.
- * - Sunburst bubbles spawn on mouse move and fade — actual cursor trail.
  * - Interactive elements (a, button) scale the cursor on hover via event delegation.
  * - Disabled on touch devices (no pointer).
  * - Sets body cursor:none while mounted; restores on unmount.
  */
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 
-type NetParticle = { x: number; y: number; vx: number; vy: number; r: number }
-type Bubble = {
+type Speck = {
   x: number
   y: number
   r: number
@@ -43,32 +42,21 @@ const BRAND_COLORS = [
   '230, 130, 50',  // mid orange
 ]
 
+// Fairy-dust tuning constants.
+const SPAWN_INTERVAL_MS = 55
+const SPAWN_RADIUS = 16
+const MAX_SPECKS = 80
+const BASE_DRIFT_Y = -0.18  // gentle upward float
+
 export default function CursorEffect() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -1000, y: -1000 })
   const ringPosRef = useRef({ x: -1000, y: -1000 })
-  const netRef = useRef<NetParticle[]>([])
-  const bubblesRef = useRef<Bubble[]>([])
+  const specksRef = useRef<Speck[]>([])
   const lastSpawnRef = useRef(0)
   const rafRef = useRef<number>(0)
-  const sizeRef = useRef({ w: 0, h: 0 })
-
-  const initNet = useCallback(() => {
-    const { w, h } = sizeRef.current
-    const particles: NetParticle[] = []
-    for (let i = 0; i < 90; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        r: Math.random() * 1.2 + 0.4,
-      })
-    }
-    netRef.current = particles
-  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) return
@@ -84,16 +72,11 @@ export default function CursorEffect() {
     document.body.style.cursor = 'none'
 
     function resize() {
-      sizeRef.current.w = canvas!.width = window.innerWidth
-      sizeRef.current.h = canvas!.height = window.innerHeight
-    }
-    function onResize() {
-      resize()
-      initNet()
+      canvas!.width = window.innerWidth
+      canvas!.height = window.innerHeight
     }
     resize()
-    initNet()
-    window.addEventListener('resize', onResize)
+    window.addEventListener('resize', resize)
 
     function onMouseMove(e: MouseEvent) {
       mouseRef.current.x = e.clientX
@@ -101,22 +84,23 @@ export default function CursorEffect() {
       cursor!.style.left = e.clientX + 'px'
       cursor!.style.top = e.clientY + 'px'
 
-      // Spawn sunburst bubbles at intervals while moving.
+      // Spawn fairy-dust specks at a measured rate while moving.
       const now = Date.now()
-      if (now - lastSpawnRef.current > 30) {
+      if (now - lastSpawnRef.current > SPAWN_INTERVAL_MS) {
         lastSpawnRef.current = now
-        const count = Math.random() > 0.7 ? 2 : 1
-        for (let i = 0; i < count; i++) {
-          bubblesRef.current.push({
-            x: e.clientX + (Math.random() - 0.5) * 8,
-            y: e.clientY + (Math.random() - 0.5) * 8,
-            r: Math.random() * 4 + 2,
-            color: BRAND_COLORS[Math.floor(Math.random() * BRAND_COLORS.length)],
-            alpha: Math.random() * 0.35 + 0.55,
-            decay: Math.random() * 0.01 + 0.006,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
-          })
+        specksRef.current.push({
+          x: e.clientX + (Math.random() - 0.5) * SPAWN_RADIUS * 2,
+          y: e.clientY + (Math.random() - 0.5) * SPAWN_RADIUS * 2,
+          r: Math.random() * 1.6 + 0.6,                 // 0.6 – 2.2
+          color: BRAND_COLORS[Math.floor(Math.random() * BRAND_COLORS.length)],
+          alpha: Math.random() * 0.25 + 0.25,           // 0.25 – 0.50
+          decay: Math.random() * 0.008 + 0.005,         // 0.005 – 0.013
+          // Velocity: random horizontal, biased-upward vertical.
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: BASE_DRIFT_Y + (Math.random() - 0.5) * 0.45,
+        })
+        if (specksRef.current.length > MAX_SPECKS) {
+          specksRef.current.splice(0, specksRef.current.length - MAX_SPECKS)
         }
       }
     }
@@ -143,102 +127,41 @@ export default function CursorEffect() {
     document.addEventListener('mouseleave', onMouseLeave, true)
 
     function animate() {
-      const { w, h } = sizeRef.current
-      const m = mouseRef.current
-
       // Smooth ring follow.
       const rp = ringPosRef.current
+      const m = mouseRef.current
       rp.x += (m.x - rp.x) * 0.12
       rp.y += (m.y - rp.y) * 0.12
       ring!.style.left = rp.x + 'px'
       ring!.style.top = rp.y + 'px'
 
-      ctx!.clearRect(0, 0, w, h)
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
 
-      // Ambient warm grid.
-      ctx!.strokeStyle = 'hsla(20, 10%, 10%, 0.025)'
-      ctx!.lineWidth = 1
-      const gs = 72
-      for (let x = 0; x <= w; x += gs) {
-        ctx!.beginPath()
-        ctx!.moveTo(x, 0)
-        ctx!.lineTo(x, h)
-        ctx!.stroke()
-      }
-      for (let y = 0; y <= h; y += gs) {
-        ctx!.beginPath()
-        ctx!.moveTo(0, y)
-        ctx!.lineTo(w, y)
-        ctx!.stroke()
-      }
-
-      // Ambient particle network — brightens near cursor.
-      const net = netRef.current
-      for (const p of net) {
-        p.x += p.vx
-        p.y += p.vy
-        if (p.x < 0) p.x = w
-        if (p.x > w) p.x = 0
-        if (p.y < 0) p.y = h
-        if (p.y > h) p.y = 0
-
-        const dx = p.x - m.x
-        const dy = p.y - m.y
-        const d = Math.sqrt(dx * dx + dy * dy)
-        const inf = Math.max(0, 1 - d / 180)
-
-        ctx!.beginPath()
-        ctx!.arc(p.x, p.y, p.r + inf * 3, 0, Math.PI * 2)
-        ctx!.fillStyle =
-          inf > 0.2
-            ? `hsla(36, 90%, 47%, ${0.18 + inf * 0.4})`
-            : `hsla(20, 75%, 48%, ${0.08 + inf * 0.18})`
-        if (inf > 0.1) {
-          ctx!.shadowColor = 'hsla(36, 90%, 47%, 0.35)'
-          ctx!.shadowBlur = 8
-        }
-        ctx!.fill()
-        ctx!.shadowBlur = 0
-      }
-
-      // Connection lines between near neighbours.
-      for (let i = 0; i < net.length; i++) {
-        for (let j = i + 1; j < net.length; j++) {
-          const dx = net[i].x - net[j].x
-          const dy = net[i].y - net[j].y
-          const d = Math.sqrt(dx * dx + dy * dy)
-          if (d < 90) {
-            ctx!.beginPath()
-            ctx!.moveTo(net[i].x, net[i].y)
-            ctx!.lineTo(net[j].x, net[j].y)
-            ctx!.strokeStyle = `hsla(20, 75%, 48%, ${0.1 * (1 - d / 90)})`
-            ctx!.lineWidth = 0.5
-            ctx!.stroke()
-          }
-        }
-      }
-
-      // Sunburst bubble trail — spawned on mouse move, fades over time.
-      const bubbles = bubblesRef.current
-      for (let i = bubbles.length - 1; i >= 0; i--) {
-        const p = bubbles[i]
+      // Draw & update fairy-dust specks (soft halo + inner dot).
+      const specks = specksRef.current
+      for (let i = specks.length - 1; i >= 0; i--) {
+        const p = specks[i]
         p.alpha -= p.decay
         p.x += p.vx
         p.y += p.vy
-        p.r *= 0.998
+        p.r *= 0.997
 
-        if (p.alpha <= 0) {
-          bubbles.splice(i, 1)
+        if (p.alpha <= 0 || p.r < 0.2) {
+          specks.splice(i, 1)
           continue
         }
 
+        // Outer halo for a soft glow without expensive shadowBlur.
+        ctx!.beginPath()
+        ctx!.arc(p.x, p.y, p.r * 2.6, 0, Math.PI * 2)
+        ctx!.fillStyle = `rgba(${p.color}, ${p.alpha * 0.18})`
+        ctx!.fill()
+
+        // Inner speck.
         ctx!.beginPath()
         ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2)
         ctx!.fillStyle = `rgba(${p.color}, ${p.alpha})`
         ctx!.fill()
-      }
-      if (bubbles.length > 120) {
-        bubbles.splice(0, bubbles.length - 120)
       }
 
       rafRef.current = requestAnimationFrame(animate)
@@ -250,10 +173,10 @@ export default function CursorEffect() {
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseenter', onMouseEnter, true)
       document.removeEventListener('mouseleave', onMouseLeave, true)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', resize)
       cancelAnimationFrame(rafRef.current)
     }
-  }, [initNet])
+  }, [])
 
   return (
     <>
@@ -262,7 +185,7 @@ export default function CursorEffect() {
         style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 1,
+          zIndex: 9000,
           pointerEvents: 'none',
         }}
       />
