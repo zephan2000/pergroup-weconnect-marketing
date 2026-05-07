@@ -140,12 +140,12 @@ export interface RequirementFormSettingsData {
 }
 
 export const DEFAULT_REQUIREMENT_FORM_SETTINGS: RequirementFormSettingsData = {
-  heading: 'Post a Requirement',
+  heading: 'Post a Need',
   description: 'Tell the WeConnect network what you need',
   requiredHint: 'Required fields are marked with',
   responseSla: 'PER GROUP will respond within 1 business day',
   sectionBasic: 'Basic Information',
-  sectionRequirement: 'Requirement Details',
+  sectionRequirement: 'Need Details',
   sectionCommercial: 'Commercial Parameters',
   sectionContact: 'Contact Information',
   labelSubject: 'Subject',
@@ -172,7 +172,7 @@ export const DEFAULT_REQUIREMENT_FORM_SETTINGS: RequirementFormSettingsData = {
   placeholderEmail: 'your@email.com',
   placeholderPhone: '+65 xxxx xxxx',
   placeholderMessage: "Tell us a bit about what you're looking for",
-  buttonSubmit: 'Submit Requirement',
+  buttonSubmit: 'Submit Need',
   buttonSubmitting: 'Submitting…',
   successTitle: "Got it — we'll be in touch.",
   successMessage: 'PER GROUP will respond within 1 business day.',

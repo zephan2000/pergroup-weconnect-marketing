@@ -1,5 +1,11 @@
 /**
- * Payload global: Post Requirement Form Settings.
+ * Payload global: Post a Need Form Settings.
+ *
+ * Note on naming: the slug `requirement-form-settings` is preserved for
+ * backwards compatibility with existing CMS data, the API contract, and
+ * Resend templates. The user-facing copy ("Post a Need") is what editors
+ * and visitors see.
+ *
  * All headings, labels, placeholders, button text, success/error messages,
  * dropdown OPTION LABELS (option `value` codes stay frozen in code).
  *
@@ -13,7 +19,7 @@ const t = (en: string, zh: string) => ({ en, zh })
 
 export const RequirementFormSettings: GlobalConfig = {
   slug: 'requirement-form-settings',
-  label: t('Requirement Form Settings', '需求表单设置'),
+  label: t('Need Form Settings', '需求表单设置'),
   fields: [
     {
       type: 'collapsible',
@@ -30,7 +36,7 @@ export const RequirementFormSettings: GlobalConfig = {
       label: t('Section Titles', '区块标题'),
       fields: [
         { name: 'sectionBasic', type: 'text', localized: true, label: t('Basic Information', '基本信息') },
-        { name: 'sectionRequirement', type: 'text', localized: true, label: t('Requirement Details', '需求详情') },
+        { name: 'sectionRequirement', type: 'text', localized: true, label: t('Need Details', '需求详情') },
         { name: 'sectionCommercial', type: 'text', localized: true, label: t('Commercial Parameters', '商业参数') },
         { name: 'sectionContact', type: 'text', localized: true, label: t('Contact Information', '联系方式') },
       ],
