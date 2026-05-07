@@ -46,7 +46,7 @@ export default function Footer({ settings, nav, locale }: FooterProps) {
               />
             </div>
             <div>
-              <div className="font-extrabold text-white text-xl tracking-[2px]">PER GROUP</div>
+              <div className="font-extrabold text-white text-xl tracking-[0.5px]">PER GROUP</div>
               <div className="text-white/50 text-xs mt-0.5">{settings.eHarborTag}</div>
               <p className="text-white/40 text-[10px] mt-1 italic">{settings.tagline}</p>
               <p className="text-white/50 text-sm mt-2">{settings.pillarLine}</p>

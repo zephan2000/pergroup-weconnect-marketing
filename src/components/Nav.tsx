@@ -49,7 +49,7 @@ export default function Nav({ settings, eHarborTag }: { settings: NavSettingsDat
             className="object-contain flex-shrink-0"
           />
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-extrabold tracking-[2px] uppercase text-pg-text font-sora">
+            <span className="text-base font-extrabold tracking-[0.5px] uppercase text-pg-text font-sora">
               PER GROUP
             </span>
             <span className="text-[11px] text-muted font-sora mt-0.5">
