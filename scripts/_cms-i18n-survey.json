@@ -1,0 +1,73 @@
+[
+  {
+    "table": "nav_settings_locales",
+    "localeCounts": {
+      "en": 1,
+      "zh": 1
+    },
+    "fields": [
+      {
+        "col": "weconnect_label",
+        "missingZh": 1,
+        "mixedLocaleEn": 0,
+        "sample": {
+          "en": "WeConnect ✦",
+          "zh": "WeConnect ✦",
+          "mixed": false,
+          "missingZh": true
+        }
+      }
+    ]
+  },
+  {
+    "table": "pages_blocks_platform_teaser_locales",
+    "localeCounts": {
+      "en": 1,
+      "zh": 1
+    },
+    "fields": [
+      {
+        "col": "headline",
+        "missingZh": 1,
+        "mixedLocaleEn": 0,
+        "sample": {
+          "en": "WeConnect —",
+          "zh": "WeConnect —",
+          "mixed": false,
+          "missingZh": true
+        }
+      }
+    ]
+  },
+  {
+    "table": "requirement_form_settings_locales",
+    "localeCounts": {
+      "en": 1,
+      "zh": 1
+    },
+    "fields": [
+      {
+        "col": "placeholder_email",
+        "missingZh": 1,
+        "mixedLocaleEn": 0,
+        "sample": {
+          "en": "your@email.com",
+          "zh": "your@email.com",
+          "mixed": false,
+          "missingZh": true
+        }
+      },
+      {
+        "col": "placeholder_phone",
+        "missingZh": 1,
+        "mixedLocaleEn": 0,
+        "sample": {
+          "en": "+65 xxxx xxxx",
+          "zh": "+65 xxxx xxxx",
+          "mixed": false,
+          "missingZh": true
+        }
+      }
+    ]
+  }
+]
