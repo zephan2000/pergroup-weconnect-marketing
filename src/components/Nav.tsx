@@ -16,7 +16,7 @@ import WeConnectTrigger from '@/components/WeConnectTrigger'
 import LanguageToggle from '@/components/LanguageToggle'
 import type { NavSettingsData } from '@/lib/cms/site-text'
 
-export default function Nav({ settings }: { settings: NavSettingsData }) {
+export default function Nav({ settings, eHarborTag }: { settings: NavSettingsData; eHarborTag: string }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -44,13 +44,18 @@ export default function Nav({ settings }: { settings: NavSettingsData }) {
           <Image
             src="/e-harbour-logo.png"
             alt="PER GROUP by E-Harbor"
-            width={36}
-            height={36}
+            width={40}
+            height={40}
             className="object-contain flex-shrink-0"
           />
-          <span className="text-sm font-extrabold tracking-[3px] uppercase text-pg-text font-sora">
-            PER GROUP
-          </span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-sm font-extrabold tracking-[3px] uppercase text-pg-text font-sora">
+              PER GROUP
+            </span>
+            <span className="text-[10px] text-muted font-sora -mt-0.5">
+              {eHarborTag}
+            </span>
+          </div>
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
@@ -79,21 +84,21 @@ export default function Nav({ settings }: { settings: NavSettingsData }) {
           {settings.weconnectCta}
         </WeConnectTrigger>
 
-        <button
-          className="md:hidden text-pg-text bg-transparent border-none cursor-pointer"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-3">
+          <LanguageToggle ariaLabel={settings.languageToggleAria} />
+          <button
+            className="text-pg-text bg-transparent border-none cursor-pointer"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
         <div className="md:hidden absolute inset-x-0 top-16 bg-bg border-b border-line shadow-lg z-50 animate-fade-in">
           <div className="flex flex-col py-2">
-            <div className="px-6 py-3 border-b border-line/50">
-              <LanguageToggle ariaLabel={settings.languageToggleAria} />
-            </div>
             {navLinks.map(({ label, href }) => (
               <Link
                 key={label}

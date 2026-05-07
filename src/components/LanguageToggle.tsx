@@ -11,7 +11,7 @@
  *
  * Used in:
  *   - Nav.tsx desktop navigation (next to WeConnect ✦)
- *   - Nav.tsx mobile hamburger menu (top item)
+ *   - Nav.tsx mobile bar (always visible next to the hamburger button)
  */
 
 import { useRouter } from 'next/navigation'

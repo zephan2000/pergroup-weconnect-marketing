@@ -14,10 +14,12 @@
  * CMS editors can update overlay copy without a code deployment.
  */
 import '../globals.css'
+import { draftMode } from 'next/headers'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import CursorEffect from '@/components/CursorEffect'
 import ScrollReveal from '@/components/ScrollReveal'
+import LivePreviewWidthWarning from '@/components/LivePreviewWidthWarning'
 import { I18nProvider } from '@/lib/i18n/context'
 import { getServerLocale } from '@/lib/i18n/server'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
@@ -243,6 +245,7 @@ async function fetchPayloadData(locale: Locale) {
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const locale = await getServerLocale()
+  const { isEnabled: isDraft } = await draftMode()
   const { platformSettings, colorOverrides, navSettings, footerSettings, weconnectSettings, requirementFormSettings, contactFormSettings } = await fetchPayloadData(locale)
 
   const styleOverrides = Object.keys(colorOverrides).length > 0
@@ -258,7 +261,8 @@ export default async function MarketingLayout({ children }: { children: React.Re
               <CursorEffect />
               <ScrollReveal />
               <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
-                <Nav settings={navSettings} />
+                <LivePreviewWidthWarning isDraft={isDraft} />
+                <Nav settings={navSettings} eHarborTag={footerSettings.eHarborTag} />
                 {children}
                 <Footer settings={footerSettings} nav={navSettings} />
               </div>
