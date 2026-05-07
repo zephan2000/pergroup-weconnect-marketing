@@ -1,18 +1,32 @@
+'use client'
+
 /**
  * VideoBlock — renders a YouTube video embed inside a responsive aspect-ratio
- * container. Server component — no client JS needed; the iframe handles itself.
+ * container.
  *
- * Uses youtube-nocookie.com (privacy-enhanced mode) which only sets cookies
- * once the user interacts with the player.
+ * Three autoplay modes (CMS-controlled):
+ *   - 'off'      — viewer presses play; iframe has no autoplay flag
+ *   - 'onLoad'   — autoplay starts immediately on page load (forced muted)
+ *   - 'onScroll' — autoplay only when the iframe scrolls into view; pauses
+ *                  when scrolled back out. Implemented via IntersectionObserver
+ *                  + postMessage to YouTube's IFrame API. Iframe URL includes
+ *                  `enablejsapi=1` so postMessage commands are accepted.
+ *
+ * Uses youtube-nocookie.com (privacy-enhanced mode) — no cookies until
+ * user interacts with the player.
  */
-import React from 'react'
+import { useEffect, useRef } from 'react'
 
 type AspectRatio = '16:9' | '9:16' | '4:3' | '1:1'
+type AutoplayMode = 'off' | 'onLoad' | 'onScroll'
 
 type VideoBlockProps = {
   youtubeUrl?: string
   caption?: string
   aspectRatio?: AspectRatio
+  /** New: 3-way mode. If absent, falls back to legacy `autoplay` boolean. */
+  autoplayMode?: AutoplayMode
+  /** Legacy boolean — kept for back-compat with rows pre-migration. */
   autoplay?: boolean
   loop?: boolean
   startSeconds?: number
@@ -55,10 +69,45 @@ export default function VideoBlock({
   youtubeUrl,
   caption,
   aspectRatio = '16:9',
+  autoplayMode,
   autoplay = false,
   loop = false,
   startSeconds,
 }: VideoBlockProps) {
+  // Resolve mode: prefer the new field, fall back to legacy boolean.
+  const mode: AutoplayMode = autoplayMode ?? (autoplay ? 'onLoad' : 'off')
+
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  useEffect(() => {
+    if (mode !== 'onScroll') return
+    const iframe = iframeRef.current
+    if (!iframe) return
+
+    const post = (func: 'playVideo' | 'pauseVideo') => {
+      iframe.contentWindow?.postMessage(
+        JSON.stringify({ event: 'command', func, args: [] }),
+        '*',
+      )
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            post('playVideo')
+          } else {
+            post('pauseVideo')
+          }
+        }
+      },
+      { threshold: 0.4 },
+    )
+
+    observer.observe(iframe)
+    return () => observer.disconnect()
+  }, [mode])
+
   if (!youtubeUrl) return null
   const videoId = extractYouTubeId(youtubeUrl)
   if (!videoId) {
@@ -71,11 +120,20 @@ export default function VideoBlock({
   const params = new URLSearchParams()
   params.set('rel', '0')
   params.set('modestbranding', '1')
-  if (autoplay) {
+
+  if (mode === 'onLoad') {
     params.set('autoplay', '1')
     params.set('mute', '1')
     params.set('playsinline', '1')
+  } else if (mode === 'onScroll') {
+    // IFrame API requires enablejsapi=1 to accept postMessage commands.
+    // Mute is required so that programmatic playVideo() actually starts in
+    // browsers that block unmuted autoplay.
+    params.set('enablejsapi', '1')
+    params.set('mute', '1')
+    params.set('playsinline', '1')
   }
+
   if (loop) {
     params.set('loop', '1')
     params.set('playlist', videoId)
@@ -91,6 +149,7 @@ export default function VideoBlock({
       <div className="max-w-[1100px] mx-auto px-4 md:px-8">
         <div className={`${ASPECT_CLASS[aspectRatio]} w-full overflow-hidden rounded-xl glass-card`}>
           <iframe
+            ref={iframeRef}
             src={src}
             title={caption || 'Video'}
             loading="lazy"

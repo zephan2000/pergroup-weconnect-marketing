@@ -50,14 +50,19 @@ export const VideoBlock: Block = {
       ],
     },
     {
-      name: 'autoplay',
-      type: 'checkbox',
-      defaultValue: false,
+      name: 'autoplayMode',
+      type: 'select',
+      defaultValue: 'off',
       label: { en: 'Autoplay', zh: '自动播放' },
+      options: [
+        { label: { en: 'Off — viewer presses play', zh: '关闭 — 由观众点击播放' }, value: 'off' },
+        { label: { en: 'On page load', zh: '页面加载时播放' }, value: 'onLoad' },
+        { label: { en: 'When scrolled into view', zh: '滚动至可见时播放' }, value: 'onScroll' },
+      ],
       admin: {
         description: {
-          en: 'Browsers require muted for autoplay to actually start. Mute is forced on when this is enabled.',
-          zh: '浏览器要求自动播放时必须静音。启用此选项时会强制静音。',
+          en: 'Browsers require muted for autoplay. Mute is forced on for both autoplay modes.',
+          zh: '浏览器要求自动播放时必须静音。两种自动播放模式均会强制静音。',
         },
       },
     },
