@@ -12,6 +12,7 @@ Blocks defined here, rendered in Next.js via a BlockRenderer component.
 - ServicesBlock: array of service items (number, icon, title, Chinese title, description)
 - PlatformTeaserBlock: headline, body, features array, launch CTA label
 - ClientsBlock: array of client name strings (marquee)
+- VideoBlock: single YouTube embed (URL, caption, aspect ratio, autoplay/loop/start). YouTube-only by design — no self-hosting (Supabase Storage free tier is too restrictive). Renders via youtube-nocookie.com.
 
 ## Globals
 - SiteSettings: Color palette overrides (amber, green, bg, bg2, text, muted, line)

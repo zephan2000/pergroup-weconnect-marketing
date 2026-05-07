@@ -18,6 +18,7 @@ import AboutBlockComponent from './blocks/AboutBlock'
 import ServicesBlockComponent from './blocks/ServicesBlock'
 import PlatformTeaserBlockComponent from './blocks/PlatformTeaserBlock'
 import ClientsBlockComponent from './blocks/ClientsBlock'
+import VideoBlockComponent from './blocks/VideoBlock'
 
 type BlockData = { blockType: string; [key: string]: unknown }
 
@@ -31,6 +32,7 @@ const blockMap: Record<string, React.ComponentType<any>> = {
   services: ServicesBlockComponent,
   platformTeaser: PlatformTeaserBlockComponent,
   clients: ClientsBlockComponent,
+  video: VideoBlockComponent,
 }
 
 interface BlockRendererProps {

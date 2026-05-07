@@ -14,6 +14,7 @@ import { AboutBlock } from '../blocks/AboutBlock'
 import { ServicesBlock } from '../blocks/ServicesBlock'
 import { PlatformTeaserBlock } from '../blocks/PlatformTeaserBlock'
 import { ClientsBlock } from '../blocks/ClientsBlock'
+import { VideoBlock } from '../blocks/VideoBlock'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -89,6 +90,7 @@ export const Pages: CollectionConfig = {
         ServicesBlock,
         PlatformTeaserBlock,
         ClientsBlock,
+        VideoBlock,
       ],
     },
   ],
