@@ -3,12 +3,10 @@
  *
  * All text fields are localized in Payload — the parent server layout
  * queries with `locale`, so `headline`, `subtitle`, `scrollHintLabel`, etc.
- * arrive already-translated.
- *
- * The brand pillar line ("Tech Innovation · Business Empowerment · Human
- * Care" in EN, "科技创新 · 商业赋能 · 人文关怀" in ZH) renders beneath
- * the headline. Single-locale rendering — pure EN string in EN mode, pure
- * ZH string in ZH mode (no side-by-side).
+ * arrive already-translated. The brand pillar line lives in the CMS
+ * `subtitle` field (EN: "Tech Innovation · Business Empowerment · Human
+ * Care", ZH: "科技创新 · 商业赋能 · 人文关怀") so editors can adjust it
+ * in /admin without a code change.
  *
  * Font: `font-sora` everywhere. The Sora stack falls back to Noto Sans SC
  * for Chinese glyphs (see tailwind.config.ts), so locale toggling never
@@ -19,10 +17,6 @@
  */
 import HeroCTAButtons from '@/components/HeroCTAButtons'
 import DotMotif from '@/components/DotMotif'
-import { getServerLocale } from '@/lib/i18n/server'
-
-const PILLAR_LINE_EN = 'Tech Innovation · Business Empowerment · Human Care'
-const PILLAR_LINE_ZH = '科技创新 · 商业赋能 · 人文关怀'
 
 type HeroStat = {
   number: string
@@ -50,7 +44,7 @@ type HeroBlockProps = {
   stats?: HeroStat[]
 }
 
-export default async function HeroBlock({
+export default function HeroBlock({
   eyebrow,
   headline,
   headlineAccent,
@@ -60,7 +54,6 @@ export default async function HeroBlock({
   ctaButtons = [],
   stats = [],
 }: HeroBlockProps) {
-  const locale = await getServerLocale()
   return (
     <section id="hero" className="bg-bg relative overflow-hidden min-h-screen flex items-center">
       <div className="absolute top-0 right-0">
@@ -87,10 +80,6 @@ export default async function HeroBlock({
               {subtitle}
             </p>
           )}
-
-          <p className="text-muted/70 text-sm tracking-wide hero-fade-3">
-            {locale === 'zh' ? PILLAR_LINE_ZH : PILLAR_LINE_EN}
-          </p>
 
           {ctaButtons.length > 0 && <div className="hero-fade-4"><HeroCTAButtons buttons={ctaButtons} /></div>}
         </div>
