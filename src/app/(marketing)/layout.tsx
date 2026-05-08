@@ -20,6 +20,7 @@ import Footer from '@/components/Footer'
 import CursorEffect from '@/components/CursorEffect'
 import ScrollReveal from '@/components/ScrollReveal'
 import LivePreviewWidthWarning from '@/components/LivePreviewWidthWarning'
+import DraftModeBanner from '@/components/DraftModeBanner'
 import { I18nProvider } from '@/lib/i18n/context'
 import { getServerLocale } from '@/lib/i18n/server'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
@@ -323,6 +324,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
               <CursorEffect />
               <ScrollReveal />
               <div className="bg-bg text-pg-text font-sora antialiased min-h-screen" style={styleOverrides}>
+                <DraftModeBanner isDraft={isDraft} />
                 <LivePreviewWidthWarning isDraft={isDraft} />
                 <Nav settings={navSettings} eHarborTag={footerSettings.eHarborTag} />
                 {children}
