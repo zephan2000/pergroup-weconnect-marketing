@@ -76,7 +76,7 @@ export default function HeroBlock({
           </h1>
 
           {subtitle && (
-            <p className="text-muted text-lg tracking-widest hero-fade-3">
+            <p className="text-muted text-lg tracking-normal hero-fade-3">
               {subtitle}
             </p>
           )}
